@@ -9,7 +9,10 @@ const Navigator = createStackNavigator(
       screen: HomeScreen,
       initialRouteName: "Home",
       defaultNavigationOptions: {
-        title: "App"
+        title: "App",
+      },
+      navigationOptions: {
+        headerShown: false
       }
     },
     Second: {
