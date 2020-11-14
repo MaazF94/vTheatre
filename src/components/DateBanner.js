@@ -115,7 +115,7 @@ const DateBanner = () => {
 const styles = StyleSheet.create({
   dateBanner: {
     backgroundColor: "#7E0808",
-    height: 89,
+    height: 75,
     flexDirection: "row",
   },
   dateBannerText: {

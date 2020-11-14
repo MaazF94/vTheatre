@@ -1,23 +1,24 @@
-import React, { Component } from "react";
+import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DateBanner from "../components/DateBanner";
+import MovieDetails from "./MovieDetails";
 
 const HeaderTitle = () => {
+  const name = "vTheatre";
 
-  const name = "vTheatre"
-
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.background}>
-          <View>
-            <Text style={styles.header}>{name}</Text>
-          </View>
-          <DateBanner/>
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.background}>
+        <View>
+          <Text style={styles.header}>{name}</Text>
         </View>
-      </SafeAreaView>
-    )
-  }
+        <DateBanner />
+        <MovieDetails />
+      </View>
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginBottom: 14,
     marginTop: 14,
-  }
+  },
 });
 
 export default HeaderTitle;
