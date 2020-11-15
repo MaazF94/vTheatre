@@ -1,11 +1,9 @@
 import React from "react";
-import { View } from "react-native";
-import HeaderTitle from "../components/HeaderTitle";
-import MovieSearch from "../components/MovieSearch";
+import Background from "../components/Background";
 
 const HomeScreen = () => {
   return (
-      <HeaderTitle />
+      <Background />
   );
 };
 

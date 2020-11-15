@@ -1,18 +1,29 @@
 import React from "react";
 import { Image, StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 const MovieDetails = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <Image style={styles.img} source={require("../assets/black-widow.jpg")} />
       <View>
         <Text style={styles.movieTitle}>Black Widow</Text>
-        <View style={{bottom: 0, position: "absolute", justifyContent: "flex-end"}}>
+        <View
+          style={{
+            bottom: 0,
+            position: "absolute",
+            justifyContent: "flex-end",
+          }}
+        >
           <View style={styles.movieDetailContainer}>
             <Text style={styles.movieRatingTime}>PG-13 | 2 HRS 10 MINS</Text>
             <Text style={styles.movieGenres}>ACTION, ADVENTURE, SCI-FI</Text>
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.button}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Second")}
+                style={styles.button}
+              >
                 <Text style={styles.buttonText}>Showtimes</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.button}>
@@ -44,7 +55,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
     marginLeft: 10,
-    marginTop: 14
+    marginTop: 14,
   },
   movieRatingTime: {
     color: "#FFFFFF",
