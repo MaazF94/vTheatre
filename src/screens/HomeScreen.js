@@ -1,9 +1,17 @@
 import React from "react";
-import Background from "../components/Background";
+import { StatusBar, View } from "react-native";
+import BannerBackground from "../components/common/BannerBackground";
+import MovieDetails from "../components/home/MovieDetails";
 
 const HomeScreen = () => {
   return (
-      <Background />
+    <View>
+      <StatusBar backgroundColor="#343434" />
+      <View>
+        <BannerBackground isDateBanner={true} />
+        <MovieDetails />
+      </View>
+    </View>
   );
 };
 

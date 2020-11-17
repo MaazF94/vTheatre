@@ -78,7 +78,7 @@ const DateBanner = () => {
   };
 
   return (
-    <View style={styles.dateBanner}>
+    <View style={{ flexDirection: "row" }}>
       <View>
         <AntDesign
           onPress={subtractDays}
@@ -113,15 +113,10 @@ const DateBanner = () => {
 };
 
 const styles = StyleSheet.create({
-  dateBanner: {
-    backgroundColor: "#7E0808",
-    height: 75,
-    flexDirection: "row",
-  },
   dateBannerText: {
     color: "#FFFFFF",
     fontSize: 16,
-    fontFamily: "Roboto",
+
     fontWeight: "bold",
     marginTop: 14,
     marginLeft: 22,
@@ -131,13 +126,10 @@ const styles = StyleSheet.create({
   dateBannerSideText: {
     color: "#FFFFFF",
     fontSize: 16,
-    fontFamily: "Roboto",
-    fontWeight: "100",
     marginTop: 14,
     marginLeft: 20,
     marginRight: 20,
     textAlign: "center",
-    textShadowColor: "#6e706f",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 1,
   },
