@@ -5,9 +5,9 @@ import MovieDetails from "../components/home/MovieDetails";
 
 const HomeScreen = () => {
   return (
-    <View>
+    <View style={{flex: 1}}>
       <StatusBar backgroundColor="#343434" />
-      <View>
+      <View style={{flex: 1}}>
         <BannerBackground isDateBanner={true} />
         <MovieDetails />
       </View>

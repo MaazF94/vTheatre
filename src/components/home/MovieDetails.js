@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Image, StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import Showtimes from "./Showtimes";
+import Constants from "expo-constants";
 
 const MovieDetails = () => {
   const [displayShowtimes, setDisplayShowtimes] = useState(false);
@@ -9,47 +11,328 @@ const MovieDetails = () => {
   function showtimesToggle() {
     setDisplayShowtimes(!displayShowtimes);
     if (displayShowtimes) {
-      setShowtimeBtnStyle(styles.button)
+      setShowtimeBtnStyle(styles.button);
     } else {
-      setShowtimeBtnStyle(styles.buttonDisplayShowtimes)
+      setShowtimeBtnStyle(styles.buttonDisplayShowtimes);
     }
   }
 
   return (
-    <View>
-      <View style={styles.container}>
-        <Image
-          style={styles.img}
-          source={require("../../assets/img/black-widow.jpg")}
-        />
-        <View>
-          <Text style={styles.movieTitle}>Black Widow</Text>
-          <View
-            style={{
-              bottom: 0,
-              position: "absolute",
-              justifyContent: "flex-end",
-            }}
-          >
-            <View style={styles.movieDetailContainer}>
-              <Text style={styles.movieRatingTime}>PG-13 | 2 HRS 10 MINS</Text>
-              <Text style={styles.movieGenres}>ACTION, ADVENTURE, SCI-FI</Text>
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                  onPress={() => showtimesToggle()}
-                  style={showtimeBtnStyle}
-                >
-                  <Text style={styles.buttonText}>Showtimes</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button}>
-                  <Text style={styles.buttonText}>Movie Info</Text>
-                </TouchableOpacity>
+    <View style={{ flex: 1 }}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={{ flexDirection: "column" }}>
+          <View style={styles.container}>
+            <Image
+              style={styles.img}
+              source={require("../../assets/img/black-widow.jpg")}
+            />
+            <View>
+              <Text style={styles.movieTitle}>Black Widow</Text>
+              <View
+                style={{
+                  bottom: 0,
+                  position: "absolute",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <View style={styles.movieDetailContainer}>
+                  <Text style={styles.movieRatingTime}>
+                    PG-13 | 2 HRS 10 MINS
+                  </Text>
+                  <Text style={styles.movieGenres}>
+                    ACTION, ADVENTURE, SCI-FI
+                  </Text>
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                      onPress={() => showtimesToggle()}
+                      style={showtimeBtnStyle}
+                    >
+                      <Text style={styles.buttonText}>Showtimes</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button}>
+                      <Text style={styles.buttonText}>Movie Info</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </View>
             </View>
           </View>
+          {displayShowtimes && <Showtimes />}
         </View>
-      </View>
-      {displayShowtimes && <Showtimes />}
+        <View style={{ flexDirection: "column" }}>
+          <View style={styles.container}>
+            <Image
+              style={styles.img}
+              source={require("../../assets/img/black-widow.jpg")}
+            />
+            <View>
+              <Text style={styles.movieTitle}>Black Widow</Text>
+              <View
+                style={{
+                  bottom: 0,
+                  position: "absolute",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <View style={styles.movieDetailContainer}>
+                  <Text style={styles.movieRatingTime}>
+                    PG-13 | 2 HRS 10 MINS
+                  </Text>
+                  <Text style={styles.movieGenres}>
+                    ACTION, ADVENTURE, SCI-FI
+                  </Text>
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                      onPress={() => showtimesToggle()}
+                      style={showtimeBtnStyle}
+                    >
+                      <Text style={styles.buttonText}>Showtimes</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button}>
+                      <Text style={styles.buttonText}>Movie Info</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+          {displayShowtimes && <Showtimes />}
+        </View>
+        <View style={{ flexDirection: "column" }}>
+          <View style={styles.container}>
+            <Image
+              style={styles.img}
+              source={require("../../assets/img/black-widow.jpg")}
+            />
+            <View>
+              <Text style={styles.movieTitle}>Black Widow</Text>
+              <View
+                style={{
+                  bottom: 0,
+                  position: "absolute",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <View style={styles.movieDetailContainer}>
+                  <Text style={styles.movieRatingTime}>
+                    PG-13 | 2 HRS 10 MINS
+                  </Text>
+                  <Text style={styles.movieGenres}>
+                    ACTION, ADVENTURE, SCI-FI
+                  </Text>
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                      onPress={() => showtimesToggle()}
+                      style={showtimeBtnStyle}
+                    >
+                      <Text style={styles.buttonText}>Showtimes</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button}>
+                      <Text style={styles.buttonText}>Movie Info</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+          {displayShowtimes && <Showtimes />}
+        </View>
+        <View style={{ flexDirection: "column" }}>
+          <View style={styles.container}>
+            <Image
+              style={styles.img}
+              source={require("../../assets/img/black-widow.jpg")}
+            />
+            <View>
+              <Text style={styles.movieTitle}>Black Widow</Text>
+              <View
+                style={{
+                  bottom: 0,
+                  position: "absolute",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <View style={styles.movieDetailContainer}>
+                  <Text style={styles.movieRatingTime}>
+                    PG-13 | 2 HRS 10 MINS
+                  </Text>
+                  <Text style={styles.movieGenres}>
+                    ACTION, ADVENTURE, SCI-FI
+                  </Text>
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                      onPress={() => showtimesToggle()}
+                      style={showtimeBtnStyle}
+                    >
+                      <Text style={styles.buttonText}>Showtimes</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button}>
+                      <Text style={styles.buttonText}>Movie Info</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+          {displayShowtimes && <Showtimes />}
+        </View>
+        <View style={{ flexDirection: "column" }}>
+          <View style={styles.container}>
+            <Image
+              style={styles.img}
+              source={require("../../assets/img/black-widow.jpg")}
+            />
+            <View>
+              <Text style={styles.movieTitle}>Black Widow</Text>
+              <View
+                style={{
+                  bottom: 0,
+                  position: "absolute",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <View style={styles.movieDetailContainer}>
+                  <Text style={styles.movieRatingTime}>
+                    PG-13 | 2 HRS 10 MINS
+                  </Text>
+                  <Text style={styles.movieGenres}>
+                    ACTION, ADVENTURE, SCI-FI
+                  </Text>
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                      onPress={() => showtimesToggle()}
+                      style={showtimeBtnStyle}
+                    >
+                      <Text style={styles.buttonText}>Showtimes</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button}>
+                      <Text style={styles.buttonText}>Movie Info</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+          {displayShowtimes && <Showtimes />}
+        </View>
+        <View style={{ flexDirection: "column" }}>
+          <View style={styles.container}>
+            <Image
+              style={styles.img}
+              source={require("../../assets/img/black-widow.jpg")}
+            />
+            <View>
+              <Text style={styles.movieTitle}>Black Widow</Text>
+              <View
+                style={{
+                  bottom: 0,
+                  position: "absolute",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <View style={styles.movieDetailContainer}>
+                  <Text style={styles.movieRatingTime}>
+                    PG-13 | 2 HRS 10 MINS
+                  </Text>
+                  <Text style={styles.movieGenres}>
+                    ACTION, ADVENTURE, SCI-FI
+                  </Text>
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                      onPress={() => showtimesToggle()}
+                      style={showtimeBtnStyle}
+                    >
+                      <Text style={styles.buttonText}>Showtimes</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button}>
+                      <Text style={styles.buttonText}>Movie Info</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+          {displayShowtimes && <Showtimes />}
+        </View>
+        <View style={{ flexDirection: "column" }}>
+          <View style={styles.container}>
+            <Image
+              style={styles.img}
+              source={require("../../assets/img/black-widow.jpg")}
+            />
+            <View>
+              <Text style={styles.movieTitle}>Black Widow</Text>
+              <View
+                style={{
+                  bottom: 0,
+                  position: "absolute",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <View style={styles.movieDetailContainer}>
+                  <Text style={styles.movieRatingTime}>
+                    PG-13 | 2 HRS 10 MINS
+                  </Text>
+                  <Text style={styles.movieGenres}>
+                    ACTION, ADVENTURE, SCI-FI
+                  </Text>
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                      onPress={() => showtimesToggle()}
+                      style={showtimeBtnStyle}
+                    >
+                      <Text style={styles.buttonText}>Showtimes</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button}>
+                      <Text style={styles.buttonText}>Movie Info</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+          {displayShowtimes && <Showtimes />}
+        </View>
+        <View style={{ flexDirection: "column" }}>
+          <View style={styles.container}>
+            <Image
+              style={styles.img}
+              source={require("../../assets/img/black-widow.jpg")}
+            />
+            <View>
+              <Text style={styles.movieTitle}>Black Widow</Text>
+              <View
+                style={{
+                  bottom: 0,
+                  position: "absolute",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <View style={styles.movieDetailContainer}>
+                  <Text style={styles.movieRatingTime}>
+                    PG-13 | 2 HRS 10 MINS
+                  </Text>
+                  <Text style={styles.movieGenres}>
+                    ACTION, ADVENTURE, SCI-FI
+                  </Text>
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                      onPress={() => showtimesToggle()}
+                      style={showtimeBtnStyle}
+                    >
+                      <Text style={styles.buttonText}>Showtimes</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button}>
+                      <Text style={styles.buttonText}>Movie Info</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+          {displayShowtimes && <Showtimes />}
+        </View>
+      </ScrollView>
     </View>
   );
 };
