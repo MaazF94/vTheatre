@@ -23,7 +23,6 @@ function RootStack() {
             fontWeight: "bold",
             fontSize: 24,
             color: "#FFFFFF",
-            
           },
         }}
       >
