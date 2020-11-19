@@ -28,7 +28,7 @@ function RootStack() {
       >
         <Stack.Screen name="vTheatre" component={HomeScreen} />
         <Stack.Screen name="Enter Movie" component={EnterMovieScreen} />
-        <Stack.Screen name="Showing" component={MovieScreen} />
+        <Stack.Screen name="Showing" component={MovieScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

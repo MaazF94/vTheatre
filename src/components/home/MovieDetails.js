@@ -2,25 +2,24 @@ import React, { useState } from "react";
 import { Image, StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Showtimes from "./Showtimes";
-import Constants from "expo-constants";
 
 const MovieDetails = () => {
-  const [displayShowtimes, setDisplayShowtimes] = useState(false);
-  const [showtimeBtnStyle, setShowtimeBtnStyle] = useState(styles.button);
+  const [showtimeBtnStyle, setShowtimeBtnStyle] = useState([styles.button]);
 
-  function showtimesToggle() {
-    setDisplayShowtimes(!displayShowtimes);
-    if (displayShowtimes) {
-      setShowtimeBtnStyle(styles.button);
+  function showtimesToggle(index) {
+    if (showtimeBtnStyle[index] === styles.buttonDisplayShowtimes) {
+      setShowtimeBtnStyle([...showtimeBtnStyle[index], styles.button]);
     } else {
-      setShowtimeBtnStyle(styles.buttonDisplayShowtimes);
+      setShowtimeBtnStyle([...showtimeBtnStyle[index],styles.buttonDisplayShowtimes]);
     }
   }
 
-  return (
-    <View style={{ flex: 1 }}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{ flexDirection: "column" }}>
+  const DisplayMovies = () => {
+    const movies = [];
+
+    for (let index = 0; index < 1; index++) {
+      movies.push(
+        <View key={index} style={{ flexDirection: "column" }}>
           <View style={styles.container}>
             <Image
               style={styles.img}
@@ -44,8 +43,8 @@ const MovieDetails = () => {
                   </Text>
                   <View style={styles.buttonContainer}>
                     <TouchableOpacity
-                      onPress={() => showtimesToggle()}
-                      style={showtimeBtnStyle}
+                      onPress={() => showtimesToggle(index)}
+                      style={showtimeBtnStyle[index]}
                     >
                       <Text style={styles.buttonText}>Showtimes</Text>
                     </TouchableOpacity>
@@ -57,8 +56,20 @@ const MovieDetails = () => {
               </View>
             </View>
           </View>
-          {displayShowtimes && <Showtimes />}
+          {showtimeBtnStyle[index] === styles.buttonDisplayShowtimes && (
+            <Showtimes />
+          )}
         </View>
+      );
+    }
+
+    return movies;
+  };
+
+  return (
+    <View style={{ flex: 1 }}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <DisplayMovies />
       </ScrollView>
     </View>
   );
