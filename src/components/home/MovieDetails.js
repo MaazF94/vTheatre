@@ -4,20 +4,23 @@ import { ScrollView } from "react-native-gesture-handler";
 import Showtimes from "./Showtimes";
 
 const MovieDetails = () => {
-  const [showtimeBtnStyle, setShowtimeBtnStyle] = useState([styles.button]);
+  const [showtimeBtnStyle, setShowtimeBtnStyle] = useState([]);
 
   function showtimesToggle(index) {
-    if (showtimeBtnStyle[index] === styles.buttonDisplayShowtimes) {
-      setShowtimeBtnStyle([...showtimeBtnStyle[index], styles.button]);
+    const arr = [...showtimeBtnStyle];
+    if (arr[index] === styles.buttonDisplayShowtimes) {
+      arr[index] = styles.button;
+      setShowtimeBtnStyle(arr);
     } else {
-      setShowtimeBtnStyle([...showtimeBtnStyle[index],styles.buttonDisplayShowtimes]);
+      arr[index] = styles.buttonDisplayShowtimes
+      setShowtimeBtnStyle(arr);
     }
   }
 
   const DisplayMovies = () => {
     const movies = [];
 
-    for (let index = 0; index < 1; index++) {
+    for (let index = 0; index < 2; index++) {
       movies.push(
         <View key={index} style={{ flexDirection: "column" }}>
           <View style={styles.container}>
