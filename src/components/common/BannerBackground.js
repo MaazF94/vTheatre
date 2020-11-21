@@ -5,7 +5,9 @@ import DateBanner from "../home/DateBanner";
 const BannerBackground = (props) => {
   function GetBannerContent() {
     if (props.isDateBanner) {
-      return <DateBanner />;
+      return (
+        <DateBanner currentDate={props.currentDate} setDate={props.setDate} />
+      );
     } else {
       return null;
     }

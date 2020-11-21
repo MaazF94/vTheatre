@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 
-const DateBanner = () => {
+const DateBanner = ({ currentDate, setDate }) => {
   const weekDayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const monthNames = [
     "Jan",
@@ -22,7 +22,6 @@ const DateBanner = () => {
   const date = new Date();
 
   // 3 date variables
-  const [currentDate, setDate] = useState(new Date());
   const [dateMinusOne, setDateMinusOne] = useState(
     new Date(date.setDate(currentDate.getDate() - 1))
   );
