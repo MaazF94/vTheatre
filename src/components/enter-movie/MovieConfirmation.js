@@ -9,8 +9,9 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-const MovieConfirmation = () => {
+const MovieConfirmation = ({ movie, showtime }) => {
   const navigation = useNavigation();
+
   return (
     <View style={styles.confirmationContainer}>
       <Text style={styles.text}>Enjoy the showing!</Text>
@@ -22,7 +23,9 @@ const MovieConfirmation = () => {
         placeholder="Ticket Confirmation Code"
       />
       <TouchableOpacity
-        onPress={() => navigation.navigate("Showing")}
+        onPress={() =>
+          navigation.navigate("Showing", { movie: movie, showtime: showtime })
+        }
         style={styles.button}
       >
         <Text style={styles.buttonText}>Enter</Text>

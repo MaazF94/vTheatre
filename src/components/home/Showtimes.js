@@ -1,25 +1,31 @@
 import React from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-const Showtimes = () => {
+const Showtimes = ({ movie }) => {
   const navigation = useNavigation();
+  const { showtimes } = movie;
+
   return (
-    <View style={styles.confirmationContainer}>
-      <Text style={styles.text}>Showtimes</Text>
-      <View style={styles.showtimesContainer}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Enter Movie")}
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>07:00 PM</Text>
-        </TouchableOpacity>
-      </View>
+    <View style={styles.showtimesContainer}>
+      {showtimes.map((showtime) => {
+        return (
+          <TouchableOpacity
+            key={showtime}
+            onPress={() =>
+              navigation.navigate("Enter Movie", {
+                movie: movie,
+                showtime: showtime,
+              })
+            }
+            style={styles.button}
+          >
+            <Text key={showtime} style={styles.buttonText}>
+              {showtime}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 };
