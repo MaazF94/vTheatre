@@ -17,16 +17,12 @@ const MovieScreen = (props) => {
   const playerWidth = width > height ? width : height;
   let landscape = true;
   const videoRef = useRef();
-  const movieHour = showtime.substring(0, 2);
-  const movieMinutes = showtime.substring(3, 5);
 
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
     landscape = true;
-    const movieShowtime = moment(new Date().setHours(12, 0, 0, 0));
-    movieShowtime.add(movieHour, "hours");
-    movieShowtime.add(movieMinutes, "minutes");
-
+    const movieShowtime = moment(showtime, 'HH:mm a')
+    
     const intervalId = setInterval(() => {
       if (new Date().getTime() >= movieShowtime) {
         setShouldPlay(true);

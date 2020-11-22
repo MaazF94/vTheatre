@@ -1,5 +1,6 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
+import TimeBanner from "../enter-movie/TimeBanner";
 import DateBanner from "../home/DateBanner";
 
 const BannerBackground = (props) => {
@@ -8,8 +9,8 @@ const BannerBackground = (props) => {
       return (
         <DateBanner currentDate={props.currentDate} setDate={props.setDate} />
       );
-    } else {
-      return null;
+    } else if (props.isTimeBanner) {
+      return <TimeBanner showtime={props.showtime} />;
     }
   }
 

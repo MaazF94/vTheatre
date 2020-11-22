@@ -13,7 +13,7 @@ const EnterMovieScreen = (props) => {
     <View>
       <ScrollView>
         <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={50}>
-          <BannerBackground isDateBanner={false} />
+          <BannerBackground isTimeBanner={true} showtime={showtime} />
           <EnterTheatre img={img} />
           <MovieConfirmation showtime={showtime} movie={movie} />
         </KeyboardAvoidingView>
