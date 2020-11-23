@@ -10,39 +10,34 @@ const MovieCard = ({ movie }) => {
   const showtimesToggle = () => setShowtimeBtnStyle(!showtimeBtnStyle);
 
   return (
-    <View style={{ flexDirection: "column" }}>
-      <View style={styles.container}>
+    <View style={styles.container}>
+      <View style={styles.contentContainerWithImg}>
         <Image style={styles.img} source={img} />
-        <View>
+        <View style={styles.contentContainerWithoutImg}>
           <Text style={styles.movieTitle}>{title}</Text>
-          <View
-            style={{
-              bottom: 0,
-              position: "absolute",
-              justifyContent: "flex-end",
-            }}
-          >
-            <View style={styles.movieDetailContainer}>
+          <View style={styles.ratingTimeAndGenreContainer}>
+            <View>
               <Text style={styles.movieRatingTime}>
-                {rating} | {length}{" "}
+                {rating} | {length}
               </Text>
-              <Text style={styles.movieGenres}>{genre}</Text>
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                  onPress={showtimesToggle}
-                  style={
-                    showtimeBtnStyle
-                      ? styles.buttonDisplayShowtimes
-                      : styles.button
-                  }
-                >
-                  <Text style={styles.buttonText}>Showtimes</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button}>
-                  <Text style={styles.buttonText}>Movie Info</Text>
-                </TouchableOpacity>
-              </View>
             </View>
+            <View>
+              <Text style={styles.movieGenres}>{genre}</Text>
+            </View>
+          </View>
+
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              onPress={showtimesToggle}
+              style={
+                showtimeBtnStyle ? styles.buttonDisplayShowtimes : styles.button
+              }
+            >
+              <Text style={styles.buttonText}>Showtimes</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.buttonText}>Movie Info</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -53,44 +48,49 @@ const MovieCard = ({ movie }) => {
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: "column",
+  },
+  contentContainerWithImg: {
     flexDirection: "row",
-    padding: 20,
+    padding: 10,
   },
   img: {
     width: 132,
     height: 158,
   },
-  movieDetailContainer: {
+  contentContainerWithoutImg: {
     flexDirection: "column",
+    marginLeft: 5,
+    flex: 1,
   },
   movieTitle: {
     color: "#FFFFFF",
-
     fontWeight: "bold",
     fontSize: 20,
-    marginLeft: 10,
-    marginTop: 14,
+  },
+  ratingTimeAndGenreContainer: {
+    flexDirection: "column",
+    flex: 1,
+    justifyContent: "center",
   },
   movieRatingTime: {
     color: "#FFFFFF",
     fontSize: 14,
-    marginLeft: 10,
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 1,
   },
   movieGenres: {
     color: "#FFFFFF",
     fontSize: 14,
-    marginLeft: 10,
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 1,
   },
   buttonContainer: {
     flexDirection: "row",
+    bottom: 0,
+    justifyContent: "space-around",
   },
   button: {
-    marginTop: 20,
-    marginLeft: 10,
     backgroundColor: "#000000",
     borderWidth: 1,
     borderRadius: 1,
@@ -101,8 +101,6 @@ const styles = StyleSheet.create({
     height: 35,
   },
   buttonDisplayShowtimes: {
-    marginTop: 20,
-    marginLeft: 10,
     backgroundColor: "#7E0808",
     borderWidth: 1,
     borderRadius: 1,
