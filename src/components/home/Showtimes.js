@@ -31,29 +31,14 @@ const Showtimes = ({ movie }) => {
 };
 
 const styles = StyleSheet.create({
-  confirmationContainer: {
-    flexDirection: "column",
-    backgroundColor: "#272727",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 40,
-    paddingBottom: 10,
-    paddingTop: 10,
-  },
-  text: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-    fontSize: 20,
-    textAlign: "center",
-  },
-  showtimesContainer: {
+showtimesContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
     alignItems: "center",
   },
   button: {
-    marginTop: 20,
+    marginBottom: 10,
     backgroundColor: "#7E0808",
     borderWidth: 1,
     borderRadius: 1,
@@ -67,7 +52,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FFFFFF",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 14,
   },
 });
 

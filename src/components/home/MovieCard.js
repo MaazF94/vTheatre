@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     bottom: 0,
-    // justifyContent: "space-around",
   },
   buttonShowtimes: {
     backgroundColor: "#000000",

@@ -21,7 +21,7 @@ const DateBanner = ({ currentDate, setDate }) => {
 
   const date = new Date();
 
-  // 3 date variables
+  // 2 date variables
   const [dateMinusOne, setDateMinusOne] = useState(
     new Date(date.setDate(currentDate.getDate() - 1))
   );
@@ -77,7 +77,7 @@ const DateBanner = ({ currentDate, setDate }) => {
   };
 
   return (
-    <View style={{ flexDirection: "row" }}>
+    <View style={styles.dateBannerContainer}>
       <View>
         <AntDesign
           onPress={subtractDays}
@@ -112,30 +112,24 @@ const DateBanner = ({ currentDate, setDate }) => {
 };
 
 const styles = StyleSheet.create({
+  dateBannerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "space-evenly",
+  },
   dateBannerText: {
     color: "#FFFFFF",
     fontSize: 16,
-
     fontWeight: "bold",
-    marginTop: 14,
-    marginLeft: 22,
-    marginRight: 22,
     textAlign: "center",
   },
   dateBannerSideText: {
     color: "#FFFFFF",
     fontSize: 16,
-    marginTop: 14,
-    marginLeft: 20,
-    marginRight: 20,
     textAlign: "center",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 1,
-  },
-  dateIcon: {
-    marginTop: 21,
-    marginLeft: 22,
-    marginRight: 22,
   },
 });
 
