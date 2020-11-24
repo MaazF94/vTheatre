@@ -30,12 +30,14 @@ const MovieCard = ({ movie }) => {
             <TouchableOpacity
               onPress={showtimesToggle}
               style={
-                showtimeBtnStyle ? styles.buttonDisplayShowtimes : styles.button
+                showtimeBtnStyle
+                  ? styles.buttonDisplayShowtimes
+                  : styles.buttonShowtimes
               }
             >
               <Text style={styles.buttonText}>Showtimes</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.buttonMovieInfo}>
               <Text style={styles.buttonText}>Movie Info</Text>
             </TouchableOpacity>
           </View>
@@ -88,9 +90,9 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     bottom: 0,
-    justifyContent: "space-around",
+    // justifyContent: "space-around",
   },
-  button: {
+  buttonShowtimes: {
     backgroundColor: "#000000",
     borderWidth: 1,
     borderRadius: 1,
@@ -99,6 +101,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 105,
     height: 35,
+  },
+  buttonMovieInfo: {
+    backgroundColor: "#000000",
+    borderWidth: 1,
+    borderRadius: 1,
+    borderColor: "#ffffff",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 105,
+    height: 35,
+    marginLeft: 10
   },
   buttonDisplayShowtimes: {
     backgroundColor: "#7E0808",
