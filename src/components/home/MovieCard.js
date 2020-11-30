@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Image, StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import Showtimes from "./Showtimes";
+//Using this until we load from URI
+import SelectImage from "../../assets/img/SelectImage";
 
 const MovieCard = ({ movie }) => {
   const [showtimeBtnStyle, setShowtimeBtnStyle] = useState(false);
-
   const { id, title, rating, length, genre, img } = movie;
 
   const showtimesToggle = () => setShowtimeBtnStyle(!showtimeBtnStyle);
@@ -12,7 +13,8 @@ const MovieCard = ({ movie }) => {
   return (
     <View style={styles.container}>
       <View style={styles.contentContainerWithImg}>
-        <Image style={styles.img} source={img} />
+        {/* Using select image below until URI is created for img*/}
+        <Image style={styles.img} source={SelectImage[id]} />
         <View style={styles.contentContainerWithoutImg}>
           <Text style={styles.movieTitle}>{title}</Text>
           <View style={styles.ratingTimeAndGenreContainer}>
@@ -110,7 +112,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 105,
     height: 35,
-    marginLeft: 10
+    marginLeft: 10,
   },
   buttonDisplayShowtimes: {
     backgroundColor: "#7E0808",

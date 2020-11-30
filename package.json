@@ -13,6 +13,7 @@
     "@react-native-community/slider": "3.0.3",
     "@react-navigation/native": "^5.8.9",
     "@react-navigation/stack": "^5.12.6",
+    "axios": "^0.21.0",
     "expo": "^39.0.4",
     "expo-av": "~8.6.0",
     "expo-screen-orientation": "~2.0.0",

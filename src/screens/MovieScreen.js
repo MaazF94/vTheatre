@@ -21,8 +21,8 @@ const MovieScreen = (props) => {
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
     landscape = true;
-    const movieShowtime = moment(showtime, 'HH:mm a')
-    
+    const movieShowtime = moment(showtime, "HH:mm a");
+
     const intervalId = setInterval(() => {
       if (new Date().getTime() >= movieShowtime) {
         setShouldPlay(true);
