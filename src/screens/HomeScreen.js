@@ -8,7 +8,7 @@ const HomeScreen = () => {
   const [currentDate, setDate] = useState(new Date());
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    // <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
         <StatusBar backgroundColor="#343434" />
         <View style={{ flex: 1 }}>
@@ -20,7 +20,7 @@ const HomeScreen = () => {
           <MovieDetails currentDate={currentDate} />
         </View>
       </View>
-    </SafeAreaView>
+    // </SafeAreaView>
   );
 };
 
