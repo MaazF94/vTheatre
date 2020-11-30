@@ -5,6 +5,7 @@ import { Dimensions, View, Button } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
+import { HeaderBackButton } from '@react-navigation/stack';
 import moment from "moment";
 
 const MovieScreen = (props) => {
@@ -42,6 +43,13 @@ const MovieScreen = (props) => {
     setHeaderShown(!headerShown);
     navigation.setOptions({
       headerShown: !headerShown,
+      headerLeft: () => (
+        <HeaderBackButton
+          onPress={() => {
+            navigation.pop(2);
+          }}
+        />
+      )
     });
   };
 
