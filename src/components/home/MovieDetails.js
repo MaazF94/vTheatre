@@ -5,29 +5,24 @@ import vtheatre from "../../api/vtheatre";
 import MovieCard from "./MovieCard";
 
 const MovieDetails = ({ currentDate }) => {
-
-  const [movies, setMovies] = useState();
-  const [loaded, setLoaded] = useState([false])
+  const [movies, setMovies] = useState([]);
 
   useEffect(() => {
-
     const getMoviesApi = async () => {
-      const response = await vtheatre.get('/getMovies');
+      const response = await vtheatre.get("/getMovies");
       setMovies(response.data);
-      setLoaded(true);
-      };
+    };
 
-      getMoviesApi();
-
-  });
+    getMoviesApi();
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {loaded && movies.map((movie) => {
+        {movies.map((movie) => {
           if (
-            movie.startDate <= currentDate.getDate() &&
-            movie.endDate >= currentDate.getDate()
+            movie.startDate <= currentDate.toISOString().split("T")[0] &&
+            movie.endDate >= currentDate.toISOString().split("T")[0]
           ) {
             return <MovieCard key={movie.id} movie={movie} />;
           }

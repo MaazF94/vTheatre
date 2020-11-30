@@ -1,14 +1,22 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 const Showtimes = ({ movie }) => {
+  const [showtime, setShowtimes] = useState([]);
+  const loadShowtimes = [];
   const navigation = useNavigation();
-  const { showtimes } = movie;
+
+  useEffect(() => {
+    movie.showtime.forEach(function (show) {
+      loadShowtimes.push(show.showtime);
+    });
+    setShowtimes(loadShowtimes);
+  }, []);
 
   return (
     <View style={styles.showtimesContainer}>
-      {showtimes.map((showtime) => {
+      {showtime.map((showtime) => {
         return (
           <TouchableOpacity
             key={showtime}
@@ -31,7 +39,7 @@ const Showtimes = ({ movie }) => {
 };
 
 const styles = StyleSheet.create({
-showtimesContainer: {
+  showtimesContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
