@@ -52,9 +52,11 @@ const MovieCard = ({ movie }) => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     flexDirection: "column",
   },
   contentContainerWithImg: {
+    flex: 1,
     flexDirection: "row",
     padding: 10,
   },
