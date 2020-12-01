@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import vtheatre from "../../api/vtheatre";
 import MovieCard from "./MovieCard";
+import moment from "moment";
 
 const MovieDetails = ({ currentDate }) => {
   const [movies, setMovies] = useState([]);
@@ -21,8 +22,8 @@ const MovieDetails = ({ currentDate }) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {movies.map((movie) => {
           if (
-            movie.startDate <= currentDate.toISOString().split("T")[0] &&
-            movie.endDate >= currentDate.toISOString().split("T")[0]
+            movie.startDate <= moment(currentDate).format('YYYY-MM-DD') &&
+            movie.endDate >= moment(currentDate).format('YYYY-MM-DD')
           ) {
             return <MovieCard key={movie.id} movie={movie} />;
           }
