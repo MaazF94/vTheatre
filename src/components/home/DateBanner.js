@@ -1,45 +1,20 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import moment from "moment";
 
 const DateBanner = ({ currentDate, setDate }) => {
-  const weekDayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-
-  const date = new Date();
 
   // 2 date variables
-  const [dateMinusOne, setDateMinusOne] = useState(
-    new Date(date.setDate(currentDate.getDate() - 1))
-  );
-  const [datePlusOne, setDatePlusOne] = useState(
-    new Date(date.setDate(currentDate.getDate() + 1))
-  );
+  const [dateMinusOne, setDateMinusOne] = useState(moment(currentDate).subtract(1, "day"));
+  const [datePlusOne, setDatePlusOne] = useState(moment(currentDate).add(1, "day"));
 
   // called when hitting left caret icon
   const subtractDays = () => {
-    const newCurrentDate = new Date(
-      currentDate.setDate(currentDate.getDate() - 1)
-    );
-    const newDateMinusOne = new Date(
-      dateMinusOne.setDate(dateMinusOne.getDate() - 1)
-    );
-    const newDatePlusOne = new Date(
-      datePlusOne.setDate(datePlusOne.getDate() - 1)
-    );
+    const newCurrentDate = moment(currentDate).subtract(1, "day");
+    const newDateMinusOne = moment(dateMinusOne).subtract(1, "day");
+    const newDatePlusOne = moment(datePlusOne).subtract(1, "day");
+
     setDate(newCurrentDate);
     setDateMinusOne(newDateMinusOne);
     setDatePlusOne(newDatePlusOne);
@@ -47,33 +22,13 @@ const DateBanner = ({ currentDate, setDate }) => {
 
   // called when hitting right caret icon
   const addDays = () => {
-    const newCurrentDate = new Date(
-      currentDate.setDate(currentDate.getDate() + 1)
-    );
-    const newDateMinusOne = new Date(
-      dateMinusOne.setDate(dateMinusOne.getDate() + 1)
-    );
-    const newDatePlusOne = new Date(
-      datePlusOne.setDate(datePlusOne.getDate() + 1)
-    );
+    const newCurrentDate = moment(currentDate).add(1, "day");
+    const newDateMinusOne = moment(dateMinusOne).add(1, "day");
+    const newDatePlusOne = moment(datePlusOne).add(1, "day");
+
     setDate(newCurrentDate);
     setDateMinusOne(newDateMinusOne);
     setDatePlusOne(newDatePlusOne);
-  };
-
-  // format the three dates that are shown in the banner
-  const formatDate = (date) => {
-    let dayOfMonth = date.getDate();
-    if (dayOfMonth < 10) {
-      dayOfMonth = "0" + dayOfMonth;
-    }
-    return (
-      monthNames[date.getMonth()] +
-      " " +
-      dayOfMonth +
-      "\n" +
-      weekDayNames[date.getDay()]
-    );
   };
 
   return (
@@ -89,14 +44,14 @@ const DateBanner = ({ currentDate, setDate }) => {
       </View>
       <View>
         <Text style={styles.dateBannerSideText}>
-          {formatDate(dateMinusOne)}
+          {moment(dateMinusOne).format("MMM DD[\n]ddd")}
         </Text>
       </View>
       <View>
-        <Text style={styles.dateBannerText}>{formatDate(currentDate)}</Text>
+        <Text style={styles.dateBannerText}>{moment(currentDate).format("MMM DD[\n]ddd")}</Text>
       </View>
       <View>
-        <Text style={styles.dateBannerSideText}>{formatDate(datePlusOne)}</Text>
+        <Text style={styles.dateBannerSideText}>{moment(datePlusOne).format("MMM DD[\n]ddd")}</Text>
       </View>
       <View>
         <AntDesign

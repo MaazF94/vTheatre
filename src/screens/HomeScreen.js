@@ -3,9 +3,10 @@ import { StatusBar, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BannerBackground from "../components/common/BannerBackground";
 import MovieDetails from "../components/home/MovieDetails";
+import moment from "moment";
 
 const HomeScreen = () => {
-  const [currentDate, setDate] = useState(new Date());
+  const [currentDate, setDate] = useState(moment(new Date()));
 
   return (
     // <SafeAreaView style={{ flex: 1 }}>

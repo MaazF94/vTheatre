@@ -22,8 +22,8 @@ const MovieDetails = ({ currentDate }) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {movies.map((movie) => {
           if (
-            movie.startDate <= moment(currentDate).format('YYYY-MM-DD') &&
-            movie.endDate >= moment(currentDate).format('YYYY-MM-DD')
+            movie.startDate <= currentDate.format('YYYY-MM-DD') &&
+            movie.endDate >= currentDate.format('YYYY-MM-DD')
           ) {
             return <MovieCard key={movie.id} movie={movie} />;
           }
