@@ -34,7 +34,8 @@ const MovieScreen = (props) => {
     }, 1000);
 
     return function cleanup() {
-      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+      ScreenOrientation.unlockAsync();
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
       landscape = false;
     };
   }, [landscape]);
