@@ -5,46 +5,42 @@ import { PaymentsStripe as Stripe } from "expo-payments-stripe";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 const PurchaseTicket = ({ hasTickets, setHasTickets }) => {
-  useEffect(() => {
-    async function callStripe() {
-      Stripe.setOptionsAsync({
-        publishableKey:
-          "pk_test_51HtEwcIm0DJNvqedevdJiTTpIkl4rXlh7fqf2Xrm6iLyeD8BNTlaZTMtMBVCBw8Sut6DCVAZFByQm8wC56VEGYxl00JfVfkF09", // Your key
-        androidPayMode: "test", // [optional] used to set wallet environment (AndroidPay)
-      });
+  async function callStripe() {
+    Stripe.setOptionsAsync({
+      publishableKey:
+        "pk_test_51HtEwcIm0DJNvqedevdJiTTpIkl4rXlh7fqf2Xrm6iLyeD8BNTlaZTMtMBVCBw8Sut6DCVAZFByQm8wC56VEGYxl00JfVfkF09", // Your key
+      androidPayMode: "test", // [optional] used to set wallet environment (AndroidPay)
+    });
 
-      const supported = await Stripe.deviceSupportsNativePayAsync();
-        Alert.alert("supported: " + supported);
-      const supportedAndPaymentMethodExists = await Stripe.canMakeNativePayPaymentsAsync();
-        Alert.alert("exists: " + supportedAndPaymentMethodExists);
+    const supported = await Stripe.deviceSupportsNativePayAsync();
+    Alert.alert("supported: " + supported);
+    const supportedAndPaymentMethodExists = await Stripe.canMakeNativePayPaymentsAsync();
+    Alert.alert("exists: " + supportedAndPaymentMethodExists);
 
-      const options = {
-        total_price: "10.00",
-        currency_code: "USD",
-        line_items: [
-          {
-            currency_code: "USD",
-            description: "Movie Ticket",
-            total_price: "10.00",
-            unit_price: "10.00",
-            quantity: "1",
-          },
-        ],
-      };
+    const options = {
+      total_price: "10.00",
+      currency_code: "USD",
+      line_items: [
+        {
+          currency_code: "USD",
+          description: "Movie Ticket",
+          total_price: "10.00",
+          unit_price: "10.00",
+          quantity: "1",
+        },
+      ],
+    };
 
-      const token = await Stripe.paymentRequestWithNativePayAsync(options);
-      Alert.alert("Token created: " + token);
-    }
-    callStripe();
-  });
+    const token = await Stripe.paymentRequestWithNativePayAsync(options);
+    Alert.alert("Token created: " + token);
+  }
 
   return (
     <View style={styles.confirmationContainer}>
       <Text style={styles.text}>Enjoy the showing!</Text>
-      {/* <TouchableOpacity onPress={callStripe}>
-        <GooglePaySvg />
-        <Text>Google Pay</Text>
-      </TouchableOpacity> */}
+      <TouchableOpacity onPress={callStripe} style={styles.payBtn}>
+        <Text style={styles.buttonText}>Proceed to checkout</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -64,6 +60,24 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
     textAlign: "center",
+  },
+  payBtn: {
+    backgroundColor: "#7E0808",
+    borderWidth: 1,
+    borderRadius: 1,
+    borderColor: "#ffffff",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingBottom: 10,
+    paddingTop: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 14,
   },
 });
 
