@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   StyleSheet,
   View,
@@ -8,36 +8,37 @@ import {
   Linking,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import HasTickets from "./HasTickets";
-import PurchaseTicket from "./PurchaseTicket";
 
-const MovieConfirmation = ({ movie, showtime }) => {
+const HasTickets = ({ hasTickets, setHasTickets, movie, showtime }) => {
   const navigation = useNavigation();
-  const [enableEnterMovie, setEnableEnterMovie] = useState(true);
 
-  function GetMovieConfirmationContent() {
-    if (enableEnterMovie) {
-      return (
-        <HasTickets
-          movie={movie}
-          showtime={showtime}
-          hasTickets={enableEnterMovie}
-          setHasTickets={setEnableEnterMovie}
-        />
-      );
-    } else {
-      return (
-        <PurchaseTicket
-          movie={movie}
-          showtime={showtime}
-          hasTickets={enableEnterMovie}
-          setHasTickets={setEnableEnterMovie}
-        />
-      );
-    }
+  function updateHasTickets() {
+    setHasTickets(!hasTickets);
   }
 
-  return <GetMovieConfirmationContent />;
+  return (
+    <View style={styles.confirmationContainer}>
+      <Text style={styles.text}>Enjoy the showing!</Text>
+      <TextInput
+        style={styles.textInput}
+        width="90%"
+        backgroundColor="#ffffff"
+        placeholderTextColor="#827D7D"
+        placeholder="Ticket Confirmation Code"
+      />
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate("Showing", { movie: movie, showtime: showtime })
+        }
+        style={styles.button}
+      >
+        <Text style={styles.buttonText}>Enter</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={updateHasTickets}>
+        <Text style={styles.ticketText}>No code? Buy tickets.</Text>
+      </TouchableOpacity>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
     textAlign: "center",
-    height: 34,
+    // height: 34,
   },
   button: {
     marginTop: 20,
@@ -89,4 +90,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MovieConfirmation;
+export default HasTickets;
