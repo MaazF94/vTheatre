@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, Alert } from "react-native";
 import { PaymentsStripe as Stripe } from "expo-payments-stripe";
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
+import Api from "../../api/Api";
+import UriConstants from "../../api/UriConstants";
 
 const PurchaseTicket = ({ hasTickets, setHasTickets, movie }) => {
   const [adultTicketText, setAdultTicketText] = useState("0");
@@ -10,6 +12,7 @@ const PurchaseTicket = ({ hasTickets, setHasTickets, movie }) => {
   const [totalAmount, setTotalAmount] = useState(0);
 
   const { title } = movie;
+  const currencyCode = 'USD';
 
   useEffect(() => {
     calculateTotalAmount();
@@ -27,24 +30,24 @@ const PurchaseTicket = ({ hasTickets, setHasTickets, movie }) => {
     if (supportedAndPaymentMethodExists) {
       const options = {
         total_price: totalAmount.toString(),
-        currency_code: "USD",
+        currency_code: currencyCode,
         line_items: [
           {
-            currency_code: "USD",
+            currency_code: currencyCode,
             description: title + " Adult Movie Ticket(s)",
             total_price: totalAmount.toString(),
             unit_price: "10.00",
             quantity: adultTicketText,
           },
           {
-            currency_code: "USD",
+            currency_code: currencyCode,
             description: title + " Senior Movie Ticket(s)",
             total_price: totalAmount.toString(),
             unit_price: "8.00",
             quantity: seniorTicketText,
           },
           {
-            currency_code: "USD",
+            currency_code: currencyCode,
             description: title + " Child Movie Ticket(s)",
             total_price: totalAmount.toString(),
             unit_price: "6.00",
@@ -55,17 +58,37 @@ const PurchaseTicket = ({ hasTickets, setHasTickets, movie }) => {
 
       try {
         const token = await Stripe.paymentRequestWithNativePayAsync(options);
-        Alert.alert("Successful Payment", "Your payment was processed. The ticket confirmation code was sent to your email. Enjoy!");
+
+        const paymentRequest = {
+          "tokenId": token.tokenId,
+          "currency": currencyCode,
+          "amount": totalAmount,
+          "description": title + " Movie Ticket(s)"
+        }
+        const processedPayment = await Api.post(UriConstants.completePayment, paymentRequest)
+        console.log("processed: " + processedPayment);
+
+        Stripe.completeNativePayRequestAsync();
+
+        Alert.alert(
+          "Successful Payment",
+          "Your payment was processed. The ticket confirmation code was sent to your email. Enjoy!"
+        );
+
         setHasTickets(!hasTickets);
       } catch (error) {
         Stripe.cancelNativePayRequestAsync();
+
         Alert.alert(
           "Canceled Payment",
           "An error occurred, your payment was not processed."
         );
       }
     } else {
-        Alert.alert("Payment method not supported", "You must have apple or google pay set up on your device.")
+      Alert.alert(
+        "Payment method not supported",
+        "You must have apple or google pay set up on your device."
+      );
     }
   }
 
