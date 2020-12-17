@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
     textAlign: "center",
-    // height: 34,
+    height: 34,
   },
   button: {
     marginTop: 20,

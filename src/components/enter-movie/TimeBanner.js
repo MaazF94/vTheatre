@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 const TimeBanner = ({ showtime }) => {
   return (
     <View style={styles.timeBanner}>
-      <Text style={styles.timeBannerText}>{showtime}</Text>
+      <Text style={styles.timeBannerText}>{showtime.showtime}</Text>
     </View>
   );
 };
