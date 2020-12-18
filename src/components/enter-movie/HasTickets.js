@@ -24,7 +24,8 @@ const HasTickets = ({ hasTickets, setHasTickets, movie, showtime }) => {
         width="90%"
         backgroundColor="#ffffff"
         placeholderTextColor="#827D7D"
-        placeholder="Ticket Confirmation Code"
+        // placeholder="Ticket Confirmation Code"
+        value="TESTCODE"
       />
       <TouchableOpacity
         onPress={() =>
@@ -62,7 +63,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
     textAlign: "center",
-    height: 34,
+    height: 45,
   },
   button: {
     marginTop: 20,

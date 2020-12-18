@@ -7,9 +7,9 @@ import UriConstants from "../../api/UriConstants";
 import StripeConfigs from "../common/StripeConfigs";
 
 const PurchaseTicket = ({ showtime, hasTickets, setHasTickets, movie }) => {
-  const [adultTicketText, setAdultTicketText] = useState("0");
-  const [seniorTicketText, setSeniorTicketText] = useState("0");
-  const [childTicketText, setChildTicketText] = useState("0");
+  // const [adultTicketText, setAdultTicketText] = useState("0");
+  // const [seniorTicketText, setSeniorTicketText] = useState("0");
+  // const [childTicketText, setChildTicketText] = useState("0");
   // const [totalAmount, setTotalAmount] = useState(0);
   const [totalAmount, setTotalAmount] = useState(10);
   const [emailAddress, setEmailAddress] = useState("");
@@ -107,7 +107,6 @@ const PurchaseTicket = ({ showtime, hasTickets, setHasTickets, movie }) => {
           token = await Stripe.paymentRequestWithNativePayAsync(options);
         } else if (Platform.OS === "ios") {
           items = createApplePayOptions();
-          console.log("Items: " + items);
           token = await Stripe.paymentRequestWithNativePayAsync(options, items);
         }
 
@@ -126,7 +125,6 @@ const PurchaseTicket = ({ showtime, hasTickets, setHasTickets, movie }) => {
           UriConstants.completePayment,
           paymentRequest
         );
-        console.log("processed: " + processedPayment);
 
         // Close payment
         await Stripe.completeNativePayRequestAsync();
@@ -290,7 +288,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
     textAlign: "center",
-    height: 34,
+    height: 45,
     borderRadius: 1,
     borderWidth: 1,
     borderColor: "#FFFFFF"

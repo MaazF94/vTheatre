@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Video } from "expo-av";
 import * as ScreenOrientation from "expo-screen-orientation";
-import { Dimensions, View, Button } from "react-native";
+import { Dimensions, View, Button, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
-import { HeaderBackButton } from '@react-navigation/stack';
+import { HeaderBackButton } from "@react-navigation/stack";
 import moment from "moment";
 
 const MovieScreen = (props) => {
-  const showtime = props.route.params.showtime;
+  const showtime = props.route.params.showtime.showtime;
   const [headerShown, setHeaderShown] = useState(false);
   const [shouldPlay, setShouldPlay] = useState(false);
   const navigation = useNavigation();
@@ -20,22 +20,34 @@ const MovieScreen = (props) => {
   const videoRef = useRef();
 
   useEffect(() => {
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-    landscape = true;
-    const movieShowtime = moment(showtime, "HH:mm a");
+    async function rotateLandscape() {
+      await ScreenOrientation.lockAsync(
+        ScreenOrientation.OrientationLock.LANDSCAPE
+      );
+      landscape = true;
+    }
 
-    const intervalId = setInterval(() => {
-      if (new Date().getTime() >= movieShowtime) {
-        setShouldPlay(true);
-        const positionInStream = new Date().getTime() - movieShowtime;
-        videoRef.current.playFromPositionAsync(positionInStream);
-        clearInterval(intervalId);
-      }
-    }, 1000);
+    function enterUserInMovie() {
+      const movieShowtime = moment(showtime, "HH:mm a");
 
-    return function cleanup() {
-      ScreenOrientation.unlockAsync();
-      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+      const intervalId = setInterval(() => {
+        if (new Date().getTime() >= movieShowtime) {
+          setShouldPlay(true);
+          const positionInStream = new Date().getTime() - movieShowtime;
+          videoRef.current.playFromPositionAsync(positionInStream);
+          clearInterval(intervalId);
+        }
+      }, 1000);
+    }
+
+    rotateLandscape();
+    enterUserInMovie();
+
+    return async function cleanup() {
+      await ScreenOrientation.unlockAsync();
+      await ScreenOrientation.lockAsync(
+        ScreenOrientation.OrientationLock.PORTRAIT_UP
+      );
       landscape = false;
     };
   }, [landscape]);
@@ -50,7 +62,7 @@ const MovieScreen = (props) => {
             navigation.pop(2);
           }}
         />
-      )
+      ),
     });
   };
 
