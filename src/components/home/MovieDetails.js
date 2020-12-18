@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import vtheatre from "../../api/vtheatre";
+import Api from "../../api/Api";
 import MovieCard from "./MovieCard";
-import moment from "moment";
+import UriConstants from "../../api/UriConstants";
 
 const MovieDetails = ({ currentDate }) => {
   const [movies, setMovies] = useState([]);
 
   useEffect(() => {
     const getMoviesApi = async () => {
-      const response = await vtheatre.get("/getMovies");
+      const response = await Api.get(UriConstants.getMovies);
       setMovies(response.data);
     };
 

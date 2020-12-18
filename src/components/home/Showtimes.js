@@ -3,23 +3,15 @@ import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 const Showtimes = ({ movie }) => {
-  const [showtime, setShowtimes] = useState([]);
-  const loadShowtimes = [];
   const navigation = useNavigation();
-
-  useEffect(() => {
-    movie.showtime.forEach(function (show) {
-      loadShowtimes.push(show.showtime);
-    });
-    setShowtimes(loadShowtimes);
-  }, []);
+  const { showtimes } = movie;
 
   return (
     <View style={styles.showtimesContainer}>
-      {showtime.map((showtime) => {
+      {showtimes.map((showtime) => {
         return (
           <TouchableOpacity
-            key={showtime}
+            key={showtime.showtimeId}
             onPress={() =>
               navigation.navigate("Enter Movie", {
                 movie: movie,
@@ -28,8 +20,8 @@ const Showtimes = ({ movie }) => {
             }
             style={styles.button}
           >
-            <Text key={showtime} style={styles.buttonText}>
-              {showtime}
+            <Text key={showtime.showtime} style={styles.buttonText}>
+              {showtime.showtime}
             </Text>
           </TouchableOpacity>
         );
