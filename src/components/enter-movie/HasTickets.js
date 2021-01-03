@@ -12,9 +12,9 @@ import { useNavigation } from "@react-navigation/native";
 const HasTickets = ({ hasTickets, setHasTickets, movie, showtime }) => {
   const navigation = useNavigation();
 
-  function updateHasTickets() {
-    setHasTickets(!hasTickets);
-  }
+  // function updateHasTickets() {
+  //   setHasTickets(!hasTickets);
+  // }
 
   return (
     <View style={styles.confirmationContainer}>
@@ -35,9 +35,9 @@ const HasTickets = ({ hasTickets, setHasTickets, movie, showtime }) => {
       >
         <Text style={styles.buttonText}>Enter</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={updateHasTickets}>
+      {/* <TouchableOpacity onPress={updateHasTickets}>
         <Text style={styles.ticketText}>No code? Buy tickets.</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };
