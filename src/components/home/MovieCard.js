@@ -1,20 +1,31 @@
 import React, { useState } from "react";
 import { Image, StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import MovieInfo from "./MovieInfo";
 import Showtimes from "./Showtimes";
-//Using this until we load from URI
-import SelectImage from "../../assets/img/SelectImage";
 
 const MovieCard = ({ movie }) => {
   const [showtimeBtnStyle, setShowtimeBtnStyle] = useState(false);
+  const [movieInfoBtnStyle, setMovieInfoBtnStyle] = useState(false);
   const { id, title, rating, length, genre, img } = movie;
 
-  const showtimesToggle = () => setShowtimeBtnStyle(!showtimeBtnStyle);
+  const showtimesToggle = () => {
+    setShowtimeBtnStyle(!showtimeBtnStyle);
+    if (movieInfoBtnStyle) {
+      setMovieInfoBtnStyle(!movieInfoBtnStyle);
+    }
+  };
+
+  const movieInfoToggle = () => {
+    setMovieInfoBtnStyle(!movieInfoBtnStyle);
+    if (showtimeBtnStyle) {
+      setShowtimeBtnStyle(!showtimeBtnStyle);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.contentContainerWithImg}>
-        {/* Using select image below until URI is created for img*/}
-        <Image style={styles.img} source={SelectImage[id]} />
+        <Image style={styles.img} source={{ uri: img }} />
         <View style={styles.contentContainerWithoutImg}>
           <Text style={styles.movieTitle}>{title}</Text>
           <View style={styles.ratingTimeAndGenreContainer}>
@@ -39,13 +50,21 @@ const MovieCard = ({ movie }) => {
             >
               <Text style={styles.buttonText}>Showtimes</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonMovieInfo}>
+            <TouchableOpacity
+              onPress={movieInfoToggle}
+              style={
+                movieInfoBtnStyle
+                  ? styles.buttonDisplayMovieInfo
+                  : styles.buttonMovieInfo
+              }
+            >
               <Text style={styles.buttonText}>Movie Info</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
-      {showtimeBtnStyle && <Showtimes id={id} movie={movie} />}
+      {showtimeBtnStyle && <Showtimes movie={movie} />}
+      {movieInfoBtnStyle && <MovieInfo movie={movie} />}
     </View>
   );
 };
@@ -125,6 +144,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 105,
     height: 35,
+  },
+  buttonDisplayMovieInfo: {
+    backgroundColor: "#7E0808",
+    borderWidth: 1,
+    borderRadius: 1,
+    borderColor: "#ffffff",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 105,
+    height: 35,
+    marginLeft: 10,
   },
   buttonText: {
     color: "#FFFFFF",
