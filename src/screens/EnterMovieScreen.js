@@ -8,17 +8,16 @@ import MovieConfirmation from "../components/enter-movie/MovieConfirmation";
 const EnterMovieScreen = (props) => {
   const movie = props.route.params.movie;
   const showtime = props.route.params.showtime;
-  // wait until img populates from URI, then pass img as prop to EnterTheatre
-  //const img = movie.img;
+  const img = movie.img;
+  const currentDate = JSON.parse(props.route.params.currentDate);
 
   return (
     <View>
       <ScrollView>
         <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={50}>
           <BannerBackground isTimeBanner={true} showtime={showtime} />
-          {/* passing movie below until img comes from URI */}
-          <EnterTheatre movie={movie} />
-          <MovieConfirmation showtime={showtime} movie={movie} />
+          <EnterTheatre img={img} />
+          <MovieConfirmation showtime={showtime} movie={movie} currentDate={currentDate} />
         </KeyboardAvoidingView>
       </ScrollView>
     </View>

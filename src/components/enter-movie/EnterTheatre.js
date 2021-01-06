@@ -2,7 +2,7 @@ import React from "react";
 import SvgComponent from "../../assets/svg/SvgComponent";
 import { StyleSheet, View, Text, Image } from "react-native";
 
-const EnterTheatre = ({ movie }) => {
+const EnterTheatre = ({ img }) => {
   return (
     <View>
       <View style={styles.screen}>
@@ -10,7 +10,7 @@ const EnterTheatre = ({ movie }) => {
       </View>
       <Text style={styles.screenText}>SCREEN</Text>
       <View style={styles.imgContainer}>
-        <Image style={styles.img} source={{uri:movie.img}} />
+        <Image style={styles.img} source={{uri:img}} />
       </View>
     </View>
   );
