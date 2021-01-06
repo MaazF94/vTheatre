@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-const Showtimes = ({ movie }) => {
+const Showtimes = ({ movie, currentDate }) => {
   const navigation = useNavigation();
   const { showtimes } = movie;
 
@@ -16,6 +16,7 @@ const Showtimes = ({ movie }) => {
               navigation.navigate("Enter Movie", {
                 movie: movie,
                 showtime: showtime,
+                currentDate: JSON.stringify(currentDate)
               })
             }
             style={styles.button}

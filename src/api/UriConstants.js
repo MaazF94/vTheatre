@@ -1,6 +1,7 @@
 const UriConstants = {
     getMovies: '/getMovies',
-    completePayment: '/completePayment'
+    completePayment: '/completePayment',
+    verifyConfirmationCode: '/verifyConfirmationCode'
 }
 
 export default UriConstants;

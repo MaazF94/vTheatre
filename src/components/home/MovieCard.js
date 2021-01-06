@@ -3,7 +3,7 @@ import { Image, StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import MovieInfo from "./MovieInfo";
 import Showtimes from "./Showtimes";
 
-const MovieCard = ({ movie }) => {
+const MovieCard = ({ movie, currentDate }) => {
   const [showtimeBtnStyle, setShowtimeBtnStyle] = useState(false);
   const [movieInfoBtnStyle, setMovieInfoBtnStyle] = useState(false);
   const { id, title, rating, length, genre, img } = movie;
@@ -63,7 +63,7 @@ const MovieCard = ({ movie }) => {
           </View>
         </View>
       </View>
-      {showtimeBtnStyle && <Showtimes movie={movie} />}
+      {showtimeBtnStyle && <Showtimes movie={movie} currentDate={currentDate} />}
       {movieInfoBtnStyle && <MovieInfo movie={movie} />}
     </View>
   );

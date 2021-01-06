@@ -5,9 +5,10 @@ import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import Api from "../../api/Api";
 import UriConstants from "../../api/UriConstants";
 import StripeConfigs from "../common/StripeConfigs";
+import moment from "moment";
 
-const PurchaseTicket = ({ showtime, hasTickets, setHasTickets, movie }) => {
-  // const [adultTicketText, setAdultTicketText] = useState("0");
+const PurchaseTicket = ({ showtime, hasTickets, setHasTickets, movie, currentDate }) => {
+  const [adultTicketText, setAdultTicketText] = useState("1");
   // const [seniorTicketText, setSeniorTicketText] = useState("0");
   // const [childTicketText, setChildTicketText] = useState("0");
   // const [totalAmount, setTotalAmount] = useState(0);
@@ -27,30 +28,30 @@ const PurchaseTicket = ({ showtime, hasTickets, setHasTickets, movie }) => {
     if (parseInt(adultTicketText) > 0) {
       line_items.push({
         currency_code: currencyCode,
-        description: title + " Adult Movie Ticket(s)",
+        description: title + " Adult Movie Ticket",
         total_price: totalAmount.toString(),
         unit_price: "10.00",
         quantity: adultTicketText,
       });
     }
-    if (parseInt(seniorTicketText) > 0) {
-      line_items.push({
-        currency_code: currencyCode,
-        description: title + " Senior Movie Ticket(s)",
-        total_price: totalAmount.toString(),
-        unit_price: "8.00",
-        quantity: seniorTicketText,
-      });
-    }
-    if (parseInt(childTicketText) > 0) {
-      line_items.push({
-        currency_code: currencyCode,
-        description: title + " Child Movie Ticket(s)",
-        total_price: totalAmount.toString(),
-        unit_price: "6.00",
-        quantity: childTicketText,
-      });
-    }
+    // if (parseInt(seniorTicketText) > 0) {
+    //   line_items.push({
+    //     currency_code: currencyCode,
+    //     description: title + " Senior Movie Ticket(s)",
+    //     total_price: totalAmount.toString(),
+    //     unit_price: "8.00",
+    //     quantity: seniorTicketText,
+    //   });
+    // }
+    // if (parseInt(childTicketText) > 0) {
+    //   line_items.push({
+    //     currency_code: currencyCode,
+    //     description: title + " Child Movie Ticket(s)",
+    //     total_price: totalAmount.toString(),
+    //     unit_price: "6.00",
+    //     quantity: childTicketText,
+    //   });
+    // }
 
     // finalize the payment request object
     const options = {
@@ -64,7 +65,7 @@ const PurchaseTicket = ({ showtime, hasTickets, setHasTickets, movie }) => {
   const createApplePayOptions = () => {
     const items = [
       {
-        label: title + " Movie Ticket(s)",
+        label: title + " Movie Ticket",
         amount: totalAmount.toString(),
       },
       {
@@ -110,6 +111,8 @@ const PurchaseTicket = ({ showtime, hasTickets, setHasTickets, movie }) => {
           token = await Stripe.paymentRequestWithNativePayAsync(options, items);
         }
 
+        const formattedDate = moment(currentDate).format("dddd, MMMM DD, YYYY");
+
         // Build request object for backend
         const paymentRequest = {
           tokenId: token.tokenId,
@@ -117,11 +120,13 @@ const PurchaseTicket = ({ showtime, hasTickets, setHasTickets, movie }) => {
           amount: totalAmount,
           description: title + " Movie Ticket",
           emailAddress: emailAddress,
-          showtime: showtime
+          showtime: showtime,
+          movie: movie,
+          chosenMovieDate: formattedDate
         };
 
         // Call backend to process the payment
-        const processedPayment = await Api.post(
+        await Api.post(
           UriConstants.completePayment,
           paymentRequest
         );

@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 import HasTickets from "./HasTickets";
 import PurchaseTicket from "./PurchaseTicket";
 
-const MovieConfirmation = ({ movie, showtime }) => {
+const MovieConfirmation = ({ movie, showtime, currentDate }) => {
   const [enableEnterMovie, setEnableEnterMovie] = useState(true);
 
   function GetMovieConfirmationContent() {
@@ -23,6 +23,7 @@ const MovieConfirmation = ({ movie, showtime }) => {
           showtime={showtime}
           hasTickets={enableEnterMovie}
           setHasTickets={setEnableEnterMovie}
+          currentDate={currentDate}
         />
       );
     }

@@ -1,20 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   View,
   Text,
   TextInput,
   TouchableOpacity,
-  Linking,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import Api from "../../api/Api";
+import UriConstants from "../../api/UriConstants";
 
 const HasTickets = ({ hasTickets, setHasTickets, movie, showtime }) => {
   const navigation = useNavigation();
+  const [confirmationCode, setConfirmationCode] = useState("");
 
-  // function updateHasTickets() {
-  //   setHasTickets(!hasTickets);
-  // }
+  function updateHasTickets() {
+    setHasTickets(!hasTickets);
+  }
+
+  async function verifyConfirmationCode() {
+    if (confirmationCode.length === 0) {
+      Alert.alert("Invalid Confirmation Code", "The confirmation code you entered was incorrect. Please try again.")
+      return;
+    }
+    
+    const confirmationCodeExists = await Api.post(
+      UriConstants.verifyConfirmationCode,
+      confirmationCode,
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    confirmationCodeExists.data
+      ? navigation.navigate("Showing", { movie: movie, showtime: showtime })
+      : Alert.alert(
+          "Invalid Confirmation Code",
+          "The confirmation code you entered was incorrect. Please try again."
+        );
+  }
 
   return (
     <View style={styles.confirmationContainer}>
@@ -24,20 +47,15 @@ const HasTickets = ({ hasTickets, setHasTickets, movie, showtime }) => {
         width="90%"
         backgroundColor="#ffffff"
         placeholderTextColor="#827D7D"
-        // placeholder="Ticket Confirmation Code"
-        value="TESTCODE"
+        placeholder="Ticket Confirmation Code"
+        onChangeText={(value) => setConfirmationCode(value)}
       />
-      <TouchableOpacity
-        onPress={() =>
-          navigation.navigate("Showing", { movie: movie, showtime: showtime })
-        }
-        style={styles.button}
-      >
+      <TouchableOpacity onPress={verifyConfirmationCode} style={styles.button}>
         <Text style={styles.buttonText}>Enter</Text>
       </TouchableOpacity>
-      {/* <TouchableOpacity onPress={updateHasTickets}>
+      <TouchableOpacity onPress={updateHasTickets}>
         <Text style={styles.ticketText}>No code? Buy tickets.</Text>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
     </View>
   );
 };
