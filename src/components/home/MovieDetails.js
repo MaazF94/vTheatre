@@ -25,7 +25,7 @@ const MovieDetails = ({ currentDate }) => {
             movie.startDate <= currentDate.format('YYYY-MM-DD') &&
             movie.endDate >= currentDate.format('YYYY-MM-DD')
           ) {
-            return <MovieCard key={movie.id} movie={movie} />;
+            return <MovieCard key={movie.id} movie={movie} currentDate={currentDate} />;
           }
         })}
       </ScrollView>

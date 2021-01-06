@@ -1,19 +1,42 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   View,
   Text,
   TextInput,
   TouchableOpacity,
-  Linking,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import Api from "../../api/Api";
+import UriConstants from "../../api/UriConstants";
 
 const HasTickets = ({ hasTickets, setHasTickets, movie, showtime }) => {
   const navigation = useNavigation();
+  const [confirmationCode, setConfirmationCode] = useState("");
 
   function updateHasTickets() {
     setHasTickets(!hasTickets);
+  }
+
+  async function verifyConfirmationCode() {
+    if (confirmationCode.length === 0) {
+      Alert.alert("Invalid Confirmation Code", "The confirmation code you entered was incorrect. Please try again.")
+      return;
+    }
+    
+    const confirmationCodeExists = await Api.post(
+      UriConstants.verifyConfirmationCode,
+      confirmationCode,
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    confirmationCodeExists.data
+      ? navigation.navigate("Showing", { movie: movie, showtime: showtime })
+      : Alert.alert(
+          "Invalid Confirmation Code",
+          "The confirmation code you entered was incorrect. Please try again."
+        );
   }
 
   return (
@@ -25,13 +48,9 @@ const HasTickets = ({ hasTickets, setHasTickets, movie, showtime }) => {
         backgroundColor="#ffffff"
         placeholderTextColor="#827D7D"
         placeholder="Ticket Confirmation Code"
+        onChangeText={(value) => setConfirmationCode(value)}
       />
-      <TouchableOpacity
-        onPress={() =>
-          navigation.navigate("Showing", { movie: movie, showtime: showtime })
-        }
-        style={styles.button}
-      >
+      <TouchableOpacity onPress={verifyConfirmationCode} style={styles.button}>
         <Text style={styles.buttonText}>Enter</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={updateHasTickets}>
@@ -62,7 +81,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
     textAlign: "center",
-    height: 34,
+    height: 45,
   },
   button: {
     marginTop: 20,

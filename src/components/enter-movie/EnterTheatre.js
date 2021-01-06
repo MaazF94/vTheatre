@@ -1,10 +1,8 @@
 import React from "react";
 import SvgComponent from "../../assets/svg/SvgComponent";
 import { StyleSheet, View, Text, Image } from "react-native";
-// Using this until we pass URI for img
-import SelectImage from "../../assets/img/SelectImage";
 
-const EnterTheatre = ({ movie }) => {
+const EnterTheatre = ({ img }) => {
   return (
     <View>
       <View style={styles.screen}>
@@ -12,8 +10,7 @@ const EnterTheatre = ({ movie }) => {
       </View>
       <Text style={styles.screenText}>SCREEN</Text>
       <View style={styles.imgContainer}>
-        {/* Using select image until we load img from URI */}
-        <Image style={styles.img} source={SelectImage[movie.id]} />
+        <Image style={styles.img} source={{uri:img}} />
       </View>
     </View>
   );

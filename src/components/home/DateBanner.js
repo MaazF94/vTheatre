@@ -1,13 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import moment from "moment";
 
 const DateBanner = ({ currentDate, setDate }) => {
-
   // 2 date variables
-  const [dateMinusOne, setDateMinusOne] = useState(moment(currentDate).subtract(1, "day"));
-  const [datePlusOne, setDatePlusOne] = useState(moment(currentDate).add(1, "day"));
+  const [dateMinusOne, setDateMinusOne] = useState(
+    moment(currentDate).subtract(1, "day")
+  );
+  const [datePlusOne, setDatePlusOne] = useState(
+    moment(currentDate).add(1, "day")
+  );
+  const [showMe, setShowMe] = useState([]);
+
+  useEffect(() => {
+    HideIfToday();
+  }, [currentDate, dateMinusOne, datePlusOne]);
 
   // called when hitting left caret icon
   const subtractDays = () => {
@@ -31,27 +39,45 @@ const DateBanner = ({ currentDate, setDate }) => {
     setDatePlusOne(newDatePlusOne);
   };
 
+  const HideIfToday = () => {
+    if (currentDate.format("MM/DD/YYYY") === moment().format("MM/DD/YYYY")) {
+      setShowMe(false);
+    } else {
+      if (showMe === false) {
+        setShowMe(true);
+      }
+    }
+  };
+
   return (
     <View style={styles.dateBannerContainer}>
       <View>
-        <AntDesign
-          onPress={subtractDays}
-          style={styles.dateIcon}
-          name="left"
-          size={24}
-          color="white"
-        />
+        {showMe && (
+          <AntDesign
+            onPress={subtractDays}
+            style={styles.dateIcon}
+            name="left"
+            size={24}
+            color="white"
+          />
+        )}
       </View>
       <View>
-        <Text style={styles.dateBannerSideText}>
-          {moment(dateMinusOne).format("MMM DD[\n]ddd")}
+        {showMe && (
+          <Text style={styles.dateBannerSideText}>
+            {moment(dateMinusOne).format("MMM DD[\n]ddd")}
+          </Text>
+        )}
+      </View>
+      <View>
+        <Text style={styles.dateBannerText}>
+          {moment(currentDate).format("MMM DD[\n]ddd")}
         </Text>
       </View>
       <View>
-        <Text style={styles.dateBannerText}>{moment(currentDate).format("MMM DD[\n]ddd")}</Text>
-      </View>
-      <View>
-        <Text style={styles.dateBannerSideText}>{moment(datePlusOne).format("MMM DD[\n]ddd")}</Text>
+        <Text style={styles.dateBannerSideText}>
+          {moment(datePlusOne).format("MMM DD[\n]ddd")}
+        </Text>
       </View>
       <View>
         <AntDesign
