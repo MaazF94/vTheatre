@@ -3,48 +3,50 @@ import { StyleSheet, Text, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import moment from "moment";
 
-const DateBanner = ({ currentDate, setDate }) => {
+const DateBanner = ({ selectedDate, setSelectedDate }) => {
+
   // 2 date variables
   const [dateMinusOne, setDateMinusOne] = useState(
-    moment(currentDate).subtract(1, "day")
+    moment(selectedDate).subtract(1, "day")
   );
   const [datePlusOne, setDatePlusOne] = useState(
-    moment(currentDate).add(1, "day")
+    moment(selectedDate).add(1, "day")
   );
-  const [showMe, setShowMe] = useState([]);
+  const [showPreviousDate, setShowPreviousDate] = useState([]);
 
   useEffect(() => {
     HideIfToday();
-  }, [currentDate, dateMinusOne, datePlusOne]);
+  }, [selectedDate, dateMinusOne, datePlusOne]);
 
   // called when hitting left caret icon
   const subtractDays = () => {
-    const newCurrentDate = moment(currentDate).subtract(1, "day");
+    const newCurrentDate = moment(selectedDate).subtract(1, "day");
     const newDateMinusOne = moment(dateMinusOne).subtract(1, "day");
     const newDatePlusOne = moment(datePlusOne).subtract(1, "day");
 
-    setDate(newCurrentDate);
+    setSelectedDate(newCurrentDate);
     setDateMinusOne(newDateMinusOne);
     setDatePlusOne(newDatePlusOne);
   };
 
   // called when hitting right caret icon
   const addDays = () => {
-    const newCurrentDate = moment(currentDate).add(1, "day");
+    const newCurrentDate = moment(selectedDate).add(1, "day");
     const newDateMinusOne = moment(dateMinusOne).add(1, "day");
     const newDatePlusOne = moment(datePlusOne).add(1, "day");
 
-    setDate(newCurrentDate);
+    setSelectedDate(newCurrentDate);
     setDateMinusOne(newDateMinusOne);
     setDatePlusOne(newDatePlusOne);
   };
 
+  // cannot see list of movies before today's date
   const HideIfToday = () => {
-    if (currentDate.format("MM/DD/YYYY") === moment().format("MM/DD/YYYY")) {
-      setShowMe(false);
+    if (selectedDate.format("MM/DD/YYYY") === moment().format("MM/DD/YYYY")) {
+      setShowPreviousDate(false);
     } else {
-      if (showMe === false) {
-        setShowMe(true);
+      if (showPreviousDate === false) {
+        setShowPreviousDate(true);
       }
     }
   };
@@ -52,10 +54,9 @@ const DateBanner = ({ currentDate, setDate }) => {
   return (
     <View style={styles.dateBannerContainer}>
       <View>
-        {showMe && (
+        {showPreviousDate && (
           <AntDesign
             onPress={subtractDays}
-            style={styles.dateIcon}
             name="left"
             size={24}
             color="white"
@@ -63,7 +64,7 @@ const DateBanner = ({ currentDate, setDate }) => {
         )}
       </View>
       <View>
-        {showMe && (
+        {showPreviousDate && (
           <Text style={styles.dateBannerSideText}>
             {moment(dateMinusOne).format("MMM DD[\n]ddd")}
           </Text>
@@ -71,7 +72,7 @@ const DateBanner = ({ currentDate, setDate }) => {
       </View>
       <View>
         <Text style={styles.dateBannerText}>
-          {moment(currentDate).format("MMM DD[\n]ddd")}
+          {moment(selectedDate).format("MMM DD[\n]ddd")}
         </Text>
       </View>
       <View>
@@ -82,7 +83,6 @@ const DateBanner = ({ currentDate, setDate }) => {
       <View>
         <AntDesign
           onPress={addDays}
-          style={styles.dateIcon}
           name="right"
           size={24}
           color="white"

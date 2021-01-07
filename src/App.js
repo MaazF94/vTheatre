@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import HomeScreen from "./screens/HomeScreen";
 import EnterMovieScreen from "./screens/EnterMovieScreen";
 import MovieScreen from "./screens/MovieScreen";
+import ScreenTitles from "./components/common/ScreenTitles";
 
 const Stack = createStackNavigator();
 
@@ -26,9 +27,9 @@ function RootStack() {
           },
         }}
       >
-        <Stack.Screen name="vTheatre" component={HomeScreen} />
-        <Stack.Screen name="Enter Movie" component={EnterMovieScreen} />
-        <Stack.Screen name="Showing" component={MovieScreen} options={{ headerShown: false }} />
+        <Stack.Screen name={ScreenTitles.HomeScreen} component={HomeScreen} />
+        <Stack.Screen name={ScreenTitles.EnterMovie} component={EnterMovieScreen} />
+        <Stack.Screen name={ScreenTitles.MovieScreen} component={MovieScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

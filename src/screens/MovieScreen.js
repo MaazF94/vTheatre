@@ -9,6 +9,7 @@ import { HeaderBackButton } from "@react-navigation/stack";
 import moment from "moment";
 
 const MovieScreen = (props) => {
+
   const showtime = props.route.params.showtime.showtime;
   const [headerShown, setHeaderShown] = useState(false);
   const [shouldPlay, setShouldPlay] = useState(false);
@@ -20,14 +21,14 @@ const MovieScreen = (props) => {
   const videoRef = useRef();
 
   useEffect(() => {
-    async function rotateLandscape() {
+    const rotateLandscape = async () => {
       await ScreenOrientation.lockAsync(
         ScreenOrientation.OrientationLock.LANDSCAPE
       );
       landscape = true;
     }
 
-    function enterUserInMovie() {
+    const enterUserInMovie = () => {
       const movieShowtime = moment(showtime, "HH:mm a");
 
       const intervalId = setInterval(() => {
@@ -43,7 +44,7 @@ const MovieScreen = (props) => {
     rotateLandscape();
     enterUserInMovie();
 
-    return async function cleanup() {
+    return cleanup = async () => {
       await ScreenOrientation.unlockAsync();
       await ScreenOrientation.lockAsync(
         ScreenOrientation.OrientationLock.PORTRAIT_UP

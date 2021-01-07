@@ -6,22 +6,20 @@ import MovieDetails from "../components/home/MovieDetails";
 import moment from "moment";
 
 const HomeScreen = () => {
-  const [currentDate, setDate] = useState(moment(new Date()));
+  const [selectedDate, setSelectedDate] = useState(moment(new Date()));
 
   return (
-    // <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flex: 1 }}>
+      <View>
         <StatusBar backgroundColor="#343434" />
-        <View style={{ flex: 1 }}>
+        <View>
           <BannerBackground
-            currentDate={currentDate}
-            setDate={setDate}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
             isDateBanner={true}
           />
-          <MovieDetails currentDate={currentDate} />
+          <MovieDetails selectedDate={selectedDate} />
         </View>
       </View>
-    // </SafeAreaView>
   );
 };
 

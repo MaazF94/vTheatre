@@ -1,10 +1,10 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-const TimeBanner = ({ showtime }) => {
+const TimeBanner = ({ selectedShowtimeObj }) => {
   return (
     <View style={styles.timeBanner}>
-      <Text style={styles.timeBannerText}>{showtime.showtime}</Text>
+      <Text style={styles.timeBannerText}>{selectedShowtimeObj.showtime}</Text>
     </View>
   );
 };

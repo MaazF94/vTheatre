@@ -1,28 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import ScreenTitles from "../common/ScreenTitles";
 
-const Showtimes = ({ movie, currentDate }) => {
+const Showtimes = ({ movie, selectedDate }) => {
+  
   const navigation = useNavigation();
   const { showtimes } = movie;
 
   return (
     <View style={styles.showtimesContainer}>
-      {showtimes.map((showtime) => {
+      {showtimes.map((showtimeObj) => {
         return (
           <TouchableOpacity
-            key={showtime.showtimeId}
+            key={showtimeObj.showtimeId}
             onPress={() =>
-              navigation.navigate("Enter Movie", {
+              navigation.navigate(ScreenTitles.EnterMovie, {
                 movie: movie,
-                showtime: showtime,
-                currentDate: JSON.stringify(currentDate)
+                selectedShowtimeObj: showtimeObj,
+                selectedDate: JSON.stringify(selectedDate)
               })
             }
             style={styles.button}
           >
-            <Text key={showtime.showtime} style={styles.buttonText}>
-              {showtime.showtime}
+            <Text key={showtimeObj.showtime} style={styles.buttonText}>
+              {showtimeObj.showtime}
             </Text>
           </TouchableOpacity>
         );
