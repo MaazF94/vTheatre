@@ -19,7 +19,7 @@ const PurchaseTicket = ({
   // const [seniorTicketText, setSeniorTicketText] = useState("0");
   // const [childTicketText, setChildTicketText] = useState("0");
   // const [totalAmount, setTotalAmount] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(10);
+  const [totalAmount, setTotalAmount] = useState(1);
   const [emailAddress, setEmailAddress] = useState("");
   const { title } = movie;
   const currencyCode = "USD";
@@ -36,7 +36,7 @@ const PurchaseTicket = ({
         currency_code: currencyCode,
         description: title + " Adult Movie Ticket",
         total_price: totalAmount.toString(),
-        unit_price: "10.00",
+        unit_price: "1.00",
         quantity: adultTicketText,
       });
     }
