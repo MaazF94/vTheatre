@@ -4,15 +4,18 @@ import TimeBanner from "../enter-movie/TimeBanner";
 import DateBanner from "../home/DateBanner";
 
 const BannerBackground = (props) => {
-  function GetBannerContent() {
-    if (props.isDateBanner) {
+
+  const {isDateBanner, isTimeBanner, selectedDate, setSelectedDate, selectedShowtimeObj } = props;
+  
+  const GetBannerContent = () => {
+    if (isDateBanner) {
       return (
-        <DateBanner currentDate={props.currentDate} setDate={props.setDate} />
+        <DateBanner selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
       );
-    } else if (props.isTimeBanner) {
-      return <TimeBanner showtime={props.showtime} />;
+    } else if (isTimeBanner) {
+      return <TimeBanner selectedShowtimeObj={selectedShowtimeObj} />;
     }
-  }
+  };
 
   return (
     <View style={styles.dateBannerBackground}>

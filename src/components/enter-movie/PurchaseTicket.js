@@ -6,15 +6,21 @@ import Api from "../../api/Api";
 import UriConstants from "../../api/UriConstants";
 import StripeConfigs from "../common/StripeConfigs";
 import moment from "moment";
+import AlertMessages from "../common/AlertMessages";
 
-const PurchaseTicket = ({ showtime, hasTickets, setHasTickets, movie, currentDate }) => {
+const PurchaseTicket = ({
+  selectedShowtimeObj,
+  hasTickets,
+  setHasTickets,
+  movie,
+  selectedDate,
+}) => {
   const [adultTicketText, setAdultTicketText] = useState("1");
   // const [seniorTicketText, setSeniorTicketText] = useState("0");
   // const [childTicketText, setChildTicketText] = useState("0");
   // const [totalAmount, setTotalAmount] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(10);
+  const [totalAmount, setTotalAmount] = useState(1);
   const [emailAddress, setEmailAddress] = useState("");
-
   const { title } = movie;
   const currencyCode = "USD";
 
@@ -30,7 +36,7 @@ const PurchaseTicket = ({ showtime, hasTickets, setHasTickets, movie, currentDat
         currency_code: currencyCode,
         description: title + " Adult Movie Ticket",
         total_price: totalAmount.toString(),
-        unit_price: "10.00",
+        unit_price: "1.00",
         quantity: adultTicketText,
       });
     }
@@ -79,14 +85,17 @@ const PurchaseTicket = ({ showtime, hasTickets, setHasTickets, movie, currentDat
   const checkValidEmailAddress = () => {
     let emailRegex = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/;
     return emailRegex.test(emailAddress);
-  }
+  };
 
   // Called from the process payment button
-  async function callStripe() {
+  const callStripe = async () => {
     // Check valid email
     const emailValidation = checkValidEmailAddress();
     if (!emailValidation) {
-      Alert.alert("Invalid Email Address", "Please enter a valid email address.");
+      Alert.alert(
+        AlertMessages.InvalidEmailAddressTitle,
+        AlertMessages.InvalidEmailAddressMsg
+      );
       return;
     }
 
@@ -111,7 +120,9 @@ const PurchaseTicket = ({ showtime, hasTickets, setHasTickets, movie, currentDat
           token = await Stripe.paymentRequestWithNativePayAsync(options, items);
         }
 
-        const formattedDate = moment(currentDate).format("dddd, MMMM DD, YYYY");
+        const formattedDate = moment(selectedDate).format(
+          "dddd, MMMM DD, YYYY"
+        );
 
         // Build request object for backend
         const paymentRequest = {
@@ -120,23 +131,20 @@ const PurchaseTicket = ({ showtime, hasTickets, setHasTickets, movie, currentDat
           amount: totalAmount,
           description: title + " Movie Ticket",
           emailAddress: emailAddress,
-          showtime: showtime,
+          showtime: selectedShowtimeObj,
           movie: movie,
-          chosenMovieDate: formattedDate
+          chosenMovieDate: formattedDate,
         };
 
         // Call backend to process the payment
-        await Api.post(
-          UriConstants.completePayment,
-          paymentRequest
-        );
+        await Api.post(UriConstants.completePayment, paymentRequest);
 
         // Close payment
         await Stripe.completeNativePayRequestAsync();
 
         Alert.alert(
-          "Successful Payment",
-          "Your payment was processed. The ticket confirmation code was sent to your email. Enjoy!"
+          AlertMessages.SuccessfulPaymentTitle,
+          AlertMessages.SuccessfulPaymentMsg
         );
 
         setHasTickets(!hasTickets);
@@ -144,17 +152,17 @@ const PurchaseTicket = ({ showtime, hasTickets, setHasTickets, movie, currentDat
         Stripe.cancelNativePayRequestAsync();
 
         Alert.alert(
-          "Canceled Payment",
-          "An error occurred, your payment was not processed. Please try again."
+          AlertMessages.CanceledPaymentTitle,
+          AlertMessages.CanceledPaymentMsg
         );
       }
     } else {
       Alert.alert(
-        "Payment Method Not Supported",
-        "You must have Apple or Google pay set up on your device."
+        AlertMessages.PaymentMethodNotSupportedTitle,
+        AlertMessages.PaymentMethodNotSupportedMsg
       );
     }
-  }
+  };
 
   // function cleanNonNumericChars(text, ticketType) {
   //   if (!text || typeof text !== "string") {
@@ -195,7 +203,7 @@ const PurchaseTicket = ({ showtime, hasTickets, setHasTickets, movie, currentDat
   return (
     <View style={styles.confirmationContainer}>
       <Text style={styles.headerText}>Enjoy the showing!</Text>
-      <View style={{alignItems: "center"}}>
+      <View style={{ alignItems: "center" }}>
         <TextInput
           style={styles.textInput}
           width="90%"
@@ -205,12 +213,12 @@ const PurchaseTicket = ({ showtime, hasTickets, setHasTickets, movie, currentDat
           onChangeText={(value) => setEmailAddress(value)}
         />
       </View>
-      <View
+      {/* <View
         style={{
           flexDirection: "row",
           justifyContent: "space-evenly",
         }}
-      >
+      > */}
         {/* <View style={styles.ticketContainer}>
           <Text style={styles.ticketTypeText}>Adult</Text>
           <Text style={styles.priceText}>$10.00</Text>
@@ -252,7 +260,7 @@ const PurchaseTicket = ({ showtime, hasTickets, setHasTickets, movie, currentDat
             }
           />
         </View> */}
-      </View>
+      {/* </View> */}
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
         <View style={{ flexDirection: "column", justifyContent: "center" }}>
           <Text style={styles.ticketTypeText}>Total</Text>
@@ -296,7 +304,7 @@ const styles = StyleSheet.create({
     height: 45,
     borderRadius: 1,
     borderWidth: 1,
-    borderColor: "#FFFFFF"
+    borderColor: "#FFFFFF",
   },
   ticketTypeText: {
     color: "#FFFFFF",

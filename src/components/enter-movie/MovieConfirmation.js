@@ -3,31 +3,32 @@ import { StyleSheet } from "react-native";
 import HasTickets from "./HasTickets";
 import PurchaseTicket from "./PurchaseTicket";
 
-const MovieConfirmation = ({ movie, showtime, currentDate }) => {
-  const [enableEnterMovie, setEnableEnterMovie] = useState(true);
+const MovieConfirmation = ({ movie, selectedShowtimeObj, selectedDate }) => {
 
-  function GetMovieConfirmationContent() {
-    if (enableEnterMovie) {
+  const [hasTickets, setHasTickets] = useState(true);
+
+  const GetMovieConfirmationContent = () => {
+    if (hasTickets) {
       return (
         <HasTickets
           movie={movie}
-          showtime={showtime}
-          hasTickets={enableEnterMovie}
-          setHasTickets={setEnableEnterMovie}
+          selectedShowtimeObj={selectedShowtimeObj}
+          hasTickets={hasTickets}
+          setHasTickets={setHasTickets}
         />
       );
     } else {
       return (
         <PurchaseTicket
           movie={movie}
-          showtime={showtime}
-          hasTickets={enableEnterMovie}
-          setHasTickets={setEnableEnterMovie}
-          currentDate={currentDate}
+          selectedShowtimeObj={selectedShowtimeObj}
+          hasTickets={hasTickets}
+          setHasTickets={setHasTickets}
+          selectedDate={selectedDate}
         />
       );
     }
-  }
+  };
 
   return <GetMovieConfirmationContent />;
 };

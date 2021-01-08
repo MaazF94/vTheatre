@@ -6,18 +6,19 @@ import EnterTheatre from "../components/enter-movie/EnterTheatre";
 import MovieConfirmation from "../components/enter-movie/MovieConfirmation";
 
 const EnterMovieScreen = (props) => {
+
   const movie = props.route.params.movie;
-  const showtime = props.route.params.showtime;
+  const selectedShowtimeObj = props.route.params.selectedShowtimeObj;
   const img = movie.img;
-  const currentDate = JSON.parse(props.route.params.currentDate);
+  const selectedDate = JSON.parse(props.route.params.selectedDate);
 
   return (
     <View>
-      <ScrollView>
+      <ScrollView keyboardShouldPersistTaps='handled'>
         <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={50}>
-          <BannerBackground isTimeBanner={true} showtime={showtime} />
+          <BannerBackground isTimeBanner={true} selectedShowtimeObj={selectedShowtimeObj} />
           <EnterTheatre img={img} />
-          <MovieConfirmation showtime={showtime} movie={movie} currentDate={currentDate} />
+          <MovieConfirmation selectedShowtimeObj={selectedShowtimeObj} movie={movie} selectedDate={selectedDate} />
         </KeyboardAvoidingView>
       </ScrollView>
     </View>

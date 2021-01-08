@@ -6,38 +6,56 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  Keyboard,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Api from "../../api/Api";
 import UriConstants from "../../api/UriConstants";
+import AlertMessages from "../common/AlertMessages";
+import HttpHeaders from "../common/HttpHeaders";
+import ScreenTitles from "../common/ScreenTitles";
 
-const HasTickets = ({ hasTickets, setHasTickets, movie, showtime }) => {
+const HasTickets = ({
+  hasTickets,
+  setHasTickets,
+  movie,
+  selectedShowtimeObj,
+}) => {
+  
   const navigation = useNavigation();
   const [confirmationCode, setConfirmationCode] = useState("");
 
-  function updateHasTickets() {
+  const updateHasTickets = () => {
     setHasTickets(!hasTickets);
-  }
+  };
 
-  async function verifyConfirmationCode() {
+  const verifyConfirmationCode = async () => {
+    Keyboard.dismiss();
+    
     if (confirmationCode.length === 0) {
-      Alert.alert("Invalid Confirmation Code", "The confirmation code you entered was incorrect. Please try again.")
+      Alert.alert(
+        AlertMessages.InvalidConfirmationCodeTitle,
+        AlertMessages.InvalidConfirmationCodeMsg
+      );
       return;
     }
-    
+
     const confirmationCodeExists = await Api.post(
       UriConstants.verifyConfirmationCode,
       confirmationCode,
-      { headers: { "Content-Type": "application/json" } }
+      { headers: HttpHeaders.headers }
     );
 
     confirmationCodeExists.data
-      ? navigation.navigate("Showing", { movie: movie, showtime: showtime })
+      ? navigation.navigate(ScreenTitles.MovieScreen, {
+          movie: movie,
+          showtime: selectedShowtimeObj,
+        })
       : Alert.alert(
-          "Invalid Confirmation Code",
-          "The confirmation code you entered was incorrect. Please try again."
+          AlertMessages.InvalidConfirmationCodeTitle,
+          AlertMessages.InvalidConfirmationCodeMsg
         );
-  }
+  };
 
   return (
     <View style={styles.confirmationContainer}>

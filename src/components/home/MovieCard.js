@@ -3,10 +3,11 @@ import { Image, StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import MovieInfo from "./MovieInfo";
 import Showtimes from "./Showtimes";
 
-const MovieCard = ({ movie, currentDate }) => {
+const MovieCard = ({ movie, selectedDate }) => {
+
   const [showtimeBtnStyle, setShowtimeBtnStyle] = useState(false);
   const [movieInfoBtnStyle, setMovieInfoBtnStyle] = useState(false);
-  const { id, title, rating, length, genre, img } = movie;
+  const { title, rating, length, genre, img } = movie;
 
   const showtimesToggle = () => {
     setShowtimeBtnStyle(!showtimeBtnStyle);
@@ -63,7 +64,7 @@ const MovieCard = ({ movie, currentDate }) => {
           </View>
         </View>
       </View>
-      {showtimeBtnStyle && <Showtimes movie={movie} currentDate={currentDate} />}
+      {showtimeBtnStyle && <Showtimes movie={movie} selectedDate={selectedDate} />}
       {movieInfoBtnStyle && <MovieInfo movie={movie} />}
     </View>
   );
@@ -71,11 +72,9 @@ const MovieCard = ({ movie, currentDate }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: "column",
   },
   contentContainerWithImg: {
-    flex: 1,
     flexDirection: "row",
     padding: 10,
   },
@@ -86,7 +85,6 @@ const styles = StyleSheet.create({
   contentContainerWithoutImg: {
     flexDirection: "column",
     marginLeft: 5,
-    flex: 1,
   },
   movieTitle: {
     color: "#FFFFFF",
