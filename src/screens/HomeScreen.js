@@ -9,9 +9,9 @@ const HomeScreen = () => {
   const [selectedDate, setSelectedDate] = useState(moment(new Date()));
 
   return (
-      <View>
+      <View style={{ flex: 1 }}>
         <StatusBar backgroundColor="#343434" />
-        <View>
+        <View style={{ flex: 1 }}>
           <BannerBackground
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
