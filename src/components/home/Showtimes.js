@@ -2,32 +2,69 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import ScreenTitles from "../common/ScreenTitles";
+import moment from "moment";
 
 const Showtimes = ({ movie, selectedDate }) => {
-  
   const navigation = useNavigation();
   const { showtimes } = movie;
+
+  const showtimeHasNotEnded = (showtime) => {
+    if (selectedDate.format("MM/DD/YYYY") === moment().format("MM/DD/YYYY")) {
+      const hrs = movie.length.includes("HR") ? movie.length.substr(0, 1) : 0;
+      const mins = movie.length.includes("MIN")
+        ? movie.length.substring(
+            movie.length.indexOf("MIN") - 3,
+            movie.length.indexOf("MIN")
+          )
+        : 0;
+      const secs = movie.length.includes("SEC")
+        ? movie.length.substring(
+            movie.length.indexOf("SEC") - 3,
+            movie.length.indexOf("SEC")
+          )
+        : 0;
+
+      const movieShowtime = moment(showtime, "HH:mm a");
+      const currentTime = moment(new Date().getTime());
+
+      if (
+        currentTime >
+        movieShowtime
+          .add(parseInt(hrs), "hours")
+          .add(parseInt(mins), "minutes")
+          .add(parseInt(secs), "seconds")
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return true;
+    }
+  };
 
   return (
     <View style={styles.showtimesContainer}>
       {showtimes.map((showtimeObj) => {
-        return (
-          <TouchableOpacity
-            key={showtimeObj.showtimeId}
-            onPress={() =>
-              navigation.navigate(ScreenTitles.EnterMovie, {
-                movie: movie,
-                selectedShowtimeObj: showtimeObj,
-                selectedDate: JSON.stringify(selectedDate)
-              })
-            }
-            style={styles.button}
-          >
-            <Text key={showtimeObj.showtime} style={styles.buttonText}>
-              {showtimeObj.showtime}
-            </Text>
-          </TouchableOpacity>
-        );
+        if (showtimeHasNotEnded(showtimeObj.showtime)) {
+          return (
+            <TouchableOpacity
+              key={showtimeObj.showtimeId}
+              onPress={() =>
+                navigation.navigate(ScreenTitles.EnterMovie, {
+                  movie: movie,
+                  selectedShowtimeObj: showtimeObj,
+                  selectedDate: JSON.stringify(selectedDate),
+                })
+              }
+              style={styles.button}
+            >
+              <Text key={showtimeObj.showtime} style={styles.buttonText}>
+                {showtimeObj.showtime}
+              </Text>
+            </TouchableOpacity>
+          );
+        }
       })}
     </View>
   );
