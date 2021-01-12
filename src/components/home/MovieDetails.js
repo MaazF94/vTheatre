@@ -22,7 +22,7 @@ const MovieDetails = ({ selectedDate }) => {
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     getMoviesApi();
-    wait(2000).then(() => setRefreshing(false));
+    wait(1000).then(() => setRefreshing(false));
   }, []);
 
   const getMoviesApi = async () => {
