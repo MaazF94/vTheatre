@@ -10,7 +10,9 @@ const AlertMessages = {
     "PaymentMethodNotSupportedTitle": "Payment Method Not Supported",
     "PaymentMethodNotSupportedMsg": "You must have Apple or Google pay set up on your device.",
     "ErrorTitle": "Error",
-    "ErrorMsg": "Sorry, something seems to be wrong! Please try again."
+    "ErrorMsg": "Sorry, something seems to be wrong! Please try again.",
+    "ShowtimeTooLateTitle": "Too Late!",
+    "ShowtimeTooLateMsg": "Sorry, this showtime has ended. Please refresh to view the latest showtimes."
     };
   
   export default AlertMessages;

@@ -12,7 +12,7 @@ function RootStack() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="vTheatre"
+        initialRouteName={ScreenTitles.HomeScreen}
         screenOptions={{
           headerStyle: {
             backgroundColor: "#343434",

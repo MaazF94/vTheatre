@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import ScreenTitles from "../common/ScreenTitles";
 import moment from "moment";
+import AlertMessages from "../common/AlertMessages";
 
 const Showtimes = ({ movie, selectedDate }) => {
   const navigation = useNavigation();
@@ -43,6 +44,19 @@ const Showtimes = ({ movie, selectedDate }) => {
     }
   };
 
+  const checkMissedShowtime = (showtimeObj) => {
+    if (!showtimeHasNotEnded(showtimeObj.showtime)) {
+      Alert.alert(AlertMessages.ShowtimeTooLateTitle, AlertMessages.ShowtimeTooLateMsg);
+      return;
+    } else {
+      navigation.navigate(ScreenTitles.EnterMovie, {
+        movie: movie,
+        selectedShowtimeObj: showtimeObj,
+        selectedDate: JSON.stringify(selectedDate),
+      });
+    }
+  };
+
   return (
     <View style={styles.showtimesContainer}>
       {showtimes.map((showtimeObj) => {
@@ -50,13 +64,7 @@ const Showtimes = ({ movie, selectedDate }) => {
           return (
             <TouchableOpacity
               key={showtimeObj.showtimeId}
-              onPress={() =>
-                navigation.navigate(ScreenTitles.EnterMovie, {
-                  movie: movie,
-                  selectedShowtimeObj: showtimeObj,
-                  selectedDate: JSON.stringify(selectedDate),
-                })
-              }
+              onPress={() => checkMissedShowtime(showtimeObj, movie, selectedDate)}
               style={styles.button}
             >
               <Text key={showtimeObj.showtime} style={styles.buttonText}>

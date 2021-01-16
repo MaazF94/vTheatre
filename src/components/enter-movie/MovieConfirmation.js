@@ -15,6 +15,7 @@ const MovieConfirmation = ({ movie, selectedShowtimeObj, selectedDate }) => {
           selectedShowtimeObj={selectedShowtimeObj}
           hasTickets={hasTickets}
           setHasTickets={setHasTickets}
+          selectedDate={selectedDate}
         />
       );
     } else {
