@@ -20,6 +20,7 @@ const HasTickets = ({
   setHasTickets,
   movie,
   selectedShowtimeObj,
+  selectedDate
 }) => {
   
   const navigation = useNavigation();
@@ -50,6 +51,7 @@ const HasTickets = ({
       ? navigation.navigate(ScreenTitles.MovieScreen, {
           movie: movie,
           showtime: selectedShowtimeObj,
+          selectedDate: selectedDate
         })
       : Alert.alert(
           AlertMessages.InvalidConfirmationCodeTitle,
