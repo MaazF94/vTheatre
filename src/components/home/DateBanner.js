@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import moment from "moment";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const DateBanner = ({ selectedDate, setSelectedDate }) => {
-
   // 2 date variables
   const [dateMinusOne, setDateMinusOne] = useState(
     moment(selectedDate).subtract(1, "day")
@@ -65,9 +65,11 @@ const DateBanner = ({ selectedDate, setSelectedDate }) => {
       </View>
       <View>
         {showPreviousDate && (
-          <Text style={styles.dateBannerSideText}>
-            {moment(dateMinusOne).format("MMM DD[\n]ddd")}
-          </Text>
+          <TouchableOpacity onPress={subtractDays}>
+            <Text style={styles.dateBannerSideText}>
+              {moment(dateMinusOne).format("MMM DD[\n]ddd")}
+            </Text>
+          </TouchableOpacity>
         )}
       </View>
       <View>
@@ -76,17 +78,14 @@ const DateBanner = ({ selectedDate, setSelectedDate }) => {
         </Text>
       </View>
       <View>
-        <Text style={styles.dateBannerSideText}>
-          {moment(datePlusOne).format("MMM DD[\n]ddd")}
-        </Text>
+        <TouchableOpacity onPress={addDays}>
+          <Text style={styles.dateBannerSideText}>
+            {moment(datePlusOne).format("MMM DD[\n]ddd")}
+          </Text>
+        </TouchableOpacity>
       </View>
       <View>
-        <AntDesign
-          onPress={addDays}
-          name="right"
-          size={24}
-          color="white"
-        />
+        <AntDesign onPress={addDays} name="right" size={24} color="white" />
       </View>
     </View>
   );
