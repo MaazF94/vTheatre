@@ -12,7 +12,9 @@ const AlertMessages = {
     "ErrorTitle": "Error",
     "ErrorMsg": "Sorry, something seems to be wrong! Please try again.",
     "ShowtimeTooLateTitle": "Too Late!",
-    "ShowtimeTooLateMsg": "Sorry, this showtime has ended. Please refresh to view the latest showtimes."
+    "ShowtimeTooLateMsg": "Sorry, this showtime has ended. Please refresh to view the latest showtimes.",
+    "ConnectivityErrorTitle": "Connectivity Error",
+    "ConnectivityErrorMsg": "We're sorry, we're having trouble connecting you to the service. Please check to see that you are connected to the internet and try again."
     };
   
   export default AlertMessages;
