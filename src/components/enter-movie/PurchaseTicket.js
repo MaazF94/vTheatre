@@ -7,6 +7,7 @@ import UriConstants from "../../api/UriConstants";
 import StripeConfigs from "../common/StripeConfigs";
 import moment from "moment";
 import AlertMessages from "../common/AlertMessages";
+import * as Network from "expo-network";
 
 const PurchaseTicket = ({
   selectedShowtimeObj,
@@ -95,6 +96,15 @@ const PurchaseTicket = ({
       Alert.alert(
         AlertMessages.InvalidEmailAddressTitle,
         AlertMessages.InvalidEmailAddressMsg
+      );
+      return;
+    }
+
+    const networkStatus = await Network.getNetworkStateAsync();
+    if (!networkStatus.isConnected) {
+      Alert.alert(
+        AlertMessages.ConnectivityErrorTitle,
+        AlertMessages.ConnectivityErrorMsg
       );
       return;
     }
@@ -219,7 +229,7 @@ const PurchaseTicket = ({
           justifyContent: "space-evenly",
         }}
       > */}
-        {/* <View style={styles.ticketContainer}>
+      {/* <View style={styles.ticketContainer}>
           <Text style={styles.ticketTypeText}>Adult</Text>
           <Text style={styles.priceText}>$10.00</Text>
           <TextInput
@@ -234,7 +244,7 @@ const PurchaseTicket = ({
             }
           />
         </View> */}
-        {/* <View style={styles.ticketContainer}>
+      {/* <View style={styles.ticketContainer}>
           <Text style={styles.ticketTypeText}>Senior</Text>
           <Text style={styles.priceText}>$8.00</Text>
           <TextInput

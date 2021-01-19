@@ -10,7 +10,10 @@ const Showtimes = ({ movie, selectedDate }) => {
   const { showtimes } = movie;
 
   const showtimeHasNotEnded = (showtime) => {
-    if (selectedDate.format("MM/DD/YYYY") === moment().format("MM/DD/YYYY")) {
+    if (
+      moment(selectedDate).format("MM/DD/YYYY") ===
+      moment().format("MM/DD/YYYY")
+    ) {
       const hrs = movie.length.includes("HR") ? movie.length.substr(0, 1) : 0;
       const mins = movie.length.includes("MIN")
         ? movie.length.substring(
@@ -46,13 +49,16 @@ const Showtimes = ({ movie, selectedDate }) => {
 
   const checkMissedShowtime = (showtimeObj) => {
     if (!showtimeHasNotEnded(showtimeObj.showtime)) {
-      Alert.alert(AlertMessages.ShowtimeTooLateTitle, AlertMessages.ShowtimeTooLateMsg);
+      Alert.alert(
+        AlertMessages.ShowtimeTooLateTitle,
+        AlertMessages.ShowtimeTooLateMsg
+      );
       return;
     } else {
       navigation.navigate(ScreenTitles.EnterMovie, {
         movie: movie,
         selectedShowtimeObj: showtimeObj,
-        selectedDate: JSON.stringify(selectedDate),
+        selectedDate: selectedDate.toString(),
       });
     }
   };
@@ -64,7 +70,9 @@ const Showtimes = ({ movie, selectedDate }) => {
           return (
             <TouchableOpacity
               key={showtimeObj.showtimeId}
-              onPress={() => checkMissedShowtime(showtimeObj, movie, selectedDate)}
+              onPress={() =>
+                checkMissedShowtime(showtimeObj, movie, selectedDate)
+              }
               style={styles.button}
             >
               <Text key={showtimeObj.showtime} style={styles.buttonText}>

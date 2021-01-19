@@ -14,15 +14,15 @@ import UriConstants from "../../api/UriConstants";
 import AlertMessages from "../common/AlertMessages";
 import HttpHeaders from "../common/HttpHeaders";
 import ScreenTitles from "../common/ScreenTitles";
+import * as Network from "expo-network";
 
 const HasTickets = ({
   hasTickets,
   setHasTickets,
   movie,
   selectedShowtimeObj,
-  selectedDate
+  selectedDate,
 }) => {
-  
   const navigation = useNavigation();
   const [confirmationCode, setConfirmationCode] = useState("");
 
@@ -32,11 +32,20 @@ const HasTickets = ({
 
   const verifyConfirmationCode = async () => {
     Keyboard.dismiss();
-    
+
     if (confirmationCode.length === 0) {
       Alert.alert(
         AlertMessages.InvalidConfirmationCodeTitle,
         AlertMessages.InvalidConfirmationCodeMsg
+      );
+      return;
+    }
+
+    const networkStatus = await Network.getNetworkStateAsync();
+    if (!networkStatus.isConnected) {
+      Alert.alert(
+        AlertMessages.ConnectivityErrorTitle,
+        AlertMessages.ConnectivityErrorMsg
       );
       return;
     }
@@ -51,7 +60,7 @@ const HasTickets = ({
       ? navigation.navigate(ScreenTitles.MovieScreen, {
           movie: movie,
           showtime: selectedShowtimeObj,
-          selectedDate: selectedDate
+          selectedDate: selectedDate.toString(),
         })
       : Alert.alert(
           AlertMessages.InvalidConfirmationCodeTitle,

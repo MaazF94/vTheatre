@@ -4,7 +4,6 @@ import HasTickets from "./HasTickets";
 import PurchaseTicket from "./PurchaseTicket";
 
 const MovieConfirmation = ({ movie, selectedShowtimeObj, selectedDate }) => {
-
   const [hasTickets, setHasTickets] = useState(true);
 
   const GetMovieConfirmationContent = () => {
