@@ -15,6 +15,7 @@ import AlertMessages from "../common/AlertMessages";
 import HttpHeaders from "../common/HttpHeaders";
 import ScreenTitles from "../common/ScreenTitles";
 import * as Network from "expo-network";
+import moment from "moment";
 
 const HasTickets = ({
   hasTickets,
@@ -28,6 +29,52 @@ const HasTickets = ({
 
   const updateHasTickets = () => {
     setHasTickets(!hasTickets);
+  };
+
+  const showtimeHasNotEnded = (showtime) => {
+    if (
+      moment(selectedDate).format("MM/DD/YYYY") ===
+      moment().format("MM/DD/YYYY")
+    ) {
+      const hrs = movie.length.includes("HR") ? movie.length.substr(0, 1) : 0;
+      const mins = movie.length.includes("MIN")
+        ? movie.length.substring(
+            movie.length.indexOf("MIN") - 3,
+            movie.length.indexOf("MIN")
+          )
+        : 0;
+      const secs = movie.length.includes("SEC")
+        ? movie.length.substring(
+            movie.length.indexOf("SEC") - 3,
+            movie.length.indexOf("SEC")
+          )
+        : 0;
+
+      const movieShowtime = moment(showtime, "HH:mm a");
+      const currentTime = moment(new Date());
+
+      if (
+        currentTime >
+        movieShowtime
+          .add(parseInt(hrs), "hours")
+          .add(parseInt(mins), "minutes")
+          .add(parseInt(secs), "seconds")
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return true;
+    }
+  };
+
+  const checkMissedShowtime = (showtimeObj) => {
+    if (!showtimeHasNotEnded(showtimeObj.showtime)) {
+      return false;
+    } else {
+      return true;
+    }
   };
 
   const verifyConfirmationCode = async () => {
@@ -46,6 +93,14 @@ const HasTickets = ({
       Alert.alert(
         AlertMessages.ConnectivityErrorTitle,
         AlertMessages.ConnectivityErrorMsg
+      );
+      return;
+    }
+
+    if (!checkMissedShowtime(selectedShowtimeObj)) {
+      Alert.alert(
+        AlertMessages.ShowtimeTooLateTitle,
+        AlertMessages.ShowtimeTooLateMsg
       );
       return;
     }
