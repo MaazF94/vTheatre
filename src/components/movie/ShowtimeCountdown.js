@@ -1,10 +1,10 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-const ShowtimeCountdown = ({ shouldPlay, days, hours, mins, secs }) => {
+const ShowtimeCountdown = ({ movieStarted, days, hours, mins, secs }) => {
   return (
     <View style={styles.centerContainer}>
-      {!shouldPlay && (
+      {!movieStarted && (
         <View style={{ flexDirection: "column" }}>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.countdownTimerText}>

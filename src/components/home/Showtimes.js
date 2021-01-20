@@ -29,7 +29,7 @@ const Showtimes = ({ movie, selectedDate }) => {
         : 0;
 
       const movieShowtime = moment(showtime, "HH:mm a");
-      const currentTime = moment(new Date().getTime());
+      const currentTime = moment(new Date());
 
       if (
         currentTime >
