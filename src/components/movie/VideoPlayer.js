@@ -8,9 +8,9 @@ import moment from "moment";
 import VideoActivityIndicator from "./VideoActivityIndicator";
 import VideoEnded from "./VideoEnded";
 import ShowtimeCountdown from "./ShowtimeCountdown";
-import * as Network from "expo-network";
 import ScreenTitles from "../common/ScreenTitles";
 import { useIsFocused } from "@react-navigation/native";
+import * as Network from "expo-network";
 
 const VideoPlayer = ({ showtime, movie, selectedDate }) => {
   // Common variables
@@ -35,23 +35,30 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
     moment.duration(movieDateTime.diff(moment()))
   );
   const [activityIndicator, setActivityIndicator] = useState({
-    opacity: 0,
+    opacity: 1,
   });
   const [movieEndedText, setMovieEndedText] = useState({
     opacity: 0,
   });
+  const [movieStarted, setMovieStarted] = useState(true);
 
   useEffect(() => {
     const enterUserInMovie = () => {
       intervalId = setInterval(() => {
         if (movieDateTime > moment()) {
+          setMovieStarted(false);
           setTimeLeft(moment.duration(movieDateTime.diff(moment())));
         } else {
           if (videoRef.current !== null) {
-            const positionInStream = new Date().getTime() - movieShowtime;
+            const positionInStream = moment.duration(
+              moment().diff(movieDateTime)
+            );
             setUsePoster(false);
+            setMovieStarted(true);
             setShouldPlay(true);
-            videoRef.current.playFromPositionAsync(positionInStream);
+            videoRef.current.playFromPositionAsync(
+              positionInStream.asMilliseconds()
+            );
           }
           intervalId = clearInterval(intervalId);
         }
@@ -62,10 +69,6 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
       intervalId = clearInterval(intervalId);
       enterUserInMovie();
     }
-
-    return () => {
-      intervalId = clearInterval(intervalId);
-    };
   }, [isFocused]);
 
   const headerToggle = () => {
@@ -90,10 +93,10 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
       if (networkStatus.isConnected) {
         setActivityIndicator({ opacity: 0 });
       } else {
+        setActivityIndicator({ opacity: 1 });
         if (videoRef.current !== null) {
           videoRef.current.pauseAsync();
         }
-        setActivityIndicator({ opacity: 1 });
         wait(3000).then(() => {
           navigation.navigate(ScreenTitles.HomeScreen);
         });
@@ -135,7 +138,7 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
       <VideoActivityIndicator activityIndicator={activityIndicator} />
       <VideoEnded movieEndedText={movieEndedText} />
       <ShowtimeCountdown
-        shouldPlay={shouldPlay}
+        movieStarted={movieStarted}
         days={timeLeft.days().toString()}
         hours={timeLeft.hours().toString()}
         mins={timeLeft.minutes().toString()}

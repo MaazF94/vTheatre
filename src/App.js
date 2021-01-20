@@ -25,11 +25,19 @@ function RootStack() {
             fontSize: 24,
             color: "#FFFFFF",
           },
+          animationEnabled: false,
         }}
       >
         <Stack.Screen name={ScreenTitles.HomeScreen} component={HomeScreen} />
-        <Stack.Screen name={ScreenTitles.EnterMovie} component={EnterMovieScreen} />
-        <Stack.Screen name={ScreenTitles.MovieScreen} component={MovieScreen} options={{ headerShown: false }} />
+        <Stack.Screen
+          name={ScreenTitles.EnterMovie}
+          component={EnterMovieScreen}
+        />
+        <Stack.Screen
+          name={ScreenTitles.MovieScreen}
+          component={MovieScreen}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
