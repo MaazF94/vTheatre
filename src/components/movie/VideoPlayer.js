@@ -3,7 +3,6 @@ import { Video } from "expo-av";
 import { Dimensions } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
-import { HeaderBackButton } from "@react-navigation/stack";
 import moment from "moment";
 import VideoActivityIndicator from "./VideoActivityIndicator";
 import VideoEnded from "./VideoEnded";
@@ -35,26 +34,26 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
     moment.duration(movieDateTime.diff(moment()))
   );
   const [activityIndicator, setActivityIndicator] = useState({
-    opacity: 1,
+    opacity: 0,
   });
   const [movieEndedText, setMovieEndedText] = useState({
     opacity: 0,
   });
-  const [movieStarted, setMovieStarted] = useState(true);
+  const [showCountdown, setShowCountdown] = useState(true);
 
   useEffect(() => {
     const enterUserInMovie = () => {
       intervalId = setInterval(() => {
         if (movieDateTime > moment()) {
-          setMovieStarted(false);
           setTimeLeft(moment.duration(movieDateTime.diff(moment())));
         } else {
           if (videoRef.current !== null) {
             const positionInStream = moment.duration(
               moment().diff(movieDateTime)
             );
+            setActivityIndicator({ opacity: 1 });
             setUsePoster(false);
-            setMovieStarted(true);
+            setShowCountdown(false);
             setShouldPlay(true);
             videoRef.current.playFromPositionAsync(
               positionInStream.asMilliseconds()
@@ -69,19 +68,18 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
       intervalId = clearInterval(intervalId);
       enterUserInMovie();
     }
+
+    return () => {
+      if (intervalId !== undefined) {
+        intervalId = clearInterval(intervalId);
+      }
+    };
   }, [isFocused]);
 
   const headerToggle = () => {
     setHeaderShown(!headerShown);
     navigation.setOptions({
       headerShown: !headerShown,
-      headerLeft: () => (
-        <HeaderBackButton
-          onPress={() => {
-            navigation.navigate(ScreenTitles.EnterMovie);
-          }}
-        />
-      ),
     });
   };
 
@@ -93,7 +91,6 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
       if (networkStatus.isConnected) {
         setActivityIndicator({ opacity: 0 });
       } else {
-        setActivityIndicator({ opacity: 1 });
         if (videoRef.current !== null) {
           videoRef.current.pauseAsync();
         }
@@ -138,7 +135,7 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
       <VideoActivityIndicator activityIndicator={activityIndicator} />
       <VideoEnded movieEndedText={movieEndedText} />
       <ShowtimeCountdown
-        movieStarted={movieStarted}
+        showCountdown={showCountdown}
         days={timeLeft.days().toString()}
         hours={timeLeft.hours().toString()}
         mins={timeLeft.minutes().toString()}
