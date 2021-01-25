@@ -88,19 +88,19 @@ const HasTickets = ({
       return;
     }
 
+    if (!checkMissedShowtime(selectedShowtimeObj)) {
+      Alert.alert(
+        AlertMessages.ShowtimeTooLateTitle,
+        AlertMessages.ShowtimeTooLateMsg
+      );
+      return;
+    }
+
     const networkStatus = await Network.getNetworkStateAsync();
     if (!networkStatus.isConnected) {
       Alert.alert(
         AlertMessages.ConnectivityErrorTitle,
         AlertMessages.ConnectivityErrorMsg
-      );
-      return;
-    }
-
-    if (!checkMissedShowtime(selectedShowtimeObj)) {
-      Alert.alert(
-        AlertMessages.ShowtimeTooLateTitle,
-        AlertMessages.ShowtimeTooLateMsg
       );
       return;
     }
