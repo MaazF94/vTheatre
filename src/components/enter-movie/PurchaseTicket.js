@@ -29,6 +29,11 @@ const PurchaseTicket = ({
   //   calculateTotalAmount();
   // }, [adultTicketText, seniorTicketText, childTicketText]);
 
+  useEffect(() => {
+    // Use publishable key, android pay mode, and apple merchant ID
+    StripeConfigs();
+  }, []);
+
   const createAndroidPayOptions = () => {
     let line_items = [];
 
@@ -109,9 +114,6 @@ const PurchaseTicket = ({
       return;
     }
 
-    // Use publishable key, android pay mode, and apple merchant ID
-    StripeConfigs();
-
     // Check if the device supports native wallet pay and if a payment method exists
     const supportedAndPaymentMethodExists = await Stripe.canMakeNativePayPaymentsAsync();
 
@@ -147,7 +149,8 @@ const PurchaseTicket = ({
         };
 
         // Call backend to process the payment
-        await Api.post(UriConstants.completePayment, paymentRequest);
+        const paymentResponse = await Api.post(UriConstants.completePayment, paymentRequest);
+        console.log("paymentResponse: " + paymentResponse);
 
         // Close payment
         await Stripe.completeNativePayRequestAsync();
