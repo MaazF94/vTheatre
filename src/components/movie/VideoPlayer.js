@@ -10,11 +10,12 @@ import ShowtimeCountdown from "./ShowtimeCountdown";
 import ScreenTitles from "../common/ScreenTitles";
 import { useIsFocused } from "@react-navigation/native";
 import * as Network from "expo-network";
+import Api from "../../api/Api";
+import UriConstants from "../../api/UriConstants";
 
 const VideoPlayer = ({ showtime, movie, selectedDate }) => {
   // Common variables
   const navigation = useNavigation();
-  let intervalId = 0;
   const isFocused = useIsFocused();
 
   // Video variables
@@ -42,6 +43,9 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
   const [showCountdown, setShowCountdown] = useState(true);
 
   useEffect(() => {
+    let intervalId = 0;
+    let userStartedWatching;
+
     const enterUserInMovie = () => {
       intervalId = setInterval(() => {
         if (movieDateTime > moment()) {
@@ -58,6 +62,7 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
             videoRef.current.playFromPositionAsync(
               positionInStream.asMilliseconds()
             );
+            userStartedWatching = moment();
           }
           intervalId = clearInterval(intervalId);
         }
@@ -73,6 +78,24 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
       if (intervalId !== undefined) {
         intervalId = clearInterval(intervalId);
       }
+
+      const recordTimeUserWatched = async () => {
+        const networkStatus = await Network.getNetworkStateAsync();
+        if (networkStatus.isConnected) {
+          const userStoppedWatching = moment.duration(
+            moment().diff(userStartedWatching)
+          );
+          const videoTimeWatchedRequest = {
+            hours: userStoppedWatching.hours(),
+            minutes: userStoppedWatching.minutes(),
+            seconds: userStoppedWatching.seconds(),
+            movieId: movie.movieId,
+          };
+          await Api.post(UriConstants.recordVideoTimeWatched, videoTimeWatchedRequest);
+        }
+      };
+
+      recordTimeUserWatched();
     };
   }, [isFocused]);
 

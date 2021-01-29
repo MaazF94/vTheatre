@@ -16,18 +16,9 @@ const PurchaseTicket = ({
   movie,
   selectedDate,
 }) => {
-  const [adultTicketText, setAdultTicketText] = useState("1");
-  // const [seniorTicketText, setSeniorTicketText] = useState("0");
-  // const [childTicketText, setChildTicketText] = useState("0");
-  // const [totalAmount, setTotalAmount] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(1);
   const [emailAddress, setEmailAddress] = useState("");
-  const { title } = movie;
+  const { title, ticketPrice } = movie;
   const currencyCode = "USD";
-
-  // useEffect(() => {
-  //   calculateTotalAmount();
-  // }, [adultTicketText, seniorTicketText, childTicketText]);
 
   useEffect(() => {
     // Use publishable key, android pay mode, and apple merchant ID
@@ -37,33 +28,13 @@ const PurchaseTicket = ({
   const createAndroidPayOptions = () => {
     let line_items = [];
 
-    if (parseInt(adultTicketText) > 0) {
       line_items.push({
         currency_code: currencyCode,
-        description: title + " Adult Movie Ticket",
-        total_price: totalAmount.toString(),
-        unit_price: "1.00",
-        quantity: adultTicketText,
+        description: title + " Movie Ticket",
+        total_price: ticketPrice.toString(),
+        unit_price: ticketPrice,
+        quantity: 1,
       });
-    }
-    // if (parseInt(seniorTicketText) > 0) {
-    //   line_items.push({
-    //     currency_code: currencyCode,
-    //     description: title + " Senior Movie Ticket(s)",
-    //     total_price: totalAmount.toString(),
-    //     unit_price: "8.00",
-    //     quantity: seniorTicketText,
-    //   });
-    // }
-    // if (parseInt(childTicketText) > 0) {
-    //   line_items.push({
-    //     currency_code: currencyCode,
-    //     description: title + " Child Movie Ticket(s)",
-    //     total_price: totalAmount.toString(),
-    //     unit_price: "6.00",
-    //     quantity: childTicketText,
-    //   });
-    // }
 
     // finalize the payment request object
     const options = {
@@ -78,11 +49,11 @@ const PurchaseTicket = ({
     const items = [
       {
         label: title + " Movie Ticket",
-        amount: totalAmount.toString(),
+        amount: ticketPrice.toString(),
       },
       {
         label: "vTheatre, LLC",
-        amount: totalAmount.toString(),
+        amount: ticketPrice.toString(),
       },
     ];
     return items;
@@ -140,7 +111,6 @@ const PurchaseTicket = ({
         const paymentRequest = {
           tokenId: token.tokenId,
           currency: currencyCode,
-          amount: totalAmount,
           description: title + " Movie Ticket",
           emailAddress: emailAddress,
           showtime: selectedShowtimeObj,
@@ -149,8 +119,7 @@ const PurchaseTicket = ({
         };
 
         // Call backend to process the payment
-        const paymentResponse = await Api.post(UriConstants.completePayment, paymentRequest);
-        console.log("paymentResponse: " + paymentResponse);
+        await Api.post(UriConstants.completePayment, paymentRequest);
 
         // Close payment
         await Stripe.completeNativePayRequestAsync();
@@ -177,42 +146,6 @@ const PurchaseTicket = ({
     }
   };
 
-  // function cleanNonNumericChars(text, ticketType) {
-  //   if (!text || typeof text !== "string") {
-  //     if (ticketType === "adultTicketText") {
-  //       setAdultTicketText("0");
-  //     } else if (ticketType === "seniorTicketText") {
-  //       setSeniorTicketText("0");
-  //     } else if (ticketType === "childTicketText") {
-  //       setChildTicketText("0");
-  //     }
-  //     return "";
-  //   }
-  //   // Remove non numeric
-  //   text = text.replace(/[^\d]/g, "");
-
-  //   // Remove leading zeros
-  //   text = text.replace(/^(-)?0+(?=\d)/, "$1"); //?=\d is a positive lookahead, which matches any digit 0-9
-
-  //   if (ticketType === "adultTicketText") {
-  //     setAdultTicketText(text);
-  //   } else if (ticketType === "seniorTicketText") {
-  //     setSeniorTicketText(text);
-  //   } else if (ticketType === "childTicketText") {
-  //     setChildTicketText(text);
-  //   }
-
-  //   return text;
-  // }
-
-  // function calculateTotalAmount() {
-  //   const adultTickets = 10 * parseInt(adultTicketText);
-  //   const seniorTickets = 8 * parseInt(seniorTicketText);
-  //   const childTickets = 6 * parseInt(childTicketText);
-
-  //   setTotalAmount(adultTickets + seniorTickets + childTickets);
-  // }
-
   return (
     <View style={styles.confirmationContainer}>
       <Text style={styles.headerText}>Enjoy the showing!</Text>
@@ -226,62 +159,13 @@ const PurchaseTicket = ({
           onChangeText={(value) => setEmailAddress(value)}
         />
       </View>
-      {/* <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-evenly",
-        }}
-      > */}
-      {/* <View style={styles.ticketContainer}>
-          <Text style={styles.ticketTypeText}>Adult</Text>
-          <Text style={styles.priceText}>$10.00</Text>
-          <TextInput
-            style={styles.ticketInput}
-            textAlign={"center"}
-            // value={adultTicketText}
-            value="1"
-            disabled
-            keyboardType={"numeric"}
-            onChangeText={(text) =>
-              cleanNonNumericChars(text, "adultTicketText")
-            }
-          />
-        </View> */}
-      {/* <View style={styles.ticketContainer}>
-          <Text style={styles.ticketTypeText}>Senior</Text>
-          <Text style={styles.priceText}>$8.00</Text>
-          <TextInput
-            style={styles.ticketInput}
-            textAlign={"center"}
-            value={seniorTicketText}
-            keyboardType={"numeric"}
-            onChangeText={(text) =>
-              cleanNonNumericChars(text, "seniorTicketText")
-            }
-          />
-        </View>
-        <View style={styles.ticketContainer}>
-          <Text style={styles.ticketTypeText}>Child</Text>
-          <Text style={styles.priceText}>$6.00</Text>
-          <TextInput
-            style={styles.ticketInput}
-            textAlign={"center"}
-            value={childTicketText}
-            keyboardType={"numeric"}
-            onChangeText={(text) =>
-              cleanNonNumericChars(text, "childTicketText")
-            }
-          />
-        </View> */}
-      {/* </View> */}
       <View style={{ flexDirection: "row", justifyContent: "center" }}>
         <View style={{ flexDirection: "column", justifyContent: "center" }}>
           <Text style={styles.ticketTypeText}>Total</Text>
-          <Text style={styles.totalAmount}>${totalAmount}.00</Text>
+          <Text style={styles.ticketPrice}>${ticketPrice}.00</Text>
         </View>
       </View>
       <TouchableOpacity
-        disabled={totalAmount === 0}
         onPress={callStripe}
         style={styles.payBtn}
       >
@@ -364,7 +248,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 30,
   },
-  totalAmount: {
+  ticketPrice: {
     color: "#FFFFFF",
     fontWeight: "bold",
     fontSize: 16,
