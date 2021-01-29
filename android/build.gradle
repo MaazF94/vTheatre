@@ -35,4 +35,5 @@ allprojects {
         jcenter()
         maven { url 'https://www.jitpack.io' }
     }
+      tasks.withType(Javadoc).all { enabled = false }
 }
