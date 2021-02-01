@@ -41,10 +41,13 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
     opacity: 0,
   });
   const [showCountdown, setShowCountdown] = useState(true);
+  const [stoppedVidPosition, setStoppedVidPosition] = useState(moment());
+  const stoppedVidPositionRef = useRef();
+  stoppedVidPositionRef.current = stoppedVidPosition;
 
   useEffect(() => {
     let intervalId = 0;
-    let userStartedWatching;
+    let positionInStream;
 
     const enterUserInMovie = () => {
       intervalId = setInterval(() => {
@@ -52,9 +55,7 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
           setTimeLeft(moment.duration(movieDateTime.diff(moment())));
         } else {
           if (videoRef.current !== null) {
-            const positionInStream = moment.duration(
-              moment().diff(movieDateTime)
-            );
+            positionInStream = moment.duration(moment().diff(movieDateTime));
             setActivityIndicator({ opacity: 1 });
             setUsePoster(false);
             setShowCountdown(false);
@@ -62,7 +63,6 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
             videoRef.current.playFromPositionAsync(
               positionInStream.asMilliseconds()
             );
-            userStartedWatching = moment();
           }
           intervalId = clearInterval(intervalId);
         }
@@ -82,16 +82,21 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
       const recordTimeUserWatched = async () => {
         const networkStatus = await Network.getNetworkStateAsync();
         if (networkStatus.isConnected) {
-          const userStoppedWatching = moment.duration(
-            moment().diff(userStartedWatching)
+          const videoTimeWatched = moment.duration(
+            stoppedVidPositionRef.current.diff(
+              positionInStream.asMilliseconds()
+            )
           );
           const videoTimeWatchedRequest = {
-            hours: userStoppedWatching.hours(),
-            minutes: userStoppedWatching.minutes(),
-            seconds: userStoppedWatching.seconds(),
+            hours: videoTimeWatched.hours(),
+            minutes: videoTimeWatched.minutes(),
+            seconds: videoTimeWatched.seconds(),
             movieId: movie.movieId,
           };
-          await Api.post(UriConstants.recordVideoTimeWatched, videoTimeWatchedRequest);
+          await Api.post(
+            UriConstants.recordVideoTimeWatched,
+            videoTimeWatchedRequest
+          );
         }
       };
 
@@ -113,6 +118,9 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
       const networkStatus = await Network.getNetworkStateAsync();
       if (networkStatus.isConnected) {
         setActivityIndicator({ opacity: 0 });
+        if (playbackStatus.isPlaying) {
+          setStoppedVidPosition(moment(playbackStatus.positionMillis));
+        }
       } else {
         if (videoRef.current !== null) {
           videoRef.current.pauseAsync();
