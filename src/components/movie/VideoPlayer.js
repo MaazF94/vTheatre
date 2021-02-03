@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Video } from "expo-av";
-import { Dimensions } from "react-native";
+import { Dimensions, AppState } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
@@ -10,12 +10,17 @@ import ShowtimeCountdown from "./ShowtimeCountdown";
 import ScreenTitles from "../common/ScreenTitles";
 import { useIsFocused } from "@react-navigation/native";
 import * as Network from "expo-network";
+import Api from "../../api/Api";
+import UriConstants from "../../api/UriConstants";
 
 const VideoPlayer = ({ showtime, movie, selectedDate }) => {
   // Common variables
   const navigation = useNavigation();
-  let intervalId = 0;
   const isFocused = useIsFocused();
+  let positionInStream = moment.duration(
+    moment(new Date()).diff(movieDateTime)
+  );
+  let intervalId = 0;
 
   // Video variables
   const { width, height } = Dimensions.get("window");
@@ -27,11 +32,12 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
     .seconds(movieShowtime.seconds());
 
   // State variables
+  const [appState, setAppState] = useState(AppState.currentState);
   const [headerShown, setHeaderShown] = useState(false);
   const [shouldPlay, setShouldPlay] = useState(false);
   const [usePoster, setUsePoster] = useState(true);
   const [timeLeft, setTimeLeft] = useState(
-    moment.duration(movieDateTime.diff(moment()))
+    moment.duration(movieDateTime.diff(moment(new Date())))
   );
   const [activityIndicator, setActivityIndicator] = useState({
     opacity: 0,
@@ -40,32 +46,17 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
     opacity: 0,
   });
   const [showCountdown, setShowCountdown] = useState(true);
+  const [stoppedVidPosition, setStoppedVidPosition] = useState(
+    moment(new Date())
+  );
+  const stoppedVidPositionRef = useRef();
+  stoppedVidPositionRef.current = stoppedVidPosition;
 
   useEffect(() => {
-    const enterUserInMovie = () => {
-      intervalId = setInterval(() => {
-        if (movieDateTime > moment()) {
-          setTimeLeft(moment.duration(movieDateTime.diff(moment())));
-        } else {
-          if (videoRef.current !== null) {
-            const positionInStream = moment.duration(
-              moment().diff(movieDateTime)
-            );
-            setActivityIndicator({ opacity: 1 });
-            setUsePoster(false);
-            setShowCountdown(false);
-            setShouldPlay(true);
-            videoRef.current.playFromPositionAsync(
-              positionInStream.asMilliseconds()
-            );
-          }
-          intervalId = clearInterval(intervalId);
-        }
-      }, 1000);
-    };
-
     if (isFocused) {
-      intervalId = clearInterval(intervalId);
+      if (intervalId !== undefined) {
+        intervalId = clearInterval(intervalId);
+      }
       enterUserInMovie();
     }
 
@@ -73,14 +64,120 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
       if (intervalId !== undefined) {
         intervalId = clearInterval(intervalId);
       }
+
+      if (movieDateTime < moment(new Date()) && showtimeHasNotEnded(showtime)) {
+        recordTimeUserWatched();
+      }
     };
   }, [isFocused]);
+
+  useEffect(() => {
+    AppState.addEventListener("change", _handleAppStateChange);
+
+    return () => {
+      AppState.removeEventListener("change", _handleAppStateChange);
+    };
+  }, [appState]);
+
+  const _handleAppStateChange = (nextAppState) => {
+    if (nextAppState === "background") {
+      if (movieDateTime < moment(new Date()) && showtimeHasNotEnded(showtime)) {
+        recordTimeUserWatched();
+      }
+    } else if (nextAppState === "active") {
+      if (isFocused) {
+        intervalId = clearInterval(intervalId);
+        enterUserInMovie();
+      }
+    }
+  };
+
+  const enterUserInMovie = () => {
+    intervalId = setInterval(() => {
+      if (movieDateTime > moment(new Date())) {
+        setTimeLeft(moment.duration(movieDateTime.diff(moment(new Date()))));
+      } else {
+        if (intervalId !== undefined) {
+          intervalId = clearInterval(intervalId);
+        }
+        if (videoRef.current !== null) {
+          setActivityIndicator({ opacity: 1 });
+          setUsePoster(false);
+          setShowCountdown(false);
+          setShouldPlay(true);
+          positionInStream = moment.duration(
+            moment(new Date()).diff(movieDateTime)
+          );
+          videoRef.current.playFromPositionAsync(
+            positionInStream.asMilliseconds()
+          );
+        }
+      }
+    }, 1000);
+  };
+
+  const recordTimeUserWatched = async () => {
+    const networkStatus = await Network.getNetworkStateAsync();
+    if (networkStatus.isConnected) {
+      const videoTimeWatched = moment.duration(
+        stoppedVidPositionRef.current.diff(positionInStream.asMilliseconds())
+      );
+      const videoTimeWatchedRequest = {
+        hours: videoTimeWatched.hours(),
+        minutes: videoTimeWatched.minutes(),
+        seconds: videoTimeWatched.seconds(),
+        movieId: movie.movieId,
+      };
+      await Api.post(
+        UriConstants.recordVideoTimeWatched,
+        videoTimeWatchedRequest
+      );
+    }
+  };
 
   const headerToggle = () => {
     setHeaderShown(!headerShown);
     navigation.setOptions({
       headerShown: !headerShown,
     });
+  };
+
+  const showtimeHasNotEnded = (showtime) => {
+    if (
+      moment(selectedDate).format("MM/DD/YYYY") ===
+      moment(new Date()).format("MM/DD/YYYY")
+    ) {
+      const hrs = movie.length.includes("HR") ? movie.length.substr(0, 1) : 0;
+      const mins = movie.length.includes("MIN")
+        ? movie.length.substring(
+            movie.length.indexOf("MIN") - 3,
+            movie.length.indexOf("MIN")
+          )
+        : 0;
+      const secs = movie.length.includes("SEC")
+        ? movie.length.substring(
+            movie.length.indexOf("SEC") - 3,
+            movie.length.indexOf("SEC")
+          )
+        : 0;
+
+      const movieEndTime = moment(showtime, "HH:mm a");
+      const currentTime = moment(new Date());
+
+      if (
+        currentTime >
+        movieEndTime
+          .add(parseInt(hrs), "hours")
+          .add(parseInt(mins), "minutes")
+          .add(parseInt(secs), "seconds")
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return true;
+    }
   };
 
   const onPlaybackStatusUpdate = async (playbackStatus) => {
@@ -90,6 +187,9 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
       const networkStatus = await Network.getNetworkStateAsync();
       if (networkStatus.isConnected) {
         setActivityIndicator({ opacity: 0 });
+        if (playbackStatus.isPlaying) {
+          setStoppedVidPosition(moment(playbackStatus.positionMillis));
+        }
       } else {
         if (videoRef.current !== null) {
           videoRef.current.pauseAsync();

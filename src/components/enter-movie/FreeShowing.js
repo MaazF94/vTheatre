@@ -1,13 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import ScreenTitles from "../common/ScreenTitles";
-import moment from "moment";
 import AlertMessages from "../common/AlertMessages";
+import ScreenTitles from "../common/ScreenTitles";
+import * as Network from "expo-network";
+import moment from "moment";
 
-const Showtimes = ({ movie, selectedDate }) => {
+const FreeShowing = ({
+  movie,
+  selectedShowtimeObj,
+  selectedDate,
+}) => {
   const navigation = useNavigation();
-  const { showtimes } = movie;
 
   const showtimeHasNotEnded = (showtime) => {
     if (
@@ -28,12 +38,12 @@ const Showtimes = ({ movie, selectedDate }) => {
           )
         : 0;
 
-      const movieShowtime = moment(showtime, "HH:mm a");
+      const movieEndTime = moment(showtime, "HH:mm a");
       const currentTime = moment(new Date());
 
       if (
         currentTime >
-        movieShowtime
+        movieEndTime
           .add(parseInt(hrs), "hours")
           .add(parseInt(mins), "minutes")
           .add(parseInt(secs), "seconds")
@@ -47,54 +57,58 @@ const Showtimes = ({ movie, selectedDate }) => {
     }
   };
 
-  const checkMissedShowtime = (showtimeObj) => {
-    if (!showtimeHasNotEnded(showtimeObj.showtime)) {
+  const checkMissedShowtime = async () => {
+    const networkStatus = await Network.getNetworkStateAsync();
+    if (!networkStatus.isConnected) {
       Alert.alert(
-        AlertMessages.ShowtimeTooLateTitle,
-        AlertMessages.ShowtimeTooLateMsg
+        AlertMessages.ConnectivityErrorTitle,
+        AlertMessages.ConnectivityErrorMsg
       );
       return;
+    }
+    if (!showtimeHasNotEnded(selectedShowtimeObj.showtime)) {
+        Alert.alert(
+          AlertMessages.ShowtimeTooLateTitle,
+          AlertMessages.ShowtimeTooLateMsg
+        );
+        return;
     } else {
-      navigation.navigate(ScreenTitles.EnterMovie, {
+      navigation.navigate(ScreenTitles.MovieScreen, {
         movie: movie,
-        selectedShowtimeObj: showtimeObj,
+        showtime: selectedShowtimeObj,
         selectedDate: selectedDate.toString(),
-      });
+      })
     }
   };
 
   return (
-    <View style={styles.showtimesContainer}>
-      {showtimes.map((showtimeObj) => {
-        if (showtimeHasNotEnded(showtimeObj.showtime)) {
-          return (
-            <TouchableOpacity
-              key={showtimeObj.showtimeId}
-              onPress={() =>
-                checkMissedShowtime(showtimeObj, movie, selectedDate)
-              }
-              style={styles.button}
-            >
-              <Text key={showtimeObj.showtime} style={styles.buttonText}>
-                {showtimeObj.showtime}
-              </Text>
-            </TouchableOpacity>
-          );
-        }
-      })}
+    <View style={styles.confirmationContainer}>
+      <Text style={styles.text}>Enjoy the showing!</Text>
+      <TouchableOpacity onPress={checkMissedShowtime} style={styles.button}>
+        <Text style={styles.buttonText}>Enter</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  showtimesContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+  confirmationContainer: {
+    flexDirection: "column",
+    backgroundColor: "#272727",
     justifyContent: "center",
     alignItems: "center",
+    marginTop: 40,
+    paddingBottom: 10,
+    paddingTop: 10,
+  },
+  text: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 20,
+    textAlign: "center",
   },
   button: {
-    marginBottom: 10,
+    marginTop: 20,
     backgroundColor: "#7E0808",
     borderWidth: 1,
     borderRadius: 1,
@@ -103,13 +117,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 105,
     height: 35,
-    marginLeft: 10,
   },
   buttonText: {
     color: "#FFFFFF",
     fontWeight: "bold",
-    fontSize: 14,
+    fontSize: 16,
   },
 });
 
-export default Showtimes;
+export default FreeShowing;
