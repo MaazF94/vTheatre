@@ -12,8 +12,11 @@ import { useIsFocused } from "@react-navigation/native";
 import * as Network from "expo-network";
 import Api from "../../api/Api";
 import UriConstants from "../../api/UriConstants";
+import * as ScreenCapture from "expo-screen-capture";
 
 const VideoPlayer = ({ showtime, movie, selectedDate }) => {
+  ScreenCapture.usePreventScreenCapture();
+
   // Common variables
   const navigation = useNavigation();
   const isFocused = useIsFocused();
@@ -78,6 +81,14 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
       AppState.removeEventListener("change", _handleAppStateChange);
     };
   }, [appState]);
+
+  useEffect(() => {
+    ScreenCapture.addScreenshotListener(() => {
+      wait(1000).then(() => {
+        navigation.navigate(ScreenTitles.HomeScreen);
+      });
+    });
+  });
 
   const _handleAppStateChange = (nextAppState) => {
     if (nextAppState === "background") {

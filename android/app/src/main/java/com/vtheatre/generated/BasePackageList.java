@@ -18,6 +18,7 @@ public class BasePackageList {
         new expo.modules.network.NetworkPackage(),
         new expo.modules.payments.stripe.StripePackage(),
         new expo.modules.permissions.PermissionsPackage(),
+        new expo.modules.screencapture.ScreenCapturePackage(),
         new expo.modules.screenorientation.ScreenOrientationPackage(),
         new expo.modules.splashscreen.SplashScreenPackage(),
         new expo.modules.sqlite.SQLitePackage(),
