@@ -12,7 +12,7 @@ const Showtimes = ({ movie, selectedDate }) => {
   const showtimeHasNotEnded = (showtime) => {
     if (
       moment(selectedDate).format("MM/DD/YYYY") ===
-      moment().format("MM/DD/YYYY")
+      moment(new Date()).format("MM/DD/YYYY")
     ) {
       const hrs = movie.length.includes("HR") ? movie.length.substr(0, 1) : 0;
       const mins = movie.length.includes("MIN")

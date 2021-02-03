@@ -27,10 +27,32 @@ const EnterMovieScreen = (props) => {
     }
   }, [isFocused]);
 
-  return (
-    <View>
-      <ScrollView keyboardShouldPersistTaps="handled">
-        <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={50}>
+  const CheckIfKeyboardViewNecessary = () => {
+    if (movie.ticketPrice > 0) {
+      return (
+        <View>
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <KeyboardAvoidingView
+              behavior="position"
+              keyboardVerticalOffset={50}
+            >
+              <BannerBackground
+                isTimeBanner={true}
+                selectedShowtimeObj={selectedShowtimeObj}
+              />
+              <EnterTheatre img={img} />
+              <MovieConfirmation
+                selectedShowtimeObj={selectedShowtimeObj}
+                movie={movie}
+                selectedDate={selectedDate}
+              />
+            </KeyboardAvoidingView>
+          </ScrollView>
+        </View>
+      );
+    } else {
+      return (
+        <View>
           <BannerBackground
             isTimeBanner={true}
             selectedShowtimeObj={selectedShowtimeObj}
@@ -41,10 +63,12 @@ const EnterMovieScreen = (props) => {
             movie={movie}
             selectedDate={selectedDate}
           />
-        </KeyboardAvoidingView>
-      </ScrollView>
-    </View>
-  );
+        </View>
+      );
+    }
+  };
+
+  return <CheckIfKeyboardViewNecessary />;
 };
 
 export default EnterMovieScreen;

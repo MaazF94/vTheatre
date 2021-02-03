@@ -22,7 +22,7 @@ const FreeShowing = ({
   const showtimeHasNotEnded = (showtime) => {
     if (
       moment(selectedDate).format("MM/DD/YYYY") ===
-      moment().format("MM/DD/YYYY")
+      moment(new Date()).format("MM/DD/YYYY")
     ) {
       const hrs = movie.length.includes("HR") ? movie.length.substr(0, 1) : 0;
       const mins = movie.length.includes("MIN")
@@ -38,12 +38,12 @@ const FreeShowing = ({
           )
         : 0;
 
-      const movieShowtime = moment(showtime, "HH:mm a");
+      const movieEndTime = moment(showtime, "HH:mm a");
       const currentTime = moment(new Date());
 
       if (
         currentTime >
-        movieShowtime
+        movieEndTime
           .add(parseInt(hrs), "hours")
           .add(parseInt(mins), "minutes")
           .add(parseInt(secs), "seconds")
@@ -57,7 +57,7 @@ const FreeShowing = ({
     }
   };
 
-  const checkMissedShowtime = async (showtimeObj) => {
+  const checkMissedShowtime = async () => {
     const networkStatus = await Network.getNetworkStateAsync();
     if (!networkStatus.isConnected) {
       Alert.alert(
@@ -66,7 +66,7 @@ const FreeShowing = ({
       );
       return;
     }
-    if (!showtimeHasNotEnded(showtimeObj.showtime)) {
+    if (!showtimeHasNotEnded(selectedShowtimeObj.showtime)) {
         Alert.alert(
           AlertMessages.ShowtimeTooLateTitle,
           AlertMessages.ShowtimeTooLateMsg

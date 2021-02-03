@@ -42,7 +42,7 @@ const DateBanner = ({ selectedDate, setSelectedDate }) => {
 
   // cannot see list of movies before today's date
   const HideIfToday = () => {
-    if (moment(selectedDate).format("MM/DD/YYYY") === moment().format("MM/DD/YYYY")) {
+    if (moment(selectedDate).format("MM/DD/YYYY") === moment(new Date()).format("MM/DD/YYYY")) {
       setShowPreviousDate(false);
     } else {
       if (showPreviousDate === false) {
