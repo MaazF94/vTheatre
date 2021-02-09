@@ -13,6 +13,7 @@ import * as Network from "expo-network";
 import Api from "../../api/Api";
 import UriConstants from "../../api/UriConstants";
 import * as ScreenCapture from "expo-screen-capture";
+import HttpHeaders from "../common/HttpHeaders";
 
 const VideoPlayer = ({ showtime, movie, selectedDate }) => {
   ScreenCapture.usePreventScreenCapture();
@@ -141,7 +142,8 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
       };
       await Api.post(
         UriConstants.recordVideoTimeWatched,
-        videoTimeWatchedRequest
+        videoTimeWatchedRequest,
+        { headers: HttpHeaders.headers }
       );
     }
   };
@@ -228,7 +230,7 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
       <Video
         source={{
           uri:
-            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+            "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
         }}
         rate={1.0}
         volume={1.0}

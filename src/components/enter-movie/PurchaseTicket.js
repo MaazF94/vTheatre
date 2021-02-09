@@ -8,6 +8,7 @@ import StripeConfigs from "../common/StripeConfigs";
 import moment from "moment";
 import AlertMessages from "../common/AlertMessages";
 import * as Network from "expo-network";
+import HttpHeaders from "../common/HttpHeaders";
 
 const PurchaseTicket = ({
   selectedShowtimeObj,
@@ -28,17 +29,17 @@ const PurchaseTicket = ({
   const createAndroidPayOptions = () => {
     let line_items = [];
 
-      line_items.push({
-        currency_code: currencyCode,
-        description: title + " Movie Ticket",
-        total_price: ticketPrice.toString(),
-        unit_price: ticketPrice,
-        quantity: 1,
-      });
+    line_items.push({
+      currency_code: currencyCode,
+      description: title + " Movie Ticket",
+      total_price: ticketPrice.toString(),
+      unit_price: ticketPrice.toString(),
+      quantity: "1",
+    });
 
     // finalize the payment request object
     const options = {
-      total_price: totalAmount.toString(),
+      total_price: ticketPrice.toString(),
       currency_code: currencyCode,
       line_items,
     };
@@ -119,7 +120,9 @@ const PurchaseTicket = ({
         };
 
         // Call backend to process the payment
-        await Api.post(UriConstants.completePayment, paymentRequest);
+        await Api.post(UriConstants.completePayment, paymentRequest, {
+          headers: HttpHeaders.headers,
+        });
 
         // Close payment
         await Stripe.completeNativePayRequestAsync();
@@ -165,10 +168,7 @@ const PurchaseTicket = ({
           <Text style={styles.ticketPrice}>${ticketPrice}.00</Text>
         </View>
       </View>
-      <TouchableOpacity
-        onPress={callStripe}
-        style={styles.payBtn}
-      >
+      <TouchableOpacity onPress={callStripe} style={styles.payBtn}>
         <Text style={styles.buttonText}>Proceed to checkout</Text>
       </TouchableOpacity>
     </View>

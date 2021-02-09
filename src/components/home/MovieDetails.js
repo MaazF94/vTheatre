@@ -7,6 +7,7 @@ import moment from "moment";
 import * as Network from "expo-network";
 import AlertMessages from "../common/AlertMessages";
 import { useIsFocused } from "@react-navigation/native";
+import HttpHeaders from "../common/HttpHeaders";
 
 const MovieDetails = ({ selectedDate }) => {
   const [refreshing, setRefreshing] = useState(false);
@@ -39,7 +40,9 @@ const MovieDetails = ({ selectedDate }) => {
       return;
     }
 
-    const response = await Api.get(UriConstants.getMovies);
+    const response = await Api.get(UriConstants.getMovies, {
+      headers: HttpHeaders.headers,
+    });
     setMovies(response.data);
   };
 
