@@ -230,7 +230,7 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
       <Video
         source={{
           uri:
-            "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+            movie.vid,
         }}
         rate={1.0}
         volume={1.0}

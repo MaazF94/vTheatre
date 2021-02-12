@@ -15,7 +15,9 @@ const MovieDetails = ({ selectedDate }) => {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    getMoviesApi();
+    if (isFocused) {
+      getMoviesApi();
+    }
   }, [isFocused]);
 
   const wait = (timeout) => {

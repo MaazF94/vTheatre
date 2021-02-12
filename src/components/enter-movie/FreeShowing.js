@@ -1,22 +1,12 @@
-import React, { useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import React from "react";
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AlertMessages from "../common/AlertMessages";
 import ScreenTitles from "../common/ScreenTitles";
 import * as Network from "expo-network";
 import moment from "moment";
 
-const FreeShowing = ({
-  movie,
-  selectedShowtimeObj,
-  selectedDate,
-}) => {
+const FreeShowing = ({ movie, selectedShowtimeObj, selectedDate }) => {
   const navigation = useNavigation();
 
   const showtimeHasNotEnded = (showtime) => {
@@ -58,27 +48,36 @@ const FreeShowing = ({
   };
 
   const checkMissedShowtime = async () => {
-    const networkStatus = await Network.getNetworkStateAsync();
-    if (!networkStatus.isConnected) {
+    if (!showtimeHasNotEnded(selectedShowtimeObj.showtime)) {
       Alert.alert(
-        AlertMessages.ConnectivityErrorTitle,
-        AlertMessages.ConnectivityErrorMsg
+        AlertMessages.ShowtimeTooLateTitle,
+        AlertMessages.ShowtimeTooLateMsg
       );
       return;
-    }
-    if (!showtimeHasNotEnded(selectedShowtimeObj.showtime)) {
+    } else {
+      const networkStatus = await Network.getNetworkStateAsync();
+      if (!networkStatus.isConnected) {
         Alert.alert(
-          AlertMessages.ShowtimeTooLateTitle,
-          AlertMessages.ShowtimeTooLateMsg
+          AlertMessages.ConnectivityErrorTitle,
+          AlertMessages.ConnectivityErrorMsg
         );
         return;
-    } else {
-      navigation.navigate(ScreenTitles.MovieScreen, {
-        movie: movie,
-        showtime: selectedShowtimeObj,
-        selectedDate: selectedDate.toString(),
-      })
+      }
+      refreshMovieFiles().then((refreshedMovie) => {
+        navigation.navigate(ScreenTitles.MovieScreen, {
+          movie: refreshedMovie,
+          showtime: selectedShowtimeObj,
+          selectedDate: selectedDate.toString(),
+        });
+      });
     }
+  };
+
+  const refreshMovieFiles = async () => {
+    const movieFiles = await Api.post(UriConstants.refreshMovieFiles, movie, {
+      headers: HttpHeaders.headers,
+    });
+    return movieFiles.data;
   };
 
   return (
