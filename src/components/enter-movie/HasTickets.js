@@ -111,16 +111,27 @@ const HasTickets = ({
       { headers: HttpHeaders.headers }
     );
 
-    confirmationCodeExists.data
-      ? navigation.navigate(ScreenTitles.MovieScreen, {
-          movie: movie,
+    if (confirmationCodeExists.data) {
+      refreshMovieFiles().then((refreshedMovie) => {
+        navigation.navigate(ScreenTitles.MovieScreen, {
+          movie: refreshedMovie,
           showtime: selectedShowtimeObj,
           selectedDate: selectedDate.toString(),
-        })
-      : Alert.alert(
-          AlertMessages.InvalidConfirmationCodeTitle,
-          AlertMessages.InvalidConfirmationCodeMsg
-        );
+        });
+      });
+    } else {
+      Alert.alert(
+        AlertMessages.InvalidConfirmationCodeTitle,
+        AlertMessages.InvalidConfirmationCodeMsg
+      );
+    }
+  };
+
+  const refreshMovieFiles = async () => {
+    const movieFiles = await Api.post(UriConstants.refreshMovieFiles, movie, {
+      headers: HttpHeaders.headers,
+    });
+    return movieFiles.data;
   };
 
   return (
