@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Video } from "expo-av";
+import { Audio, Video } from "expo-av";
 import { Dimensions, AppState } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
@@ -14,9 +14,11 @@ import Api from "../../api/Api";
 import UriConstants from "../../api/UriConstants";
 import * as ScreenCapture from "expo-screen-capture";
 import HttpHeaders from "../common/HttpHeaders";
+import { useKeepAwake } from "expo-keep-awake";
 
 const VideoPlayer = ({ showtime, movie, selectedDate }) => {
   ScreenCapture.usePreventScreenCapture();
+  useKeepAwake();
 
   // Common variables
   const navigation = useNavigation();
@@ -90,6 +92,10 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
       });
     });
   });
+
+  useEffect(() => {
+    Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+  }, []);
 
   const _handleAppStateChange = (nextAppState) => {
     if (nextAppState === "background") {
@@ -229,8 +235,7 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
     <TouchableOpacity onPress={headerToggle}>
       <Video
         source={{
-          uri:
-            movie.vid,
+          uri: movie.vid,
         }}
         rate={1.0}
         volume={1.0}
