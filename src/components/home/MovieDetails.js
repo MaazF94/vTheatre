@@ -64,7 +64,7 @@ const MovieDetails = ({ selectedDate }) => {
           ) {
             return (
               <MovieCard
-                key={movie.id}
+                key={movie.movieId}
                 movie={movie}
                 selectedDate={selectedDate}
               />

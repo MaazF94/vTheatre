@@ -5,6 +5,9 @@ import AlertMessages from "../common/AlertMessages";
 import ScreenTitles from "../common/ScreenTitles";
 import * as Network from "expo-network";
 import moment from "moment";
+import Api from "../../api/Api";
+import HttpHeaders from "../common/HttpHeaders";
+import UriConstants from "../../api/UriConstants";
 
 const FreeShowing = ({ movie, selectedShowtimeObj, selectedDate }) => {
   const navigation = useNavigation();

@@ -1,10 +1,16 @@
 import React, { useState } from "react";
-import { Image, StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import MovieInfo from "./MovieInfo";
 import Showtimes from "./Showtimes";
 
 const MovieCard = ({ movie, selectedDate }) => {
-
   const [showtimeBtnStyle, setShowtimeBtnStyle] = useState(false);
   const [movieInfoBtnStyle, setMovieInfoBtnStyle] = useState(false);
   const { title, rating, length, genre, img } = movie;
@@ -64,7 +70,9 @@ const MovieCard = ({ movie, selectedDate }) => {
           </View>
         </View>
       </View>
-      {showtimeBtnStyle && <Showtimes movie={movie} selectedDate={selectedDate} />}
+      {showtimeBtnStyle && (
+        <Showtimes movie={movie} selectedDate={selectedDate} />
+      )}
       {movieInfoBtnStyle && <MovieInfo movie={movie} />}
     </View>
   );
@@ -85,6 +93,7 @@ const styles = StyleSheet.create({
   contentContainerWithoutImg: {
     flexDirection: "column",
     marginLeft: 5,
+    flex: 1,
   },
   movieTitle: {
     color: "#FFFFFF",
@@ -119,7 +128,7 @@ const styles = StyleSheet.create({
     borderColor: "#ffffff",
     alignItems: "center",
     justifyContent: "center",
-    width: 105,
+    width: Dimensions.get("window").width / 4,
     height: 35,
   },
   buttonMovieInfo: {
@@ -129,7 +138,7 @@ const styles = StyleSheet.create({
     borderColor: "#ffffff",
     alignItems: "center",
     justifyContent: "center",
-    width: 105,
+    width: Dimensions.get("window").width / 4,
     height: 35,
     marginLeft: 10,
   },
@@ -140,7 +149,7 @@ const styles = StyleSheet.create({
     borderColor: "#ffffff",
     alignItems: "center",
     justifyContent: "center",
-    width: 105,
+    width: Dimensions.get("window").width / 4,
     height: 35,
   },
   buttonDisplayMovieInfo: {
@@ -150,7 +159,7 @@ const styles = StyleSheet.create({
     borderColor: "#ffffff",
     alignItems: "center",
     justifyContent: "center",
-    width: 105,
+    width: Dimensions.get("window").width / 4,
     height: 35,
     marginLeft: 10,
   },

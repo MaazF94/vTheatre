@@ -145,7 +145,10 @@ const HasTickets = ({
         placeholder="Ticket Confirmation Code"
         onChangeText={(value) => setConfirmationCode(value)}
       />
-      <TouchableOpacity onPress={verifyConfirmationCode} style={styles.button}>
+      <TouchableOpacity
+        onPress={verifyConfirmationCode}
+        style={styles.button}
+      >
         <Text style={styles.buttonText}>Enter</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={updateHasTickets}>
@@ -162,8 +165,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 40,
-    paddingBottom: 10,
-    paddingTop: 10,
+    paddingTop: 20,
+    paddingBottom: 20,
   },
   text: {
     color: "#FFFFFF",
@@ -177,6 +180,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: "center",
     height: 45,
+    borderRadius: 1,
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
   },
   button: {
     marginTop: 20,
