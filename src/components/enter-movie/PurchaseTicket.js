@@ -16,14 +16,17 @@ const PurchaseTicket = ({
   setHasTickets,
   movie,
   selectedDate,
+  setLoadingAnimation,
 }) => {
   const [emailAddress, setEmailAddress] = useState("");
+  const [paymentSource, setPaymentSource] = useState("");
   const { title, ticketPrice } = movie;
   const currencyCode = "USD";
 
   useEffect(() => {
     // Use publishable key, android pay mode, and apple merchant ID
     StripeConfigs();
+    choosePaymentSource();
   }, []);
 
   const createAndroidPayOptions = () => {
@@ -119,10 +122,14 @@ const PurchaseTicket = ({
           chosenMovieDate: formattedDate,
         };
 
+        setLoadingAnimation(true);
+
         // Call backend to process the payment
         await Api.post(UriConstants.completePayment, paymentRequest, {
           headers: HttpHeaders.headers,
         });
+
+        setLoadingAnimation(false);
 
         // Close payment
         await Stripe.completeNativePayRequestAsync();
@@ -149,6 +156,14 @@ const PurchaseTicket = ({
     }
   };
 
+  const choosePaymentSource = () => {
+    if (Platform.OS === "android") {
+      return setPaymentSource("Google Pay");
+    } else if (Platform.OS === "ios") {
+      return setPaymentSource("Apple Pay");
+    }
+  }
+
   return (
     <View style={styles.confirmationContainer}>
       <Text style={styles.headerText}>Enjoy the showing!</Text>
@@ -169,7 +184,7 @@ const PurchaseTicket = ({
         </View>
       </View>
       <TouchableOpacity onPress={callStripe} style={styles.payBtn}>
-        <Text style={styles.buttonText}>Proceed to checkout</Text>
+        <Text style={styles.buttonText}>Checkout with {paymentSource}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -182,10 +197,6 @@ const styles = StyleSheet.create({
     marginTop: 40,
     paddingTop: 20,
     paddingBottom: 20,
-  },
-  ticketContainer: {
-    flexDirection: "column",
-    alignItems: "center",
   },
   headerText: {
     color: "#FFFFFF",
@@ -210,19 +221,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 30,
   },
-  priceText: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-    fontSize: 11,
-    textAlign: "center",
-  },
-  ticketInput: {
-    backgroundColor: "white",
-    paddingVertical: 0,
-    marginTop: 5,
-    height: 30,
-    width: 40,
-  },
   payBtn: {
     backgroundColor: "#7E0808",
     borderWidth: 1,
@@ -240,13 +238,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "bold",
     fontSize: 14,
-  },
-  totalText: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-    fontSize: 16,
-    textAlign: "center",
-    marginTop: 30,
   },
   ticketPrice: {
     color: "#FFFFFF",
