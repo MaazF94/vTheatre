@@ -16,7 +16,7 @@ import * as ScreenCapture from "expo-screen-capture";
 import HttpHeaders from "../common/HttpHeaders";
 import { useKeepAwake } from "expo-keep-awake";
 
-const VideoPlayer = ({ showtime, movie, selectedDate }) => {
+const VideoPlayer = ({ showtime, movie, selectedDate, confirmationCode }) => {
   ScreenCapture.usePreventScreenCapture();
   useKeepAwake();
 
@@ -63,6 +63,9 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
       if (intervalId !== undefined) {
         intervalId = clearInterval(intervalId);
       }
+      if (confirmationCode !== undefined) {
+        updateTicketStatus("INACTIVE");
+      }
       enterUserInMovie();
     }
 
@@ -70,9 +73,11 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
       if (intervalId !== undefined) {
         intervalId = clearInterval(intervalId);
       }
-
       if (movieDateTime < moment(new Date()) && showtimeHasNotEnded(showtime)) {
         recordTimeUserWatched();
+      }
+      if (confirmationCode !== undefined) {
+        updateTicketStatus("ACTIVE");
       }
     };
   }, [isFocused]);
@@ -93,10 +98,6 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
     });
   });
 
-  useEffect(() => {
-    Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
-  }, []);
-
   const _handleAppStateChange = (nextAppState) => {
     if (nextAppState === "background") {
       if (movieDateTime < moment(new Date()) && showtimeHasNotEnded(showtime)) {
@@ -108,6 +109,18 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
         enterUserInMovie();
       }
     }
+  };
+
+  const updateTicketStatus = (status) => {
+    const ticketStatusRequest = {
+      confirmationCode: confirmationCode,
+      status: status,
+    };
+    Api.post(
+      UriConstants.updateTicketStatus,
+      ticketStatusRequest,
+      HttpHeaders.headers
+    );
   };
 
   const enterUserInMovie = () => {
@@ -129,6 +142,7 @@ const VideoPlayer = ({ showtime, movie, selectedDate }) => {
           videoRef.current.playFromPositionAsync(
             positionInStream.asMilliseconds()
           );
+          Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
         }
       }
     }, 1000);

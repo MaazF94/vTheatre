@@ -107,9 +107,11 @@ const PurchaseTicket = ({
           token = await Stripe.paymentRequestWithNativePayAsync(options, items);
         }
 
-        const formattedDate = moment(selectedDate).format(
+        const emailFormattedDate = moment(selectedDate).format(
           "dddd, MMMM DD, YYYY"
         );
+
+        const ticketFormattedDate = moment(selectedDate).format("YYYY-MM-DD");
 
         // Build request object for backend
         const paymentRequest = {
@@ -119,7 +121,8 @@ const PurchaseTicket = ({
           emailAddress: emailAddress,
           showtime: selectedShowtimeObj,
           movie: movie,
-          chosenMovieDate: formattedDate,
+          emailFormattedDate: emailFormattedDate,
+          ticketFormattedDate: ticketFormattedDate,
         };
 
         setLoadingAnimation(true);
@@ -162,7 +165,7 @@ const PurchaseTicket = ({
     } else if (Platform.OS === "ios") {
       return setPaymentSource("Apple Pay");
     }
-  }
+  };
 
   return (
     <View style={styles.confirmationContainer}>
