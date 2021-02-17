@@ -10,6 +10,7 @@ const MovieScreen = (props) => {
   const movie = props.route.params.movie;
   const selectedDateStr = props.route.params.selectedDate;
   const selectedDate = new Date(selectedDateStr);
+  const confirmationCode = props.route.params.confirmationCode;
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -31,6 +32,7 @@ const MovieScreen = (props) => {
         showtime={showtime}
         movie={movie}
         selectedDate={selectedDate}
+        confirmationCode={confirmationCode}
       />
     </View>
   );

@@ -105,25 +105,48 @@ const HasTickets = ({
       return;
     }
 
-    const confirmationCodeExists = await Api.post(
-      UriConstants.verifyConfirmationCode,
-      confirmationCode,
-      { headers: HttpHeaders.headers }
-    );
+    let verifyConfCodeResponse;
+    const verifyConfCodeRequest = {
+      confirmationCode: confirmationCode,
+      chosenDate: moment(selectedDate).format("YYYY-MM-DD"),
+      showtime: selectedShowtimeObj.showtime,
+    };
 
-    if (confirmationCodeExists.data) {
-      refreshMovieFiles().then((refreshedMovie) => {
-        navigation.navigate(ScreenTitles.MovieScreen, {
-          movie: refreshedMovie,
-          showtime: selectedShowtimeObj,
-          selectedDate: selectedDate.toString(),
+    await Api.post(UriConstants.verifyConfirmationCode, verifyConfCodeRequest, {
+      headers: HttpHeaders.headers,
+    }).then((response) => {
+      verifyConfCodeResponse = response.data;
+    });
+
+    if (verifyConfCodeResponse.exists) {
+      if (verifyConfCodeResponse.status === "ACTIVE") {
+        refreshMovieFiles().then((refreshedMovie) => {
+          navigation.navigate(ScreenTitles.MovieScreen, {
+            movie: refreshedMovie,
+            showtime: selectedShowtimeObj,
+            selectedDate: selectedDate.toString(),
+            confirmationCode: confirmationCode,
+          });
         });
-      });
+      } else if (verifyConfCodeResponse.status === "INACTIVE") {
+        Alert.alert(
+          AlertMessages.TicketStatusInactiveTitle,
+          AlertMessages.TicketStatusInactiveMsg
+        );
+        return;
+      } else if (verifyConfCodeResponse.status === "REFUNDED") {
+        Alert.alert(
+          AlertMessages.TicketStatusRefundedTitle,
+          AlertMessages.TicketStatusRefundedMsg
+        );
+        return;
+      }
     } else {
       Alert.alert(
         AlertMessages.InvalidConfirmationCodeTitle,
         AlertMessages.InvalidConfirmationCodeMsg
       );
+      return;
     }
   };
 
@@ -145,10 +168,7 @@ const HasTickets = ({
         placeholder="Ticket Confirmation Code"
         onChangeText={(value) => setConfirmationCode(value)}
       />
-      <TouchableOpacity
-        onPress={verifyConfirmationCode}
-        style={styles.button}
-      >
+      <TouchableOpacity onPress={verifyConfirmationCode} style={styles.button}>
         <Text style={styles.buttonText}>Enter</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={updateHasTickets}>
