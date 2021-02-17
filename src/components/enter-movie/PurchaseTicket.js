@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, Alert, Platform } from "react-native";
+import { StyleSheet, View, Text, Alert, Platform, Image } from "react-native";
 import { PaymentsStripe as Stripe } from "expo-payments-stripe";
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import Api from "../../api/Api";
@@ -9,6 +9,8 @@ import moment from "moment";
 import AlertMessages from "../common/AlertMessages";
 import * as Network from "expo-network";
 import HttpHeaders from "../common/HttpHeaders";
+import GooglePay from "../../assets/svg/GooglePay";
+import { ApplePayButton } from "react-native-rn-apple-pay-button";
 
 const PurchaseTicket = ({
   selectedShowtimeObj,
@@ -186,9 +188,24 @@ const PurchaseTicket = ({
           <Text style={styles.ticketPrice}>${ticketPrice}.00</Text>
         </View>
       </View>
-      <TouchableOpacity onPress={callStripe} style={styles.payBtn}>
-        <Text style={styles.buttonText}>Checkout with {paymentSource}</Text>
-      </TouchableOpacity>
+      {paymentSource === "Google Pay" && (
+        <TouchableOpacity onPress={callStripe} style={styles.googlePayBtn}>
+          <GooglePay />
+        </TouchableOpacity>
+      )}
+
+      {paymentSource === "Apple Pay" && (
+        <View style={styles.applePayBtn}>
+          <ApplePayButton
+            buttonStyle="white"
+            cornerRadius={5}
+            type="buy"
+            width={145}
+            height={33}
+            onPress={callStripe}
+          />
+        </View>
+      )}
     </View>
   );
 };
@@ -224,17 +241,25 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 30,
   },
-  payBtn: {
-    backgroundColor: "#7E0808",
-    borderWidth: 1,
-    borderRadius: 1,
-    borderColor: "#ffffff",
+  googlePayBtn: {
     alignItems: "center",
     paddingBottom: 10,
     paddingTop: 10,
     paddingLeft: 10,
     paddingRight: 10,
     marginTop: 20,
+    alignSelf: "center",
+    backgroundColor: "white",
+    borderRadius: 5,
+    width: 145,
+  },
+  applePayBtn: {
+    alignItems: "center",
+    paddingBottom: 10,
+    paddingTop: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
+    marginTop: 10,
     alignSelf: "center",
   },
   buttonText: {
