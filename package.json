@@ -12,6 +12,7 @@
     "@react-native-community/slider": "3.0.3",
     "@react-navigation/native": "^5.8.9",
     "@react-navigation/stack": "^5.12.6",
+    "accordion-collapse-react-native": "^1.0.0",
     "appstate": "^2.1.2",
     "axios": "^0.21.0",
     "expo": "^39.0.4",

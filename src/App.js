@@ -5,6 +5,7 @@ import HomeScreen from "./screens/HomeScreen";
 import EnterMovieScreen from "./screens/EnterMovieScreen";
 import MovieScreen from "./screens/MovieScreen";
 import ScreenTitles from "./components/common/ScreenTitles";
+import SettingsScreen from "./screens/SettingsScreen";
 
 const Stack = createStackNavigator();
 
@@ -38,6 +39,7 @@ function RootStack() {
           component={MovieScreen}
           options={{ headerShown: false }}
         />
+        <Stack.Screen name={ScreenTitles.SettingsScreen} component={SettingsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
