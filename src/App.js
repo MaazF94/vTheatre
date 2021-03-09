@@ -39,7 +39,10 @@ function RootStack() {
           component={MovieScreen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name={ScreenTitles.SettingsScreen} component={SettingsScreen} />
+        <Stack.Screen
+          name={ScreenTitles.SettingsScreen}
+          component={SettingsScreen}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

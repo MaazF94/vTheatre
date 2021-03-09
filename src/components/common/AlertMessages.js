@@ -6,13 +6,16 @@ const AlertMessages = {
   InvalidEmailAddressMsg: "Please enter a valid email address.",
   SuccessfulPaymentTitle: "Successful Payment",
   SuccessfulPaymentMsg:
-    "Your payment was processed. The ticket confirmation code was sent to your email. Enjoy!",
+    "Your payment was processed. Enjoy!",
   CanceledPaymentTitle: "Canceled Payment",
   CanceledPaymentMsg:
     "An error occurred, your payment was not processed. Please try again.",
   PaymentMethodNotSupportedTitle: "Payment Method Not Supported",
   PaymentMethodNotSupportedMsg:
     "You must have Apple or Google pay set up on your device.",
+  PaymentDeferredTitle: "Waiting For Approval",
+  PaymentDeferredMsg:
+    "You can enter the movie theatre after your payment is approved by your parent. Thank you!",
   ErrorTitle: "Error",
   ErrorMsg: "Sorry, something seems to be wrong! Please try again.",
   ShowtimeTooLateTitle: "Too Late!",

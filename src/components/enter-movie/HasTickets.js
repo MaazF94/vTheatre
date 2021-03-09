@@ -18,7 +18,6 @@ import * as Network from "expo-network";
 import moment from "moment";
 
 const HasTickets = ({
-  hasTickets,
   setHasTickets,
   movie,
   selectedShowtimeObj,
@@ -26,10 +25,6 @@ const HasTickets = ({
 }) => {
   const navigation = useNavigation();
   const [confirmationCode, setConfirmationCode] = useState("");
-
-  const updateHasTickets = () => {
-    setHasTickets(!hasTickets);
-  };
 
   const showtimeHasNotEnded = (showtime) => {
     if (
@@ -171,7 +166,7 @@ const HasTickets = ({
       <TouchableOpacity onPress={verifyConfirmationCode} style={styles.button}>
         <Text style={styles.buttonText}>Enter</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={updateHasTickets}>
+      <TouchableOpacity onPress={() => setHasTickets(false)}>
         <Text style={styles.ticketText}>No code? Buy tickets.</Text>
       </TouchableOpacity>
     </View>

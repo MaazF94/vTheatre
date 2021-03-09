@@ -1,16 +1,25 @@
 import React, { useState } from "react";
-import { View, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, Platform } from "react-native";
 import FreeShowing from "./FreeShowing";
 import HasTickets from "./HasTickets";
 import PurchaseTicket from "./PurchaseTicket";
 
-const MovieConfirmation = ({ movie, selectedShowtimeObj, selectedDate }) => {
+const MovieConfirmation = ({
+  movie,
+  selectedShowtimeObj,
+  selectedDate,
+  iapProduct,
+}) => {
   const [hasTickets, setHasTickets] = useState(true);
   const [loadingAnimation, setLoadingAnimation] = useState(false);
-  const { ticketPrice } = movie;
+  const { ticketPrice, iosProductId } = movie;
 
   const GetMovieConfirmationContent = () => {
-    if (ticketPrice == 0) {
+    // check ticketPrice for Android, iosProductId for iOS
+    if (
+      (Platform.OS === "android" && ticketPrice === 0) ||
+      (Platform.OS === "ios" && iosProductId === null)
+    ) {
       return (
         <FreeShowing
           movie={movie}
@@ -23,7 +32,6 @@ const MovieConfirmation = ({ movie, selectedShowtimeObj, selectedDate }) => {
         <HasTickets
           movie={movie}
           selectedShowtimeObj={selectedShowtimeObj}
-          hasTickets={hasTickets}
           setHasTickets={setHasTickets}
           selectedDate={selectedDate}
         />
@@ -47,10 +55,10 @@ const MovieConfirmation = ({ movie, selectedShowtimeObj, selectedDate }) => {
           <PurchaseTicket
             movie={movie}
             selectedShowtimeObj={selectedShowtimeObj}
-            hasTickets={hasTickets}
             setHasTickets={setHasTickets}
             selectedDate={selectedDate}
             setLoadingAnimation={setLoadingAnimation}
+            iapProduct={iapProduct}
           />
         </View>
       );

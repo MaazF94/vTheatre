@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Alert, KeyboardAvoidingView, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Platform, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import BannerBackground from "../components/common/BannerBackground";
 import EnterTheatre from "../components/enter-movie/EnterTheatre";
@@ -12,6 +12,7 @@ import Api from "../api/Api";
 import HttpHeaders from "../components/common/HttpHeaders";
 import * as Network from "expo-network";
 import AlertMessages from "../components/common/AlertMessages";
+import * as InAppPurchases from "expo-in-app-purchases";
 
 const EnterMovieScreen = (props) => {
   const [movie, setMovie] = useState(props.route.params.movie);
@@ -20,6 +21,7 @@ const EnterMovieScreen = (props) => {
   const selectedDateStr = props.route.params.selectedDate;
   const selectedDate = new Date(selectedDateStr);
   const isFocused = useIsFocused();
+  const [iapProduct, setIapProduct] = useState();
 
   useEffect(() => {
     const rotatePortrait = async () => {
@@ -31,8 +33,40 @@ const EnterMovieScreen = (props) => {
     if (isFocused) {
       refreshMovieFiles();
       rotatePortrait();
+      if (Platform.OS === "ios" && movie.iosProductId !== null) {
+        getProductsIAP();
+      }
     }
+
+    return () => {
+      if (Platform.OS === "ios" && movie.iosProductId !== null && isFocused) {
+        disconnectAppStore();
+      }
+    };
   }, [isFocused]);
+
+  const disconnectAppStore = async () => {
+    const networkStatus = await Network.getNetworkStateAsync();
+    if (networkStatus.isConnected) {
+      await InAppPurchases.disconnectAsync();
+    }
+  };
+
+  const getProductsIAP = async () => {
+    const networkStatus = await Network.getNetworkStateAsync();
+    if (networkStatus.isConnected) {
+      await InAppPurchases.connectAsync();
+      const items = Platform.select({
+        ios: [movie.iosProductId],
+      });
+      const { responseCode, results } = await InAppPurchases.getProductsAsync(
+        items
+      );
+      if (responseCode === InAppPurchases.IAPResponseCode.OK) {
+        setIapProduct(results);
+      }
+    }
+  };
 
   const refreshMovieFiles = async () => {
     const networkStatus = await Network.getNetworkStateAsync();
@@ -63,7 +97,12 @@ const EnterMovieScreen = (props) => {
   };
 
   const CheckIfKeyboardViewNecessary = () => {
-    if (movie.ticketPrice > 0) {
+    // For android, check ticket price
+    // For iOS, check iosProductId
+    if (
+      (Platform.OS === "android" && movie.ticketPrice > 0) ||
+      (Platform.OS === "ios" && movie.iosProductId !== null)
+    ) {
       return (
         <View>
           <ScrollView keyboardShouldPersistTaps="handled">
@@ -80,6 +119,7 @@ const EnterMovieScreen = (props) => {
                 selectedShowtimeObj={selectedShowtimeObj}
                 movie={movie}
                 selectedDate={selectedDate}
+                iapProduct={iapProduct}
               />
             </KeyboardAvoidingView>
           </ScrollView>
@@ -97,6 +137,7 @@ const EnterMovieScreen = (props) => {
             selectedShowtimeObj={selectedShowtimeObj}
             movie={movie}
             selectedDate={selectedDate}
+            iapProduct={iapProduct}
           />
         </View>
       );

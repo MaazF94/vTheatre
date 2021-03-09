@@ -17,6 +17,7 @@
     "axios": "^0.21.0",
     "expo": "^39.0.4",
     "expo-av": "~8.6.0",
+    "expo-in-app-purchases": "^10.1.0",
     "expo-keep-awake": "~8.3.0",
     "expo-network": "~2.3.0",
     "expo-payments-stripe": "~8.3.0",

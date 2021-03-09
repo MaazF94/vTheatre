@@ -1,10 +1,12 @@
 const UriConstants = {
   getMovies: "/getMovies",
-  completePayment: "/completePayment",
+  completeAndroidPayment: "/completeAndroidPayment",
+  processIosPayment: "/processIosPayment",
   verifyConfirmationCode: "/verifyConfirmationCode",
   recordVideoTimeWatched: "/recordVideoTimeWatched",
   refreshMovieFiles: "/refreshMovieFiles",
   updateTicketStatus: "/updateTicketStatus",
+  getIapConfigs: "/getIapConfigs",
 };
 
 export default UriConstants;
