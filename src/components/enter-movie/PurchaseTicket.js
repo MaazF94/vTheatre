@@ -68,9 +68,19 @@ const PurchaseTicket = ({
     };
 
     // Call backend to process the payment
-    await Api.post(UriConstants.processIosPayment, paymentRequest, {
-      headers: HttpHeaders.headers,
-    });
+    const response = await Api.post(
+      UriConstants.processIosPayment,
+      paymentRequest,
+      {
+        headers: HttpHeaders.headers,
+      }
+    );
+    if (!response.data.confirmed) {
+      Alert.alert(
+        AlertMessages.AlreadyPurchasedTitle,
+        AlertMessages.AlreadyPurchasedMsg
+      );
+    }
   };
 
   // Set iOS In App Purchase listener
