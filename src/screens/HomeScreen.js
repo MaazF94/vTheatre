@@ -5,7 +5,7 @@ import MovieDetails from "../components/home/MovieDetails";
 import { useIsFocused } from "@react-navigation/native";
 import * as ScreenOrientation from "expo-screen-orientation";
 import { useNavigation } from "@react-navigation/native";
-import { AntDesign } from '@expo/vector-icons';
+import { AntDesign } from "@expo/vector-icons";
 import ScreenTitles from "../components/common/ScreenTitles";
 
 const HomeScreen = () => {
@@ -19,16 +19,17 @@ const HomeScreen = () => {
         ScreenOrientation.OrientationLock.PORTRAIT_UP
       );
     };
-    
+
     if (isFocused) {
       rotateLandscape();
       settingsIcon();
+      disableBackBtn();
     }
   }, [isFocused]);
 
   navigateToSettings = () => {
     navigation.navigate(ScreenTitles.SettingsScreen);
-  }
+  };
 
   const settingsIcon = () => {
     navigation.setOptions({
@@ -43,7 +44,13 @@ const HomeScreen = () => {
         </View>
       ),
     });
-  }
+  };
+
+  const disableBackBtn = () => {
+    navigation.setOptions({
+      headerLeft: null,
+    });
+  };
 
   return (
     <View style={{ flex: 1 }}>

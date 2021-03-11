@@ -1,5 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
+  Alert,
+  Dimensions,
   Linking,
   ScrollView,
   StatusBar,
@@ -7,8 +9,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { useIsFocused } from "@react-navigation/native";
-import * as ScreenOrientation from "expo-screen-orientation";
 import {
   Collapse,
   CollapseHeader,
@@ -16,21 +16,36 @@ import {
 } from "accordion-collapse-react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import EnterTheatre from "../components/enter-movie/EnterTheatre";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Auth } from "aws-amplify";
+import { useNavigation } from "@react-navigation/native";
+import ScreenTitles from "../components/common/ScreenTitles";
+import AlertMessages from "../components/common/AlertMessages";
+import StorageConstants from "../components/common/StorageConstants";
 
 const SettingsScreen = () => {
-  const isFocused = useIsFocused();
+  const navigation = useNavigation();
 
-  useEffect(() => {
-    const rotateLandscape = async () => {
-      await ScreenOrientation.lockAsync(
-        ScreenOrientation.OrientationLock.PORTRAIT_UP
-      );
-    };
-
-    if (isFocused) {
-      rotateLandscape();
+  const removeData = async () => {
+    try {
+      const value = await AsyncStorage.getItem(StorageConstants.Username);
+      if (value !== null) {
+        AsyncStorage.removeItem(StorageConstants.Username);
+      }
+    } catch (e) {
+      // error removing data
     }
-  }, [isFocused]);
+  };
+
+  const signOut = async () => {
+    try {
+      await Auth.signOut();
+      removeData();
+      navigation.navigate(ScreenTitles.AuthScreen);
+    } catch (error) {
+      Alert.alert(AlertMessages.ErrorTitle, AlertMessages.ErrorMsg);
+    }
+  };
 
   const openPrivacyPolicy = () => {
     Linking.openURL("https://www.vtheatres.com");
@@ -76,6 +91,9 @@ const SettingsScreen = () => {
                 </Text>
               </CollapseBody>
             </Collapse>
+            <TouchableOpacity onPress={signOut} style={styles.signMeUpBtn}>
+              <Text style={styles.buttonText}>Log out</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </View>
@@ -93,6 +111,7 @@ const styles = StyleSheet.create({
     paddingRight: 20,
     marginTop: 40,
     height: "100%",
+    alignItems: "center",
   },
   header: {
     color: "#FFFFFF",
@@ -116,6 +135,22 @@ const styles = StyleSheet.create({
   },
   collapsibleBodyContainer: {
     marginTop: 10,
+  },
+  signMeUpBtn: {
+    backgroundColor: "#7E0808",
+    borderWidth: 1,
+    borderRadius: 1,
+    borderColor: "#ffffff",
+    alignItems: "center",
+    justifyContent: "center",
+    width: Dimensions.get("window").width / 4,
+    height: 35,
+    marginTop: 20,
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
 
