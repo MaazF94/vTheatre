@@ -64,6 +64,7 @@ const PurchaseTicket = ({
       showtime: selectedShowtimeObj,
       movie: movie,
       chosenDate: chosenDate,
+      username: username,
     };
 
     // Call backend to process the payment
@@ -80,8 +81,6 @@ const PurchaseTicket = ({
         if (!purchase.acknowledged) {
           // Process transaction here and unlock content...
           processIosPayment();
-          // Handle this with logged in user
-          // Then when you're done
           InAppPurchases.finishTransactionAsync(purchase, true);
         }
       });
