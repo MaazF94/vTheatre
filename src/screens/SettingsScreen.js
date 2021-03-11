@@ -25,6 +25,23 @@ import StorageConstants from "../components/common/StorageConstants";
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
+  const data = [
+    {
+      title: "Black Widow",
+      showtime: "5:00 PM",
+      chosenDate: "Sat, Dec 21st, 2021",
+    },
+    {
+      title: "Black Widow",
+      showtime: "6:00 PM",
+      chosenDate: "Sat, Dec 21st, 2021",
+    },
+    {
+      title: "Black Widow",
+      showtime: "7:00 PM",
+      chosenDate: "Sat, Dec 21st, 2021",
+    },
+  ];
 
   const removeData = async () => {
     try {
@@ -48,7 +65,33 @@ const SettingsScreen = () => {
   };
 
   const openPrivacyPolicy = () => {
-    Linking.openURL("https://www.vtheatres.com");
+    Linking.openURL("https://www.vtheatres.com/privacy-policy");
+  };
+
+  const renderRow = (data) => {
+    return (
+      <View>
+        <View style={{ flexDirection: "row" }}>
+          <Text style={styles.purchasedTickets}>
+            {data.title}
+            {"\n"}
+            {data.chosenDate}, {data.showtime}
+          </Text>
+        </View>
+        <View style={{ flexDirection: "row" }}>
+          <TouchableOpacity style={styles.refundBtn}>
+            <Text style={styles.refundBtnText}>Refund?</Text>
+          </TouchableOpacity>
+        </View>
+        <View
+          style={{
+            borderBottomColor: "white",
+            borderBottomWidth: 1,
+            marginTop: 25,
+          }}
+        ></View>
+      </View>
+    );
   };
 
   return (
@@ -62,6 +105,19 @@ const SettingsScreen = () => {
         >
           <View style={styles.confirmationContainer}>
             <Text style={styles.header}>Need more info?</Text>
+            <Collapse style={styles.collapsibleContainer}>
+              <CollapseHeader>
+                <View>
+                  <Text style={styles.collapsibleTitle}>Purchased Tickets</Text>
+                </View>
+              </CollapseHeader>
+              <CollapseBody style={styles.collapsibleBodyContainer}>
+                {data.map((datum) => {
+                  // This will render a row for each data element.
+                  return renderRow(datum);
+                })}
+              </CollapseBody>
+            </Collapse>
             <Collapse style={styles.collapsibleContainer}>
               <CollapseHeader>
                 <View>
@@ -92,7 +148,7 @@ const SettingsScreen = () => {
               </CollapseBody>
             </Collapse>
             <TouchableOpacity onPress={signOut} style={styles.signMeUpBtn}>
-              <Text style={styles.buttonText}>Log out</Text>
+              <Text style={styles.logOutBtnText}>Log out</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -113,6 +169,29 @@ const styles = StyleSheet.create({
     height: "100%",
     alignItems: "center",
   },
+  purchasedTickets: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 14,
+    marginTop: 20,
+  },
+  refundBtn: {
+    marginTop: 20,
+    backgroundColor: "#7E0808",
+    borderWidth: 1,
+    borderRadius: 1,
+    borderColor: "#ffffff",
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    width: 75,
+    height: 35,
+  },
+  refundBtnText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 12,
+  },
   header: {
     color: "#FFFFFF",
     fontWeight: "bold",
@@ -124,6 +203,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 14,
     textAlign: "center",
+    textDecorationLine: "underline"
   },
   collapsibleBody: {
     color: "#FFFFFF",
@@ -145,9 +225,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: Dimensions.get("window").width / 4,
     height: 35,
-    marginTop: 20,
+    marginTop: 30,
   },
-  buttonText: {
+  logOutBtnText: {
     color: "#FFFFFF",
     fontWeight: "bold",
     fontSize: 16,
