@@ -1,7 +1,7 @@
 const AlertMessages = {
-  InvalidConfirmationCodeTitle: "Invalid Confirmation Code",
-  InvalidConfirmationCodeMsg:
-    "The confirmation code you entered was incorrect. Please try again.",
+  InvalidTicketTitle: "Invalid Ticket",
+  InvalidTicketMsg:
+    "You have not purchased a ticket for this movie, date, and showtime. Please purchase a ticket and try again.",
   InvalidEmailAddressTitle: "Invalid Email Address",
   InvalidEmailAddressMsg: "Please enter a valid email address.",
   SuccessfulPaymentTitle: "Successful Payment",
@@ -32,6 +32,8 @@ const AlertMessages = {
   ExitvTheatreTitle: "Exit vTheatre?",
   ExitvTheatreYesMsg: "Yes",
   ExitvTheatreNoMsg: "No",
+  NoAccountTitle: "No Account",
+  NoAccountMsg: "Please register or sign in to purchase a movie ticket.",
 };
 
 export default AlertMessages;

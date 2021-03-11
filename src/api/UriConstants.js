@@ -2,7 +2,7 @@ const UriConstants = {
   getMovies: "/getMovies",
   completeAndroidPayment: "/completeAndroidPayment",
   processIosPayment: "/processIosPayment",
-  verifyConfirmationCode: "/verifyConfirmationCode",
+  verifyTicket: "/verifyTicket",
   recordVideoTimeWatched: "/recordVideoTimeWatched",
   refreshMovieFiles: "/refreshMovieFiles",
   updateTicketStatus: "/updateTicketStatus",

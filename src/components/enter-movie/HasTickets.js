@@ -1,13 +1,5 @@
-import React, { useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-  Keyboard,
-} from "react-native";
+import React from "react";
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Api from "../../api/Api";
 import UriConstants from "../../api/UriConstants";
@@ -22,9 +14,9 @@ const HasTickets = ({
   movie,
   selectedShowtimeObj,
   selectedDate,
+  username,
 }) => {
   const navigation = useNavigation();
-  const [confirmationCode, setConfirmationCode] = useState("");
 
   const showtimeHasNotEnded = (showtime) => {
     if (
@@ -72,17 +64,7 @@ const HasTickets = ({
     }
   };
 
-  const verifyConfirmationCode = async () => {
-    Keyboard.dismiss();
-
-    if (confirmationCode.length === 0) {
-      Alert.alert(
-        AlertMessages.InvalidConfirmationCodeTitle,
-        AlertMessages.InvalidConfirmationCodeMsg
-      );
-      return;
-    }
-
+  const verifyTicket = async () => {
     if (!checkMissedShowtime(selectedShowtimeObj)) {
       Alert.alert(
         AlertMessages.ShowtimeTooLateTitle,
@@ -100,36 +82,38 @@ const HasTickets = ({
       return;
     }
 
-    let verifyConfCodeResponse;
-    const verifyConfCodeRequest = {
-      confirmationCode: confirmationCode,
+    let verifyTicketResponse;
+    const verifyTicketRequest = {
+      username: username,
       chosenDate: moment(selectedDate).format("YYYY-MM-DD"),
       showtime: selectedShowtimeObj.showtime,
     };
 
-    await Api.post(UriConstants.verifyConfirmationCode, verifyConfCodeRequest, {
+    await Api.post(UriConstants.verifyTicket, verifyTicketRequest, {
       headers: HttpHeaders.headers,
     }).then((response) => {
-      verifyConfCodeResponse = response.data;
+      verifyTicketResponse = response.data;
     });
 
-    if (verifyConfCodeResponse.exists) {
-      if (verifyConfCodeResponse.status === "ACTIVE") {
+    if (verifyTicketResponse.exists) {
+      if (verifyTicketResponse.status === "ACTIVE") {
         refreshMovieFiles().then((refreshedMovie) => {
           navigation.navigate(ScreenTitles.MovieScreen, {
             movie: refreshedMovie,
             showtime: selectedShowtimeObj,
             selectedDate: selectedDate.toString(),
-            confirmationCode: confirmationCode,
+            ticketPrice: refreshedMovie.ticketPrice,
+            iosProductId: refreshedMovie.iosProductId,
+            username: username,
           });
         });
-      } else if (verifyConfCodeResponse.status === "INACTIVE") {
+      } else if (verifyTicketResponse.status === "INACTIVE") {
         Alert.alert(
           AlertMessages.TicketStatusInactiveTitle,
           AlertMessages.TicketStatusInactiveMsg
         );
         return;
-      } else if (verifyConfCodeResponse.status === "REFUNDED") {
+      } else if (verifyTicketResponse.status === "REFUNDED") {
         Alert.alert(
           AlertMessages.TicketStatusRefundedTitle,
           AlertMessages.TicketStatusRefundedMsg
@@ -138,8 +122,8 @@ const HasTickets = ({
       }
     } else {
       Alert.alert(
-        AlertMessages.InvalidConfirmationCodeTitle,
-        AlertMessages.InvalidConfirmationCodeMsg
+        AlertMessages.InvalidTicketTitle,
+        AlertMessages.InvalidTicketMsg
       );
       return;
     }
@@ -155,19 +139,11 @@ const HasTickets = ({
   return (
     <View style={styles.confirmationContainer}>
       <Text style={styles.text}>Enjoy the showing!</Text>
-      <TextInput
-        style={styles.textInput}
-        width="90%"
-        backgroundColor="#ffffff"
-        placeholderTextColor="#827D7D"
-        placeholder="Ticket Confirmation Code"
-        onChangeText={(value) => setConfirmationCode(value)}
-      />
-      <TouchableOpacity onPress={verifyConfirmationCode} style={styles.button}>
+      <TouchableOpacity onPress={verifyTicket} style={styles.button}>
         <Text style={styles.buttonText}>Enter</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => setHasTickets(false)}>
-        <Text style={styles.ticketText}>No code? Buy tickets.</Text>
+        <Text style={styles.ticketText}>No ticket? Purchase one.</Text>
       </TouchableOpacity>
     </View>
   );

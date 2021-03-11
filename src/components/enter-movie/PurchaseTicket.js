@@ -12,6 +12,7 @@ import HttpHeaders from "../common/HttpHeaders";
 import GooglePay from "../../assets/svg/GooglePay";
 import * as InAppPurchases from "expo-in-app-purchases";
 import { useIsFocused } from "@react-navigation/native";
+import StorageConstants from "../common/StorageConstants";
 
 const PurchaseTicket = ({
   selectedShowtimeObj,
@@ -20,6 +21,7 @@ const PurchaseTicket = ({
   selectedDate,
   setLoadingAnimation,
   iapProduct,
+  username,
 }) => {
   const { title, ticketPrice } = movie;
   const currencyCode = "USD";
@@ -113,6 +115,10 @@ const PurchaseTicket = ({
 
   // Called from the payment button
   const processPayment = async () => {
+    if (username === null || username === StorageConstants.Guest) {
+      Alert.alert(AlertMessages.NoAccountTitle, AlertMessages.NoAccountMsg);
+      return;
+    }
     // Android will use Google Pay
     if (Platform.OS === "android") {
       const networkStatus = await Network.getNetworkStateAsync();
@@ -143,6 +149,7 @@ const PurchaseTicket = ({
             showtime: selectedShowtimeObj,
             movie: movie,
             chosenDate: chosenDate,
+            username: username,
           };
 
           setLoadingAnimation(true);

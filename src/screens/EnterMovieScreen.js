@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Alert, KeyboardAvoidingView, Platform, View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { Alert, Platform, View } from "react-native";
 import BannerBackground from "../components/common/BannerBackground";
 import EnterTheatre from "../components/enter-movie/EnterTheatre";
 import MovieConfirmation from "../components/enter-movie/MovieConfirmation";
@@ -96,55 +95,21 @@ const EnterMovieScreen = (props) => {
       });
   };
 
-  const CheckIfKeyboardViewNecessary = () => {
-    // For android, check ticket price
-    // For iOS, check iosProductId
-    if (
-      (Platform.OS === "android" && movie.ticketPrice > 0) ||
-      (Platform.OS === "ios" && movie.iosProductId !== null)
-    ) {
-      return (
-        <View>
-          <ScrollView keyboardShouldPersistTaps="handled">
-            <KeyboardAvoidingView
-              behavior="position"
-              keyboardVerticalOffset={50}
-            >
-              <BannerBackground
-                isTimeBanner={true}
-                selectedShowtimeObj={selectedShowtimeObj}
-              />
-              <EnterTheatre img={img} />
-              <MovieConfirmation
-                selectedShowtimeObj={selectedShowtimeObj}
-                movie={movie}
-                selectedDate={selectedDate}
-                iapProduct={iapProduct}
-              />
-            </KeyboardAvoidingView>
-          </ScrollView>
-        </View>
-      );
-    } else {
-      return (
-        <View>
-          <BannerBackground
-            isTimeBanner={true}
-            selectedShowtimeObj={selectedShowtimeObj}
-          />
-          <EnterTheatre img={img} />
-          <MovieConfirmation
-            selectedShowtimeObj={selectedShowtimeObj}
-            movie={movie}
-            selectedDate={selectedDate}
-            iapProduct={iapProduct}
-          />
-        </View>
-      );
-    }
-  };
-
-  return <CheckIfKeyboardViewNecessary />;
+  return (
+    <View>
+      <BannerBackground
+        isTimeBanner={true}
+        selectedShowtimeObj={selectedShowtimeObj}
+      />
+      <EnterTheatre img={img} />
+      <MovieConfirmation
+        selectedShowtimeObj={selectedShowtimeObj}
+        movie={movie}
+        selectedDate={selectedDate}
+        iapProduct={iapProduct}
+      />
+    </View>
+  );
 };
 
 export default EnterMovieScreen;

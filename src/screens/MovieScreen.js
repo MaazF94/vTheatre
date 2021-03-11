@@ -10,7 +10,9 @@ const MovieScreen = (props) => {
   const movie = props.route.params.movie;
   const selectedDateStr = props.route.params.selectedDate;
   const selectedDate = new Date(selectedDateStr);
-  const confirmationCode = props.route.params.confirmationCode;
+  const ticketPrice = props.route.params.ticketPrice;
+  const iosProductId = props.route.params.iosProductId;
+  const username = props.route.params.username;
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -19,7 +21,7 @@ const MovieScreen = (props) => {
         ScreenOrientation.OrientationLock.LANDSCAPE
       );
     };
-    
+
     if (isFocused) {
       rotateLandscape();
     }
@@ -32,7 +34,9 @@ const MovieScreen = (props) => {
         showtime={showtime}
         movie={movie}
         selectedDate={selectedDate}
-        confirmationCode={confirmationCode}
+        ticketPrice={ticketPrice}
+        iosProductId={iosProductId}
+        username={username}
       />
     </View>
   );

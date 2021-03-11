@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, ActivityIndicator, Platform } from "react-native";
 import FreeShowing from "./FreeShowing";
 import HasTickets from "./HasTickets";
 import PurchaseTicket from "./PurchaseTicket";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import StorageConstants from "../common/StorageConstants";
 
 const MovieConfirmation = ({
   movie,
@@ -12,8 +14,21 @@ const MovieConfirmation = ({
 }) => {
   const [hasTickets, setHasTickets] = useState(true);
   const [loadingAnimation, setLoadingAnimation] = useState(false);
+  const [username, setUsername] = useState("");
   const { ticketPrice, iosProductId } = movie;
 
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem(StorageConstants.Username);
+      setUsername(value);
+    } catch (e) {
+      // error reading value
+    }
+  };
   const GetMovieConfirmationContent = () => {
     // check ticketPrice for Android, iosProductId for iOS
     if (
@@ -34,6 +49,7 @@ const MovieConfirmation = ({
           selectedShowtimeObj={selectedShowtimeObj}
           setHasTickets={setHasTickets}
           selectedDate={selectedDate}
+          username={username}
         />
       );
     } else {
@@ -59,6 +75,7 @@ const MovieConfirmation = ({
             selectedDate={selectedDate}
             setLoadingAnimation={setLoadingAnimation}
             iapProduct={iapProduct}
+            username={username}
           />
         </View>
       );

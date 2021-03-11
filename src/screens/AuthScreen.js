@@ -133,7 +133,7 @@ const AuthScreen = () => {
   };
 
   const enterAsGuest = () => {
-    storeData(JSON.stringify("guest"));
+    storeData(StorageConstants.Guest);
     navigation.navigate(ScreenTitles.HomeScreen);
   };
 
