@@ -22,10 +22,12 @@ import { useIsFocused } from "@react-navigation/native";
 import AuthAlertMessages from "../components/common/AuthAlertMessages";
 import AuthExceptions from "../components/common/AuthExceptions";
 import StorageConstants from "../components/common/StorageConstants";
+import LoadingSpinner from "../components/common/LoadingSpinner";
 
 const AuthScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showLoadingSpinner, setShowLoadingSpinner] = useState(false);
   const navigation = useNavigation();
   const registerNavBtn = "Sign me up";
   const loginNavBtn = "Sign me in";
@@ -79,13 +81,16 @@ const AuthScreen = () => {
       return;
     }
     try {
+      setShowLoadingSpinner(true);
       const { user } = await Auth.signUp({
         username: email,
         password,
       });
-      storeData(JSON.stringify(user.getUsername()));
+      storeData(user.attributes.email);
+      setShowLoadingSpinner(false);
       navigation.navigate(ScreenTitles.HomeScreen);
     } catch (error) {
+      setShowLoadingSpinner(false);
       if (error.name === AuthExceptions.AuthError) {
         Alert.alert(
           AuthAlertMessages.AuthErrorTitle,
@@ -109,10 +114,13 @@ const AuthScreen = () => {
 
   const signIn = async () => {
     try {
+      setShowLoadingSpinner(true);
       const user = await Auth.signIn(email, password);
-      storeData(JSON.stringify(user.getUsername()));
+      storeData(user.attributes.email);
+      setShowLoadingSpinner(false);
       navigation.navigate(ScreenTitles.HomeScreen);
     } catch (error) {
+      setShowLoadingSpinner(false);
       if (error.name === AuthExceptions.NotAuthorizedException) {
         Alert.alert(
           AuthAlertMessages.NotAuthorizedExceptionTitle,
@@ -155,6 +163,7 @@ const AuthScreen = () => {
         <ScrollView keyboardShouldPersistTaps="handled">
           <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={50}>
             <EnterTheatre img="https://d2jd6aahs7xcv2.cloudfront.net/Icon.jpg" />
+            <LoadingSpinner show={showLoadingSpinner} />
             <View style={styles.confirmationContainer}>
               <Text style={styles.text}>Welcome!</Text>
               <TextInput

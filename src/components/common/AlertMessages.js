@@ -35,8 +35,10 @@ const AlertMessages = {
   NoAccountTitle: "No Account",
   NoAccountMsg: "Please register or sign in to purchase a movie ticket.",
   AlreadyPurchasedTitle: "Already Purchased",
-  AlreadyPurchasedMsg:
+  IosAlreadyPurchasedMsg:
     "You already purchased a ticket for this movie, showtime, and date. Please contact Apple support to receive a refund.",
+  GoogleAlreadyPurchasedMsg:
+    "You already purchased a ticket for this movie, showtime, and date. Please contact our support team to receive a refund.",
 };
 
 export default AlertMessages;

@@ -4,10 +4,26 @@ import { useNavigation } from "@react-navigation/native";
 import ScreenTitles from "../common/ScreenTitles";
 import moment from "moment";
 import AlertMessages from "../common/AlertMessages";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import StorageConstants from "../common/StorageConstants";
 
 const Showtimes = ({ movie, selectedDate }) => {
   const navigation = useNavigation();
   const { showtimes } = movie;
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem(StorageConstants.Username);
+      setUsername(value);
+    } catch (e) {
+      // error reading value
+    }
+  };
 
   const showtimeHasNotEnded = (showtime) => {
     if (
@@ -59,6 +75,7 @@ const Showtimes = ({ movie, selectedDate }) => {
         movie: movie,
         selectedShowtimeObj: showtimeObj,
         selectedDate: selectedDate.toString(),
+        username: username,
       });
     }
   };

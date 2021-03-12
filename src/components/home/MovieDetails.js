@@ -72,10 +72,15 @@ const MovieDetails = ({ selectedDate }) => {
       return;
     }
 
-    const response = await Api.get(UriConstants.getMovies, {
+    await Api.get(UriConstants.getMovies, {
       headers: HttpHeaders.headers,
-    });
-    setMovies(response.data);
+    })
+      .then((response) => {
+        setMovies(response.data);
+      })
+      .catch((error) => {
+        Alert.alert(AlertMessages.ErrorTitle, AlertMessages.ErrorMsg);
+      });
   };
 
   return (
@@ -87,20 +92,21 @@ const MovieDetails = ({ selectedDate }) => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {movies.map((movie) => {
-          if (
-            movie.startDate <= moment(selectedDate).format("YYYY-MM-DD") &&
-            movie.endDate >= moment(selectedDate).format("YYYY-MM-DD")
-          ) {
-            return (
-              <MovieCard
-                key={movie.movieId}
-                movie={movie}
-                selectedDate={selectedDate}
-              />
-            );
-          }
-        })}
+        {movies !== null &&
+          movies.map((movie) => {
+            if (
+              movie.startDate <= moment(selectedDate).format("YYYY-MM-DD") &&
+              movie.endDate >= moment(selectedDate).format("YYYY-MM-DD")
+            ) {
+              return (
+                <MovieCard
+                  key={movie.movieId}
+                  movie={movie}
+                  selectedDate={selectedDate}
+                />
+              );
+            }
+          })}
       </ScrollView>
     </View>
   );

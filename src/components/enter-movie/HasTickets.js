@@ -10,11 +10,11 @@ import * as Network from "expo-network";
 import moment from "moment";
 
 const HasTickets = ({
-  setHasTickets,
   movie,
   selectedShowtimeObj,
   selectedDate,
   username,
+  verifyTicketResponse,
 }) => {
   const navigation = useNavigation();
 
@@ -82,19 +82,6 @@ const HasTickets = ({
       return;
     }
 
-    let verifyTicketResponse;
-    const verifyTicketRequest = {
-      username: username,
-      chosenDate: moment(selectedDate).format("YYYY-MM-DD"),
-      showtime: selectedShowtimeObj.showtime,
-    };
-
-    await Api.post(UriConstants.verifyTicket, verifyTicketRequest, {
-      headers: HttpHeaders.headers,
-    }).then((response) => {
-      verifyTicketResponse = response.data;
-    });
-
     if (verifyTicketResponse.exists) {
       if (verifyTicketResponse.status === "ACTIVE") {
         refreshMovieFiles().then((refreshedMovie) => {
@@ -139,11 +126,23 @@ const HasTickets = ({
   return (
     <View style={styles.confirmationContainer}>
       <Text style={styles.text}>Enjoy the showing!</Text>
+      <View
+        style={{
+          borderColor: "white",
+          borderWidth: 1,
+          marginTop: 20,
+          padding: 20,
+        }}
+      >
+        <Text style={styles.textTicketTitle}>Ticket Confirmed:</Text>
+        <Text style={styles.ticketText}>{username}</Text>
+        <Text style={styles.ticketText}>
+          {moment(selectedDate).format("dddd, MMMM DD, YYYY")}
+        </Text>
+        <Text style={styles.ticketText}>{selectedShowtimeObj.showtime}</Text>
+      </View>
       <TouchableOpacity onPress={verifyTicket} style={styles.button}>
         <Text style={styles.buttonText}>Enter</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => setHasTickets(false)}>
-        <Text style={styles.ticketText}>No ticket? Purchase one.</Text>
       </TouchableOpacity>
     </View>
   );
@@ -165,15 +164,18 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: "center",
   },
-  textInput: {
-    marginTop: 20,
+  textTicketTitle: {
+    color: "#FFFFFF",
     fontWeight: "bold",
-    fontSize: 20,
+    fontSize: 18,
     textAlign: "center",
-    height: 45,
-    borderRadius: 1,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
+    marginBottom: 5,
+  },
+  ticketText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 16,
+    textAlign: "center",
   },
   button: {
     marginTop: 20,
@@ -190,14 +192,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "bold",
     fontSize: 16,
-  },
-  ticketText: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-    fontSize: 16,
-    textAlign: "center",
-    marginTop: 20,
-    textDecorationLine: "underline",
   },
 });
 

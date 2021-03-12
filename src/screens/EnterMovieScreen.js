@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Alert, Platform, View } from "react-native";
+import { Alert, Platform, ScrollView, View } from "react-native";
 import BannerBackground from "../components/common/BannerBackground";
 import EnterTheatre from "../components/enter-movie/EnterTheatre";
 import MovieConfirmation from "../components/enter-movie/MovieConfirmation";
@@ -19,6 +19,7 @@ const EnterMovieScreen = (props) => {
   const img = movie.img;
   const selectedDateStr = props.route.params.selectedDate;
   const selectedDate = new Date(selectedDateStr);
+  const username = props.route.params.username;
   const isFocused = useIsFocused();
   const [iapProduct, setIapProduct] = useState();
 
@@ -97,17 +98,20 @@ const EnterMovieScreen = (props) => {
 
   return (
     <View>
-      <BannerBackground
-        isTimeBanner={true}
-        selectedShowtimeObj={selectedShowtimeObj}
-      />
-      <EnterTheatre img={img} />
-      <MovieConfirmation
-        selectedShowtimeObj={selectedShowtimeObj}
-        movie={movie}
-        selectedDate={selectedDate}
-        iapProduct={iapProduct}
-      />
+      <ScrollView>
+        <BannerBackground
+          isTimeBanner={true}
+          selectedShowtimeObj={selectedShowtimeObj}
+        />
+        <EnterTheatre img={img} />
+        <MovieConfirmation
+          selectedShowtimeObj={selectedShowtimeObj}
+          movie={movie}
+          selectedDate={selectedDate}
+          iapProduct={iapProduct}
+          username={username}
+        />
+      </ScrollView>
     </View>
   );
 };
