@@ -116,8 +116,7 @@ const SettingsScreen = () => {
                 </View>
               </CollapseHeader>
               <CollapseBody style={styles.collapsibleBodyContainer}>
-                {myTickets !== null &&
-                  myTickets.map((myTicket) => {
+                {myTickets.map((myTicket) => {
                     // This will render a row for each data element.
                     return renderRow(myTicket);
                   })}
