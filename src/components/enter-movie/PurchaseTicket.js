@@ -173,6 +173,7 @@ const PurchaseTicket = ({
             }
           );
           if (!response.data.confirmed) {
+            setLoadingAnimation(false);
             Alert.alert(
               AlertMessages.AlreadyPurchasedTitle,
               AlertMessages.GoogleAlreadyPurchasedMsg
@@ -187,23 +188,23 @@ const PurchaseTicket = ({
             AlertMessages.SuccessfulPaymentTitle,
             AlertMessages.SuccessfulPaymentMsg
           );
-
+          setLoadingAnimation(false);
           setHasTickets(true);
         } catch (error) {
           Stripe.cancelNativePayRequestAsync();
-
+          setLoadingAnimation(false);
           Alert.alert(
             AlertMessages.CanceledPaymentTitle,
             AlertMessages.CanceledPaymentMsg
           );
         }
       } else {
+        setLoadingAnimation(false);
         Alert.alert(
           AlertMessages.PaymentMethodNotSupportedTitle,
           AlertMessages.PaymentMethodNotSupportedMsg
         );
       }
-      setLoadingAnimation(false);
 
       // IOS will use In-App Purchases
     } else if (Platform.OS === "ios") {

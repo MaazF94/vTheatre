@@ -7,6 +7,7 @@ const UriConstants = {
   refreshMovieFiles: "/refreshMovieFiles",
   updateTicketStatus: "/updateTicketStatus",
   getIapConfigs: "/getIapConfigs",
+  getTickets: "/getTickets",
 };
 
 export default UriConstants;

@@ -1,6 +1,6 @@
 const StorageConstants = {
   Username: "username",
-  Guest: "guest",
+  Guest: "Guest",
 };
 
 export default StorageConstants;

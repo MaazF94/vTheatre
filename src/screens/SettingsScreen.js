@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Alert,
   Dimensions,
@@ -22,33 +22,42 @@ import { useNavigation } from "@react-navigation/native";
 import ScreenTitles from "../components/common/ScreenTitles";
 import AlertMessages from "../components/common/AlertMessages";
 import StorageConstants from "../components/common/StorageConstants";
+import moment from "moment";
+import { useEffect } from "react";
+import Api from "../api/Api";
+import UriConstants from "../api/UriConstants";
+import HttpHeaders from "../components/common/HttpHeaders";
+import { useIsFocused } from "@react-navigation/native";
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
-  const data = [
-    {
-      title: "Black Widow",
-      showtime: "5:00 PM",
-      chosenDate: "Sat, Dec 21st, 2021",
-    },
-    {
-      title: "Black Widow",
-      showtime: "6:00 PM",
-      chosenDate: "Sat, Dec 21st, 2021",
-    },
-    {
-      title: "Black Widow",
-      showtime: "7:00 PM",
-      chosenDate: "Sat, Dec 21st, 2021",
-    },
-  ];
+  const [myTickets, setMyTickets] = useState([]);
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      getTickets();
+    }
+  }, [isFocused]);
+
+  const getTickets = async () => {
+    const value = await AsyncStorage.getItem(StorageConstants.Username);
+    const myTicketsRequest = {
+      username: value,
+    };
+    const myTickets = await Api.post(
+      UriConstants.getTickets,
+      myTicketsRequest,
+      {
+        headers: HttpHeaders.headers,
+      }
+    );
+    setMyTickets(myTickets.data);
+  };
 
   const removeData = async () => {
     try {
-      const value = await AsyncStorage.getItem(StorageConstants.Username);
-      if (value !== null) {
-        AsyncStorage.removeItem(StorageConstants.Username);
-      }
+      await AsyncStorage.clear();
     } catch (e) {
       // error removing data
     }
@@ -70,26 +79,21 @@ const SettingsScreen = () => {
 
   const renderRow = (data) => {
     return (
-      <View>
-        <View style={{ flexDirection: "row" }}>
-          <Text style={styles.purchasedTickets}>
-            {data.title}
-            {"\n"}
-            {data.chosenDate}, {data.showtime}
-          </Text>
-        </View>
-        <View style={{ flexDirection: "row" }}>
-          <TouchableOpacity style={styles.refundBtn}>
-            <Text style={styles.refundBtnText}>Refund?</Text>
-          </TouchableOpacity>
-        </View>
+      <View key={data.title + data.showtime + data.chosenDate}>
         <View
           style={{
-            borderBottomColor: "white",
-            borderBottomWidth: 1,
-            marginTop: 25,
+            borderColor: "white",
+            borderWidth: 1,
+            marginTop: 20,
+            padding: 20,
           }}
-        ></View>
+        >
+          <Text style={styles.ticketText}>{data.title}</Text>
+          <Text style={styles.ticketText}>
+            {moment(new Date(data.chosenDate)).format("dddd, MMMM DD, YYYY")}
+          </Text>
+          <Text style={styles.ticketText}>{data.showtime}</Text>
+        </View>
       </View>
     );
   };
@@ -112,10 +116,11 @@ const SettingsScreen = () => {
                 </View>
               </CollapseHeader>
               <CollapseBody style={styles.collapsibleBodyContainer}>
-                {data.map((datum) => {
-                  // This will render a row for each data element.
-                  return renderRow(datum);
-                })}
+                {myTickets !== null &&
+                  myTickets.map((myTicket) => {
+                    // This will render a row for each data element.
+                    return renderRow(myTicket);
+                  })}
               </CollapseBody>
             </Collapse>
             <Collapse style={styles.collapsibleContainer}>
@@ -175,22 +180,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 20,
   },
-  refundBtn: {
-    marginTop: 20,
-    backgroundColor: "#7E0808",
-    borderWidth: 1,
-    borderRadius: 1,
-    borderColor: "#ffffff",
-    alignItems: "center",
-    justifyContent: "center",
-    alignSelf: "center",
-    width: 75,
-    height: 35,
-  },
-  refundBtnText: {
+  textTicketTitle: {
     color: "#FFFFFF",
     fontWeight: "bold",
-    fontSize: 12,
+    fontSize: 18,
+    textAlign: "center",
+    marginBottom: 5,
+  },
+  ticketText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 16,
+    textAlign: "center",
   },
   header: {
     color: "#FFFFFF",
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 14,
     textAlign: "center",
-    textDecorationLine: "underline"
+    textDecorationLine: "underline",
   },
   collapsibleBody: {
     color: "#FFFFFF",

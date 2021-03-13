@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Api from "../../api/Api";
@@ -8,6 +8,7 @@ import HttpHeaders from "../common/HttpHeaders";
 import ScreenTitles from "../common/ScreenTitles";
 import * as Network from "expo-network";
 import moment from "moment";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 const HasTickets = ({
   movie,
@@ -17,6 +18,7 @@ const HasTickets = ({
   verifyTicketResponse,
 }) => {
   const navigation = useNavigation();
+  const [loadingAnimation, setLoadingAnimation] = useState(false);
 
   const showtimeHasNotEnded = (showtime) => {
     if (
@@ -84,7 +86,9 @@ const HasTickets = ({
 
     if (verifyTicketResponse.exists) {
       if (verifyTicketResponse.status === "ACTIVE") {
+        setLoadingAnimation(true);
         refreshMovieFiles().then((refreshedMovie) => {
+          setLoadingAnimation(false);
           navigation.navigate(ScreenTitles.MovieScreen, {
             movie: refreshedMovie,
             showtime: selectedShowtimeObj,
@@ -125,6 +129,7 @@ const HasTickets = ({
 
   return (
     <View style={styles.confirmationContainer}>
+      <LoadingSpinner show={loadingAnimation} />
       <Text style={styles.text}>Enjoy the showing!</Text>
       <View
         style={{

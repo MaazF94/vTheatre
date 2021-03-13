@@ -6,15 +6,19 @@ import moment from "moment";
 import AlertMessages from "../common/AlertMessages";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import StorageConstants from "../common/StorageConstants";
+import { useIsFocused } from "@react-navigation/native";
 
 const Showtimes = ({ movie, selectedDate }) => {
   const navigation = useNavigation();
   const { showtimes } = movie;
   const [username, setUsername] = useState("");
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    getData();
-  }, []);
+    if (isFocused) {
+      getData();
+    }
+  }, [isFocused]);
 
   const getData = async () => {
     try {

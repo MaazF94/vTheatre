@@ -24,7 +24,7 @@ const MovieConfirmation = ({
 
   useEffect(() => {
     verifyTicket();
-  }, []);
+  }, [hasTickets]);
 
   const verifyTicket = async () => {
     const networkStatus = await Network.getNetworkStateAsync();
@@ -72,6 +72,7 @@ const MovieConfirmation = ({
           movie={movie}
           selectedShowtimeObj={selectedShowtimeObj}
           selectedDate={selectedDate}
+          username={username}
         />
       );
     } else if (hasTickets) {
