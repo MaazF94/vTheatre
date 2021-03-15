@@ -78,7 +78,7 @@ const MovieDetails = ({ selectedDate }) => {
       .then((response) => {
         setMovies(response.data);
       })
-      .catch((error) => {
+      .catch(() => {
         Alert.alert(AlertMessages.ErrorTitle, AlertMessages.ErrorMsg);
       });
   };
