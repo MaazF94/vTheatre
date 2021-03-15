@@ -10,6 +10,7 @@ import Amplify from "aws-amplify";
 import AuthScreen from "./screens/AuthScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import StorageConstants from "./components/common/StorageConstants";
+import ForgotPasswordScreen from "./screens/ForgotPasswordScreen";
 
 const RootStack = () => {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
@@ -82,6 +83,10 @@ const RootStack = () => {
               name={ScreenTitles.SettingsScreen}
               component={SettingsScreen}
             />
+            <Stack.Screen
+              name={ScreenTitles.ForgotPassword}
+              component={ForgotPasswordScreen}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       );
@@ -125,6 +130,10 @@ const RootStack = () => {
             <Stack.Screen
               name={ScreenTitles.SettingsScreen}
               component={SettingsScreen}
+            />
+            <Stack.Screen
+              name={ScreenTitles.ForgotPassword}
+              component={ForgotPasswordScreen}
             />
           </Stack.Navigator>
         </NavigationContainer>
