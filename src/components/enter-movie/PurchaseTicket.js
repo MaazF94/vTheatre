@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, Alert, Platform, Image } from "react-native";
+import { StyleSheet, View, Text, Alert, Platform } from "react-native";
 import { PaymentsStripe as Stripe } from "expo-payments-stripe";
-import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import Api from "../../api/Api";
 import UriConstants from "../../api/UriConstants";
 import StripeConfigs from "../common/StripeConfigs";
@@ -10,28 +10,34 @@ import AlertMessages from "../common/AlertMessages";
 import * as Network from "expo-network";
 import HttpHeaders from "../common/HttpHeaders";
 import GooglePay from "../../assets/svg/GooglePay";
-import { ApplePayButton } from "react-native-rn-apple-pay-button";
+import * as InAppPurchases from "expo-in-app-purchases";
+import { useIsFocused } from "@react-navigation/native";
+import StorageConstants from "../common/StorageConstants";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 const PurchaseTicket = ({
   selectedShowtimeObj,
-  hasTickets,
   setHasTickets,
   movie,
   selectedDate,
-  setLoadingAnimation,
+  iapProduct,
+  username,
 }) => {
-  const [emailAddress, setEmailAddress] = useState("");
-  const [paymentSource, setPaymentSource] = useState("");
   const { title, ticketPrice } = movie;
   const currencyCode = "USD";
+  const isFocused = useIsFocused();
+  const [loadingAnimation, setLoadingAnimation] = useState(false);
 
   useEffect(() => {
-    // Use publishable key, android pay mode, and apple merchant ID
-    StripeConfigs();
-    choosePaymentSource();
-  }, []);
+    if (isFocused) {
+      if (Platform.OS === "android") {
+        // Use publishable key, android pay mode, and apple merchant ID
+        StripeConfigs();
+      }
+    }
+  }, [isFocused]);
 
-  const createAndroidPayOptions = () => {
+  const createGooglePayOptions = () => {
     let line_items = [];
 
     line_items.push({
@@ -51,161 +57,197 @@ const PurchaseTicket = ({
     return options;
   };
 
-  const createApplePayOptions = () => {
-    const items = [
+  const processIosPayment = async () => {
+    const chosenDate = moment(selectedDate).format("YYYY-MM-DD");
+
+    // Build request object for backend
+    const paymentRequest = {
+      showtime: selectedShowtimeObj,
+      movie: movie,
+      chosenDate: chosenDate,
+      username: username,
+    };
+
+    // Call backend to process the payment
+    const response = await Api.post(
+      UriConstants.processIosPayment,
+      paymentRequest,
       {
-        label: title + " Movie Ticket",
-        amount: ticketPrice.toString(),
-      },
-      {
-        label: "vTheatre, LLC",
-        amount: ticketPrice.toString(),
-      },
-    ];
-    return items;
+        headers: HttpHeaders.headers,
+      }
+    );
+    if (!response.data.confirmed) {
+      Alert.alert(
+        AlertMessages.AlreadyPurchasedTitle,
+        AlertMessages.IosAlreadyPurchasedMsg
+      );
+    }
   };
 
-  const checkValidEmailAddress = () => {
-    let emailRegex = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/;
-    return emailRegex.test(emailAddress);
-  };
-
-  // Called from the process payment button
-  const callStripe = async () => {
-    // Check valid email
-    const emailValidation = checkValidEmailAddress();
-    if (!emailValidation) {
-      Alert.alert(
-        AlertMessages.InvalidEmailAddressTitle,
-        AlertMessages.InvalidEmailAddressMsg
-      );
-      return;
-    }
-
-    const networkStatus = await Network.getNetworkStateAsync();
-    if (!networkStatus.isConnected) {
-      Alert.alert(
-        AlertMessages.ConnectivityErrorTitle,
-        AlertMessages.ConnectivityErrorMsg
-      );
-      return;
-    }
-
-    // Check if the device supports native wallet pay and if a payment method exists
-    const supportedAndPaymentMethodExists = await Stripe.canMakeNativePayPaymentsAsync();
-
-    if (supportedAndPaymentMethodExists) {
-      try {
-        let options = {};
-        let items = [];
-        let token = {};
-
-        // Build options depending on OS
-        if (Platform.OS === "android") {
-          options = createAndroidPayOptions();
-          token = await Stripe.paymentRequestWithNativePayAsync(options);
-        } else if (Platform.OS === "ios") {
-          items = createApplePayOptions();
-          token = await Stripe.paymentRequestWithNativePayAsync(options, items);
+  // Set iOS In App Purchase listener
+  InAppPurchases.setPurchaseListener(({ responseCode, results, errorCode }) => {
+    // Purchase was successful
+    if (responseCode === InAppPurchases.IAPResponseCode.OK) {
+      results.forEach((purchase) => {
+        if (!purchase.acknowledged) {
+          // Process transaction here and unlock content...
+          processIosPayment();
+          InAppPurchases.finishTransactionAsync(purchase, true);
         }
-
-        const emailFormattedDate = moment(selectedDate).format(
-          "dddd, MMMM DD, YYYY"
-        );
-
-        const ticketFormattedDate = moment(selectedDate).format("YYYY-MM-DD");
-
-        // Build request object for backend
-        const paymentRequest = {
-          tokenId: token.tokenId,
-          currency: currencyCode,
-          description: title + " Movie Ticket",
-          emailAddress: emailAddress,
-          showtime: selectedShowtimeObj,
-          movie: movie,
-          emailFormattedDate: emailFormattedDate,
-          ticketFormattedDate: ticketFormattedDate,
-        };
-
-        setLoadingAnimation(true);
-
-        // Call backend to process the payment
-        await Api.post(UriConstants.completePayment, paymentRequest, {
-          headers: HttpHeaders.headers,
-        });
-
+      });
+      setLoadingAnimation(false);
+      setHasTickets(true);
+    } else {
+      // Else find out what went wrong
+      if (responseCode === InAppPurchases.IAPResponseCode.USER_CANCELED) {
         setLoadingAnimation(false);
-
-        // Close payment
-        await Stripe.completeNativePayRequestAsync();
-
         Alert.alert(
-          AlertMessages.SuccessfulPaymentTitle,
-          AlertMessages.SuccessfulPaymentMsg
+          AlertMessages.CanceledPaymentTitle,
+          AlertMessages.CanceledPaymentMsg
         );
-
-        setHasTickets(!hasTickets);
-      } catch (error) {
-        Stripe.cancelNativePayRequestAsync();
-
+      } else if (responseCode === InAppPurchases.IAPResponseCode.DEFERRED) {
+        setLoadingAnimation(false);
+        // Process transaction here...
+        // Handle this with logged in user
+        Alert.alert(
+          AlertMessages.PaymentDeferredTitle,
+          AlertMessages.PaymentDeferredMsg
+        );
+      } else {
+        setLoadingAnimation(false);
         Alert.alert(
           AlertMessages.CanceledPaymentTitle,
           AlertMessages.CanceledPaymentMsg
         );
       }
-    } else {
-      Alert.alert(
-        AlertMessages.PaymentMethodNotSupportedTitle,
-        AlertMessages.PaymentMethodNotSupportedMsg
-      );
     }
-  };
+  });
 
-  const choosePaymentSource = () => {
+  // Called from the payment button
+  const processPayment = async () => {
+    if (username === null || username === StorageConstants.Guest) {
+      Alert.alert(AlertMessages.NoAccountTitle, AlertMessages.NoAccountMsg);
+      return;
+    }
+    // Android will use Google Pay
     if (Platform.OS === "android") {
-      return setPaymentSource("Google Pay");
+      const networkStatus = await Network.getNetworkStateAsync();
+      if (!networkStatus.isConnected) {
+        Alert.alert(
+          AlertMessages.ConnectivityErrorTitle,
+          AlertMessages.ConnectivityErrorMsg
+        );
+        return;
+      }
+      setLoadingAnimation(true);
+
+      // Check if the device supports native wallet pay and if a payment method exists
+      const supportedAndPaymentMethodExists = await Stripe.canMakeNativePayPaymentsAsync();
+      if (supportedAndPaymentMethodExists) {
+        let options = {};
+        let token = {};
+
+        try {
+          options = createGooglePayOptions();
+          token = await Stripe.paymentRequestWithNativePayAsync(options);
+
+          const chosenDate = moment(selectedDate).format("YYYY-MM-DD");
+
+          // Build request object for backend
+          const paymentRequest = {
+            tokenId: token.tokenId,
+            currency: currencyCode,
+            description: title + " Movie Ticket",
+            showtime: selectedShowtimeObj,
+            movie: movie,
+            chosenDate: chosenDate,
+            username: username,
+          };
+
+          // Call backend to process the payment
+          const response = await Api.post(
+            UriConstants.completeAndroidPayment,
+            paymentRequest,
+            {
+              headers: HttpHeaders.headers,
+            }
+          );
+          if (!response.data.confirmed) {
+            setLoadingAnimation(false);
+            Alert.alert(
+              AlertMessages.AlreadyPurchasedTitle,
+              AlertMessages.GoogleAlreadyPurchasedMsg
+            );
+            return;
+          }
+
+          // Close payment
+          await Stripe.completeNativePayRequestAsync();
+
+          Alert.alert(
+            AlertMessages.SuccessfulPaymentTitle,
+            AlertMessages.SuccessfulPaymentMsg
+          );
+          setLoadingAnimation(false);
+          setHasTickets(true);
+        } catch (error) {
+          Stripe.cancelNativePayRequestAsync();
+          setLoadingAnimation(false);
+          Alert.alert(
+            AlertMessages.CanceledPaymentTitle,
+            AlertMessages.CanceledPaymentMsg
+          );
+        }
+      } else {
+        setLoadingAnimation(false);
+        Alert.alert(
+          AlertMessages.PaymentMethodNotSupportedTitle,
+          AlertMessages.PaymentMethodNotSupportedMsg
+        );
+      }
+
+      // IOS will use In-App Purchases
     } else if (Platform.OS === "ios") {
-      return setPaymentSource("Apple Pay");
+      if (iapProduct !== undefined) {
+        setLoadingAnimation(true);
+        InAppPurchases.purchaseItemAsync(iapProduct[0].productId);
+      } else {
+        Alert.alert(AlertMessages.ErrorTitle, AlertMessages.ErrorMsg);
+      }
     }
   };
 
   return (
-    <View style={styles.confirmationContainer}>
-      <Text style={styles.headerText}>Enjoy the showing!</Text>
-      <View style={{ alignItems: "center" }}>
-        <TextInput
-          style={styles.textInput}
-          width="90%"
-          backgroundColor="#ffffff"
-          placeholderTextColor="#827D7D"
-          placeholder="Email Address"
-          onChangeText={(value) => setEmailAddress(value)}
-        />
-      </View>
-      <View style={{ flexDirection: "row", justifyContent: "center" }}>
-        <View style={{ flexDirection: "column", justifyContent: "center" }}>
-          <Text style={styles.ticketTypeText}>Total</Text>
-          <Text style={styles.ticketPrice}>${ticketPrice}.00</Text>
+    <View>
+      <LoadingSpinner show={loadingAnimation} />
+      <View style={styles.confirmationContainer}>
+        <Text style={styles.headerText}>Buy a ticket!</Text>
+        <View style={{ flexDirection: "row", justifyContent: "center" }}>
+          <View style={{ flexDirection: "column", justifyContent: "center" }}>
+            <Text style={styles.ticketTypeText}>Total</Text>
+            {Platform.OS === "android" && (
+              <Text style={styles.ticketPrice}>${ticketPrice}.00</Text>
+            )}
+            {Platform.OS === "ios" && iapProduct !== undefined && (
+              <Text style={styles.ticketPrice}>{iapProduct[0].price}</Text>
+            )}
+          </View>
         </View>
-      </View>
-      {paymentSource === "Google Pay" && (
-        <TouchableOpacity onPress={callStripe} style={styles.googlePayBtn}>
-          <GooglePay />
-        </TouchableOpacity>
-      )}
+        {Platform.OS === "android" && (
+          <TouchableOpacity
+            onPress={processPayment}
+            style={styles.googlePayBtn}
+          >
+            <GooglePay />
+          </TouchableOpacity>
+        )}
 
-      {paymentSource === "Apple Pay" && (
-        <View style={styles.applePayBtn}>
-          <ApplePayButton
-            buttonStyle="white"
-            cornerRadius={5}
-            type="buy"
-            width={145}
-            height={33}
-            onPress={callStripe}
-          />
-        </View>
-      )}
+        {Platform.OS === "ios" && (
+          <TouchableOpacity onPress={processPayment} style={styles.applePayBtn}>
+            <Text style={styles.buttonText}>Proceed to checkout</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };
@@ -215,7 +257,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     backgroundColor: "#272727",
     marginTop: 40,
-    paddingTop: 20,
     paddingBottom: 20,
   },
   headerText: {
@@ -223,23 +264,20 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
     textAlign: "center",
-  },
-  textInput: {
     marginTop: 20,
-    fontWeight: "bold",
-    fontSize: 20,
-    textAlign: "center",
-    height: 45,
-    borderRadius: 1,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
   },
   ticketTypeText: {
     color: "#FFFFFF",
     fontWeight: "bold",
     fontSize: 16,
     textAlign: "center",
-    marginTop: 30,
+    marginTop: 20,
+  },
+  ticketPrice: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 16,
+    textAlign: "center",
   },
   googlePayBtn: {
     alignItems: "center",
@@ -259,19 +297,17 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingLeft: 10,
     paddingRight: 10,
-    marginTop: 10,
+    marginTop: 20,
     alignSelf: "center",
+    backgroundColor: "#7E0808",
+    borderWidth: 1,
+    borderRadius: 1,
+    borderColor: "#ffffff",
   },
   buttonText: {
     color: "#FFFFFF",
     fontWeight: "bold",
-    fontSize: 14,
-  },
-  ticketPrice: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
     fontSize: 16,
-    textAlign: "center",
   },
 });
 

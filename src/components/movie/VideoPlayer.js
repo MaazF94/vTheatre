@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Audio, Video } from "expo-av";
-import { Dimensions, AppState } from "react-native";
+import { Dimensions, AppState, Platform } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
@@ -16,7 +16,14 @@ import * as ScreenCapture from "expo-screen-capture";
 import HttpHeaders from "../common/HttpHeaders";
 import { useKeepAwake } from "expo-keep-awake";
 
-const VideoPlayer = ({ showtime, movie, selectedDate, confirmationCode }) => {
+const VideoPlayer = ({
+  showtime,
+  movie,
+  selectedDate,
+  ticketPrice,
+  iosProductId,
+  username,
+}) => {
   ScreenCapture.usePreventScreenCapture();
   useKeepAwake();
 
@@ -63,7 +70,10 @@ const VideoPlayer = ({ showtime, movie, selectedDate, confirmationCode }) => {
       if (intervalId !== undefined) {
         intervalId = clearInterval(intervalId);
       }
-      if (confirmationCode !== undefined) {
+      if (
+        (Platform.OS === "android" && ticketPrice !== 0) ||
+        (Platform.OS === "ios" && iosProductId !== null)
+      ) {
         updateTicketStatus("INACTIVE");
       }
       enterUserInMovie();
@@ -76,7 +86,10 @@ const VideoPlayer = ({ showtime, movie, selectedDate, confirmationCode }) => {
       if (movieDateTime < moment(new Date()) && showtimeHasNotEnded(showtime)) {
         recordTimeUserWatched();
       }
-      if (confirmationCode !== undefined) {
+      if (
+        (Platform.OS === "android" && ticketPrice !== 0) ||
+        (Platform.OS === "ios" && iosProductId !== null)
+      ) {
         updateTicketStatus("ACTIVE");
       }
     };
@@ -113,7 +126,9 @@ const VideoPlayer = ({ showtime, movie, selectedDate, confirmationCode }) => {
 
   const updateTicketStatus = (status) => {
     const ticketStatusRequest = {
-      confirmationCode: confirmationCode,
+      username: username,
+      chosenDate: selectedDate,
+      showtime: showtime,
       status: status,
     };
     Api.post(

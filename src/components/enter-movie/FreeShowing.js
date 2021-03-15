@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AlertMessages from "../common/AlertMessages";
@@ -8,9 +8,16 @@ import moment from "moment";
 import Api from "../../api/Api";
 import HttpHeaders from "../common/HttpHeaders";
 import UriConstants from "../../api/UriConstants";
+import LoadingSpinner from "../common/LoadingSpinner";
 
-const FreeShowing = ({ movie, selectedShowtimeObj, selectedDate }) => {
+const FreeShowing = ({
+  movie,
+  selectedShowtimeObj,
+  selectedDate,
+  username,
+}) => {
   const navigation = useNavigation();
+  const [loadingAnimation, setLoadingAnimation] = useState(false);
 
   const showtimeHasNotEnded = (showtime) => {
     if (
@@ -66,7 +73,9 @@ const FreeShowing = ({ movie, selectedShowtimeObj, selectedDate }) => {
         );
         return;
       }
+      setLoadingAnimation(true);
       refreshMovieFiles().then((refreshedMovie) => {
+        setLoadingAnimation(false);
         navigation.navigate(ScreenTitles.MovieScreen, {
           movie: refreshedMovie,
           showtime: selectedShowtimeObj,
@@ -85,7 +94,23 @@ const FreeShowing = ({ movie, selectedShowtimeObj, selectedDate }) => {
 
   return (
     <View style={styles.confirmationContainer}>
+      <LoadingSpinner show={loadingAnimation} />
       <Text style={styles.text}>Enjoy the showing!</Text>
+      <View
+        style={{
+          borderColor: "white",
+          borderWidth: 1,
+          marginTop: 20,
+          padding: 20,
+        }}
+      >
+        <Text style={styles.textTicketTitle}>Free Ticket:</Text>
+        <Text style={styles.ticketText}>{username}</Text>
+        <Text style={styles.ticketText}>
+          {moment(selectedDate).format("dddd, MMMM DD, YYYY")}
+        </Text>
+        <Text style={styles.ticketText}>{selectedShowtimeObj.showtime}</Text>
+      </View>
       <TouchableOpacity onPress={checkMissedShowtime} style={styles.button}>
         <Text style={styles.buttonText}>Enter</Text>
       </TouchableOpacity>
@@ -102,6 +127,19 @@ const styles = StyleSheet.create({
     marginTop: 40,
     paddingBottom: 10,
     paddingTop: 10,
+  },
+  textTicketTitle: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 18,
+    textAlign: "center",
+    marginBottom: 5,
+  },
+  ticketText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 16,
+    textAlign: "center",
   },
   text: {
     color: "#FFFFFF",

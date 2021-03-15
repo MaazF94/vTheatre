@@ -1,7 +1,9 @@
 const ScreenTitles = {
-    "MovieScreen": "Movie Screen",
-    "EnterMovie": "Enter Movie",
-    "HomeScreen": "vTheatre"
-}
+  MovieScreen: "Theatre",
+  EnterMovie: "Enter Theatre",
+  HomeScreen: "Home",
+  SettingsScreen: "Settings",
+  AuthScreen: "vTheatre",
+};
 
 export default ScreenTitles;

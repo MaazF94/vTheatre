@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-  Keyboard,
-} from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Api from "../../api/Api";
 import UriConstants from "../../api/UriConstants";
@@ -16,20 +8,17 @@ import HttpHeaders from "../common/HttpHeaders";
 import ScreenTitles from "../common/ScreenTitles";
 import * as Network from "expo-network";
 import moment from "moment";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 const HasTickets = ({
-  hasTickets,
-  setHasTickets,
   movie,
   selectedShowtimeObj,
   selectedDate,
+  username,
+  verifyTicketResponse,
 }) => {
   const navigation = useNavigation();
-  const [confirmationCode, setConfirmationCode] = useState("");
-
-  const updateHasTickets = () => {
-    setHasTickets(!hasTickets);
-  };
+  const [loadingAnimation, setLoadingAnimation] = useState(false);
 
   const showtimeHasNotEnded = (showtime) => {
     if (
@@ -77,17 +66,7 @@ const HasTickets = ({
     }
   };
 
-  const verifyConfirmationCode = async () => {
-    Keyboard.dismiss();
-
-    if (confirmationCode.length === 0) {
-      Alert.alert(
-        AlertMessages.InvalidConfirmationCodeTitle,
-        AlertMessages.InvalidConfirmationCodeMsg
-      );
-      return;
-    }
-
+  const verifyTicket = async () => {
     if (!checkMissedShowtime(selectedShowtimeObj)) {
       Alert.alert(
         AlertMessages.ShowtimeTooLateTitle,
@@ -105,36 +84,27 @@ const HasTickets = ({
       return;
     }
 
-    let verifyConfCodeResponse;
-    const verifyConfCodeRequest = {
-      confirmationCode: confirmationCode,
-      chosenDate: moment(selectedDate).format("YYYY-MM-DD"),
-      showtime: selectedShowtimeObj.showtime,
-    };
-
-    await Api.post(UriConstants.verifyConfirmationCode, verifyConfCodeRequest, {
-      headers: HttpHeaders.headers,
-    }).then((response) => {
-      verifyConfCodeResponse = response.data;
-    });
-
-    if (verifyConfCodeResponse.exists) {
-      if (verifyConfCodeResponse.status === "ACTIVE") {
+    if (verifyTicketResponse.exists) {
+      if (verifyTicketResponse.status === "ACTIVE") {
+        setLoadingAnimation(true);
         refreshMovieFiles().then((refreshedMovie) => {
+          setLoadingAnimation(false);
           navigation.navigate(ScreenTitles.MovieScreen, {
             movie: refreshedMovie,
             showtime: selectedShowtimeObj,
             selectedDate: selectedDate.toString(),
-            confirmationCode: confirmationCode,
+            ticketPrice: refreshedMovie.ticketPrice,
+            iosProductId: refreshedMovie.iosProductId,
+            username: username,
           });
         });
-      } else if (verifyConfCodeResponse.status === "INACTIVE") {
+      } else if (verifyTicketResponse.status === "INACTIVE") {
         Alert.alert(
           AlertMessages.TicketStatusInactiveTitle,
           AlertMessages.TicketStatusInactiveMsg
         );
         return;
-      } else if (verifyConfCodeResponse.status === "REFUNDED") {
+      } else if (verifyTicketResponse.status === "REFUNDED") {
         Alert.alert(
           AlertMessages.TicketStatusRefundedTitle,
           AlertMessages.TicketStatusRefundedMsg
@@ -143,8 +113,8 @@ const HasTickets = ({
       }
     } else {
       Alert.alert(
-        AlertMessages.InvalidConfirmationCodeTitle,
-        AlertMessages.InvalidConfirmationCodeMsg
+        AlertMessages.InvalidTicketTitle,
+        AlertMessages.InvalidTicketMsg
       );
       return;
     }
@@ -159,20 +129,25 @@ const HasTickets = ({
 
   return (
     <View style={styles.confirmationContainer}>
+      <LoadingSpinner show={loadingAnimation} />
       <Text style={styles.text}>Enjoy the showing!</Text>
-      <TextInput
-        style={styles.textInput}
-        width="90%"
-        backgroundColor="#ffffff"
-        placeholderTextColor="#827D7D"
-        placeholder="Ticket Confirmation Code"
-        onChangeText={(value) => setConfirmationCode(value)}
-      />
-      <TouchableOpacity onPress={verifyConfirmationCode} style={styles.button}>
+      <View
+        style={{
+          borderColor: "white",
+          borderWidth: 1,
+          marginTop: 20,
+          padding: 20,
+        }}
+      >
+        <Text style={styles.textTicketTitle}>Ticket Confirmed:</Text>
+        <Text style={styles.ticketText}>{username}</Text>
+        <Text style={styles.ticketText}>
+          {moment(selectedDate).format("dddd, MMMM DD, YYYY")}
+        </Text>
+        <Text style={styles.ticketText}>{selectedShowtimeObj.showtime}</Text>
+      </View>
+      <TouchableOpacity onPress={verifyTicket} style={styles.button}>
         <Text style={styles.buttonText}>Enter</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={updateHasTickets}>
-        <Text style={styles.ticketText}>No code? Buy tickets.</Text>
       </TouchableOpacity>
     </View>
   );
@@ -194,15 +169,18 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: "center",
   },
-  textInput: {
-    marginTop: 20,
+  textTicketTitle: {
+    color: "#FFFFFF",
     fontWeight: "bold",
-    fontSize: 20,
+    fontSize: 18,
     textAlign: "center",
-    height: 45,
-    borderRadius: 1,
-    borderWidth: 1,
-    borderColor: "#FFFFFF",
+    marginBottom: 5,
+  },
+  ticketText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 16,
+    textAlign: "center",
   },
   button: {
     marginTop: 20,
@@ -219,14 +197,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "bold",
     fontSize: 16,
-  },
-  ticketText: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-    fontSize: 16,
-    textAlign: "center",
-    marginTop: 20,
-    textDecorationLine: "underline",
   },
 });
 
