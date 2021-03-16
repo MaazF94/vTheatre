@@ -11,6 +11,8 @@ import AuthScreen from "./screens/AuthScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import StorageConstants from "./components/common/StorageConstants";
 import ForgotPasswordScreen from "./screens/ForgotPasswordScreen";
+import PurchaseTicketScreen from "./screens/PurchaseTicketScreen";
+import { HeaderBackButton } from "react-navigation-stack";
 
 const RootStack = () => {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
@@ -73,6 +75,13 @@ const RootStack = () => {
             <Stack.Screen
               name={ScreenTitles.EnterMovie}
               component={EnterMovieScreen}
+              options={({ navigation }) => ({
+                headerLeft: () => (
+                  <HeaderBackButton
+                    onPress={() => navigation.navigate(ScreenTitles.HomeScreen)}
+                  />
+                ),
+              })}
             />
             <Stack.Screen
               name={ScreenTitles.MovieScreen}
@@ -86,6 +95,10 @@ const RootStack = () => {
             <Stack.Screen
               name={ScreenTitles.ForgotPassword}
               component={ForgotPasswordScreen}
+            />
+            <Stack.Screen
+              name={ScreenTitles.PurchaseTicket}
+              component={PurchaseTicketScreen}
             />
           </Stack.Navigator>
         </NavigationContainer>
@@ -121,6 +134,13 @@ const RootStack = () => {
             <Stack.Screen
               name={ScreenTitles.EnterMovie}
               component={EnterMovieScreen}
+              options={({ navigation }) => ({
+                headerLeft: () => (
+                  <HeaderBackButton
+                    onPress={() => navigation.navigate(ScreenTitles.HomeScreen)}
+                  />
+                ),
+              })}
             />
             <Stack.Screen
               name={ScreenTitles.MovieScreen}
@@ -134,6 +154,10 @@ const RootStack = () => {
             <Stack.Screen
               name={ScreenTitles.ForgotPassword}
               component={ForgotPasswordScreen}
+            />
+            <Stack.Screen
+              name={ScreenTitles.PurchaseTicket}
+              component={PurchaseTicketScreen}
             />
           </Stack.Navigator>
         </NavigationContainer>

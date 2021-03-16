@@ -32,6 +32,7 @@ import { useIsFocused } from "@react-navigation/native";
 const SettingsScreen = () => {
   const navigation = useNavigation();
   const [myTickets, setMyTickets] = useState([]);
+  const [username, setUsername] = useState("");
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -45,14 +46,12 @@ const SettingsScreen = () => {
     const myTicketsRequest = {
       username: value,
     };
-    const myTickets = await Api.post(
-      UriConstants.getTickets,
-      myTicketsRequest,
-      {
-        headers: HttpHeaders.headers,
-      }
-    );
-    setMyTickets(myTickets.data);
+    await Api.post(UriConstants.getTickets, myTicketsRequest, {
+      headers: HttpHeaders.headers,
+    }).then((response) => {
+      setUsername(value);
+      setMyTickets(response.data);
+    });
   };
 
   const removeData = async () => {
@@ -79,7 +78,7 @@ const SettingsScreen = () => {
 
   const renderRow = (data) => {
     return (
-      <View key={data.title + data.showtime + data.chosenDate}>
+      <View key={data.title + data.showtime + data.chosenDate + data.movieId}>
         <View
           style={{
             borderColor: "white",
@@ -88,6 +87,7 @@ const SettingsScreen = () => {
             padding: 20,
           }}
         >
+          <Text style={styles.ticketText}>{username}</Text>
           <Text style={styles.ticketText}>{data.title}</Text>
           <Text style={styles.ticketText}>
             {moment(new Date(data.chosenDate)).format("dddd, MMMM DD, YYYY")}
@@ -117,9 +117,9 @@ const SettingsScreen = () => {
               </CollapseHeader>
               <CollapseBody style={styles.collapsibleBodyContainer}>
                 {myTickets.map((myTicket) => {
-                    // This will render a row for each data element.
-                    return renderRow(myTicket);
-                  })}
+                  // This will render a row for each data element.
+                  return renderRow(myTicket);
+                })}
               </CollapseBody>
             </Collapse>
             <Collapse style={styles.collapsibleContainer}>

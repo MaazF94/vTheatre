@@ -7,18 +7,75 @@ import AlertMessages from "../common/AlertMessages";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import StorageConstants from "../common/StorageConstants";
 import { useIsFocused } from "@react-navigation/native";
+import * as Network from "expo-network";
+import Api from "../../api/Api";
+import UriConstants from "../../api/UriConstants";
+import HttpHeaders from "../common/HttpHeaders";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 const Showtimes = ({ movie, selectedDate }) => {
   const navigation = useNavigation();
   const { showtimes } = movie;
   const [username, setUsername] = useState("");
   const isFocused = useIsFocused();
+  const [loadingAnimation, setLoadingAnimation] = useState(false);
 
   useEffect(() => {
     if (isFocused) {
       getData();
     }
   }, [isFocused]);
+
+  const verifyTicket = async (selectedShowtimeObj) => {
+    const networkStatus = await Network.getNetworkStateAsync();
+    if (!networkStatus.isConnected) {
+      Alert.alert(
+        AlertMessages.ConnectivityErrorTitle,
+        AlertMessages.ConnectivityErrorMsg
+      );
+      return;
+    }
+
+    setLoadingAnimation(true);
+
+    let verifyTicketResponse;
+    const verifyTicketRequest = {
+      username: username,
+      chosenDate: moment(selectedDate).format("YYYY-MM-DD"),
+      showtime: selectedShowtimeObj.showtime,
+      movieId: movie.movieId,
+    };
+
+    await Api.post(UriConstants.verifyTicket, verifyTicketRequest, {
+      headers: HttpHeaders.headers,
+    })
+      .then((response) => {
+        setLoadingAnimation(false);
+        verifyTicketResponse = response.data;
+
+        if (verifyTicketResponse.exists) {
+          navigation.navigate(ScreenTitles.EnterMovie, {
+            movie: movie,
+            selectedShowtimeObj: selectedShowtimeObj,
+            selectedDate: selectedDate.toString(),
+            username: username,
+            verifyTicketResponse: verifyTicketResponse,
+          });
+        } else {
+          navigation.navigate(ScreenTitles.PurchaseTicket, {
+            movie: movie,
+            selectedShowtimeObj: selectedShowtimeObj,
+            selectedDate: selectedDate.toString(),
+            username: username,
+            verifyTicketResponse: verifyTicketResponse,
+          });
+        }
+      })
+      .catch(() => {
+        setShowLoadingSpinner(false);
+        Alert.alert(AlertMessages.ErrorTitle, AlertMessages.ErrorMsg);
+      });
+  };
 
   const getData = async () => {
     try {
@@ -67,42 +124,52 @@ const Showtimes = ({ movie, selectedDate }) => {
     }
   };
 
-  const checkMissedShowtime = (showtimeObj) => {
-    if (!showtimeHasNotEnded(showtimeObj.showtime)) {
+  const checkMissedShowtime = (selectedShowtimeObj) => {
+    if (!showtimeHasNotEnded(selectedShowtimeObj.showtime)) {
       Alert.alert(
         AlertMessages.ShowtimeTooLateTitle,
         AlertMessages.ShowtimeTooLateMsg
       );
       return;
     } else {
-      navigation.navigate(ScreenTitles.EnterMovie, {
-        movie: movie,
-        selectedShowtimeObj: showtimeObj,
-        selectedDate: selectedDate.toString(),
-        username: username,
-      });
+      if (
+        (Platform.OS === "android" && movie.ticketPrice === 0) ||
+        (Platform.OS === "ios" && movie.iosProductId === null)
+      ) {
+        navigation.navigate(ScreenTitles.EnterMovie, {
+          movie: movie,
+          selectedShowtimeObj: selectedShowtimeObj,
+          selectedDate: selectedDate.toString(),
+          username: username,
+        });
+      } else {
+        verifyTicket(selectedShowtimeObj);
+      }
     }
   };
 
   return (
-    <View style={styles.showtimesContainer}>
-      {showtimes.map((showtimeObj) => {
-        if (showtimeHasNotEnded(showtimeObj.showtime)) {
-          return (
-            <TouchableOpacity
-              key={showtimeObj.showtimeId}
-              onPress={() =>
-                checkMissedShowtime(showtimeObj, movie, selectedDate)
-              }
-              style={styles.button}
-            >
-              <Text key={showtimeObj.showtime} style={styles.buttonText}>
-                {showtimeObj.showtime}
-              </Text>
-            </TouchableOpacity>
-          );
-        }
-      })}
+    <View>
+      <LoadingSpinner show={loadingAnimation} />
+      <View style={styles.showtimesContainer}>
+        {showtimes.map((showtimeObj) => {
+          if (showtimeHasNotEnded(showtimeObj.showtime)) {
+            return (
+              <TouchableOpacity
+                key={showtimeObj.showtimeId}
+                onPress={() =>
+                  checkMissedShowtime(showtimeObj, movie, selectedDate)
+                }
+                style={styles.button}
+              >
+                <Text key={showtimeObj.showtime} style={styles.buttonText}>
+                  {showtimeObj.showtime}
+                </Text>
+              </TouchableOpacity>
+            );
+          }
+        })}
+      </View>
     </View>
   );
 };

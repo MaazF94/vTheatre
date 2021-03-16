@@ -130,12 +130,15 @@ const VideoPlayer = ({
       chosenDate: selectedDate,
       showtime: showtime,
       status: status,
+      movieId: movie.movieId,
     };
     Api.post(
       UriConstants.updateTicketStatus,
       ticketStatusRequest,
       HttpHeaders.headers
-    );
+    )
+      .then(() => {})
+      .catch(() => {});
   };
 
   const enterUserInMovie = () => {
@@ -175,11 +178,11 @@ const VideoPlayer = ({
         seconds: videoTimeWatched.seconds(),
         movieId: movie.movieId,
       };
-      await Api.post(
-        UriConstants.recordVideoTimeWatched,
-        videoTimeWatchedRequest,
-        { headers: HttpHeaders.headers }
-      );
+      Api.post(UriConstants.recordVideoTimeWatched, videoTimeWatchedRequest, {
+        headers: HttpHeaders.headers,
+      })
+        .then(() => {})
+        .catch(() => {});
     }
   };
 

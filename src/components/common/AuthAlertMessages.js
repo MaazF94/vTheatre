@@ -16,7 +16,7 @@ const AuthAlertMessages = {
     "The verification code that you provided is incorrect. Please try again.",
   LimitExceededExceptionTitle: "Limit Exceeded",
   LimitExceededExceptionMsg:
-    "Too many attempts. Please try again after some time.",
+    "Your account has been disabled for too many attempts. Please try again after some time or contact us to re-enable your account.",
   PasswordSuccesfullyResetTitle: "Password Succesfully Reset",
   PasswordSuccesfullyResetMsg:
     "You successfully reset your password. Thank you!",
