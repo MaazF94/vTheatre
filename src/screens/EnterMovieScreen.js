@@ -51,14 +51,13 @@ const EnterMovieScreen = (props) => {
       })
       .catch(async function (error) {
         if (error.response) {
-          const movieFiles = await Api.post(
-            UriConstants.refreshMovieFiles,
-            movie,
-            {
-              headers: HttpHeaders.headers,
-            }
-          );
-          setMovie(movieFiles.data);
+          await Api.post(UriConstants.refreshMovieFiles, movie, {
+            headers: HttpHeaders.headers,
+          })
+            .then((response) => {
+              setMovie(response.data);
+            })
+            .catch(() => {});
         }
       });
   };

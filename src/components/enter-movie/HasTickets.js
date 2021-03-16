@@ -69,17 +69,21 @@ const HasTickets = ({
     if (verifyTicketResponse.exists) {
       if (verifyTicketResponse.status === "ACTIVE") {
         setLoadingAnimation(true);
-        refreshMovieFiles().then((refreshedMovie) => {
-          setLoadingAnimation(false);
-          navigation.navigate(ScreenTitles.MovieScreen, {
-            movie: refreshedMovie,
-            showtime: selectedShowtimeObj,
-            selectedDate: selectedDate.toString(),
-            ticketPrice: refreshedMovie.ticketPrice,
-            iosProductId: refreshedMovie.iosProductId,
-            username: username,
+        refreshMovieFiles()
+          .then((refreshedMovie) => {
+            setLoadingAnimation(false);
+            navigation.navigate(ScreenTitles.MovieScreen, {
+              movie: refreshedMovie,
+              showtime: selectedShowtimeObj,
+              selectedDate: selectedDate.toString(),
+              ticketPrice: refreshedMovie.ticketPrice,
+              iosProductId: refreshedMovie.iosProductId,
+              username: username,
+            });
+          })
+          .catch(() => {
+            setShowLoadingSpinner(false);
           });
-        });
       } else if (verifyTicketResponse.status === "INACTIVE") {
         Alert.alert(
           AlertMessages.TicketStatusInactiveTitle,

@@ -71,19 +71,21 @@ const PurchaseTicket = ({
     };
 
     // Call backend to process the payment
-    const response = await Api.post(
-      UriConstants.processIosPayment,
-      paymentRequest,
-      {
-        headers: HttpHeaders.headers,
-      }
-    );
-    if (!response.data.confirmed) {
-      Alert.alert(
-        AlertMessages.AlreadyPurchasedTitle,
-        AlertMessages.IosAlreadyPurchasedMsg
-      );
-    }
+    await Api.post(UriConstants.processIosPayment, paymentRequest, {
+      headers: HttpHeaders.headers,
+    })
+      .then((response) => {
+        if (!response.data.confirmed) {
+          Alert.alert(
+            AlertMessages.AlreadyPurchasedTitle,
+            AlertMessages.IosAlreadyPurchasedMsg
+          );
+        }
+      })
+      .catch(() => {
+        setLoadingAnimation(false);
+        Alert.alert(AlertMessages.ErrorTitle, AlertMessages.ErrorMsg);
+      });
   };
 
   // Set iOS In App Purchase listener
@@ -175,39 +177,41 @@ const PurchaseTicket = ({
           };
 
           // Call backend to process the payment
-          const response = await Api.post(
-            UriConstants.completeAndroidPayment,
-            paymentRequest,
-            {
-              headers: HttpHeaders.headers,
-            }
-          );
-          if (!response.data.confirmed) {
-            setLoadingAnimation(false);
-            Alert.alert(
-              AlertMessages.AlreadyPurchasedTitle,
-              AlertMessages.GoogleAlreadyPurchasedMsg
-            );
-            return;
-          }
+          await Api.post(UriConstants.completeAndroidPayment, paymentRequest, {
+            headers: HttpHeaders.headers,
+          })
+            .then(async (response) => {
+              if (!response.data.confirmed) {
+                setLoadingAnimation(false);
+                Alert.alert(
+                  AlertMessages.AlreadyPurchasedTitle,
+                  AlertMessages.GoogleAlreadyPurchasedMsg
+                );
+                return;
+              } else {
+                // Close payment
+                await Stripe.completeNativePayRequestAsync();
 
-          // Close payment
-          await Stripe.completeNativePayRequestAsync();
-
-          Alert.alert(
-            AlertMessages.SuccessfulPaymentTitle,
-            AlertMessages.SuccessfulPaymentMsg
-          );
-          setLoadingAnimation(false);
-          verifyTicketResponse.status = "ACTIVE";
-          verifyTicketResponse.exists = true;
-          navigation.navigate(ScreenTitles.EnterMovie, {
-            movie: movie,
-            selectedShowtimeObj: selectedShowtimeObj,
-            selectedDate: selectedDate.toString(),
-            username: username,
-            verifyTicketResponse: verifyTicketResponse,
-          });
+                Alert.alert(
+                  AlertMessages.SuccessfulPaymentTitle,
+                  AlertMessages.SuccessfulPaymentMsg
+                );
+                setLoadingAnimation(false);
+                verifyTicketResponse.status = "ACTIVE";
+                verifyTicketResponse.exists = true;
+                navigation.navigate(ScreenTitles.EnterMovie, {
+                  movie: movie,
+                  selectedShowtimeObj: selectedShowtimeObj,
+                  selectedDate: selectedDate.toString(),
+                  username: username,
+                  verifyTicketResponse: verifyTicketResponse,
+                });
+              }
+            })
+            .catch(() => {
+              setLoadingAnimation(false);
+              Alert.alert(AlertMessages.ErrorTitle, AlertMessages.ErrorMsg);
+            });
         } catch (error) {
           Stripe.cancelNativePayRequestAsync();
           setLoadingAnimation(false);

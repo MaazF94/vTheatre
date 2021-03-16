@@ -48,28 +48,33 @@ const Showtimes = ({ movie, selectedDate }) => {
 
     await Api.post(UriConstants.verifyTicket, verifyTicketRequest, {
       headers: HttpHeaders.headers,
-    }).then((response) => {
-      setLoadingAnimation(false);
-      verifyTicketResponse = response.data;
+    })
+      .then((response) => {
+        setLoadingAnimation(false);
+        verifyTicketResponse = response.data;
 
-      if (verifyTicketResponse.exists) {
-        navigation.navigate(ScreenTitles.EnterMovie, {
-          movie: movie,
-          selectedShowtimeObj: selectedShowtimeObj,
-          selectedDate: selectedDate.toString(),
-          username: username,
-          verifyTicketResponse: verifyTicketResponse,
-        });
-      } else {
-        navigation.navigate(ScreenTitles.PurchaseTicket, {
-          movie: movie,
-          selectedShowtimeObj: selectedShowtimeObj,
-          selectedDate: selectedDate.toString(),
-          username: username,
-          verifyTicketResponse: verifyTicketResponse,
-        });
-      }
-    });
+        if (verifyTicketResponse.exists) {
+          navigation.navigate(ScreenTitles.EnterMovie, {
+            movie: movie,
+            selectedShowtimeObj: selectedShowtimeObj,
+            selectedDate: selectedDate.toString(),
+            username: username,
+            verifyTicketResponse: verifyTicketResponse,
+          });
+        } else {
+          navigation.navigate(ScreenTitles.PurchaseTicket, {
+            movie: movie,
+            selectedShowtimeObj: selectedShowtimeObj,
+            selectedDate: selectedDate.toString(),
+            username: username,
+            verifyTicketResponse: verifyTicketResponse,
+          });
+        }
+      })
+      .catch(() => {
+        setShowLoadingSpinner(false);
+        Alert.alert(AlertMessages.ErrorTitle, AlertMessages.ErrorMsg);
+      });
   };
 
   const getData = async () => {

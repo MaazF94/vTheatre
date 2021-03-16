@@ -5,7 +5,7 @@ const AlertMessages = {
   InvalidEmailAddressTitle: "Invalid Email Address",
   InvalidEmailAddressMsg: "Please enter a valid email address.",
   SuccessfulPaymentTitle: "Successful Payment",
-  SuccessfulPaymentMsg: "Your payment was processed. Enjoy!",
+  SuccessfulPaymentMsg: "Your payment was successfully processed. Enjoy!",
   CanceledPaymentTitle: "Canceled Payment",
   CanceledPaymentMsg:
     "An error occurred, your payment was not processed. Please try again.",

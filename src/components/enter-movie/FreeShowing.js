@@ -74,22 +74,21 @@ const FreeShowing = ({
         return;
       }
       setLoadingAnimation(true);
-      refreshMovieFiles().then((refreshedMovie) => {
-        setLoadingAnimation(false);
-        navigation.navigate(ScreenTitles.MovieScreen, {
-          movie: refreshedMovie,
-          showtime: selectedShowtimeObj,
-          selectedDate: selectedDate.toString(),
-        });
-      });
+      refreshMovieFiles();
     }
   };
 
   const refreshMovieFiles = async () => {
-    const movieFiles = await Api.post(UriConstants.refreshMovieFiles, movie, {
+    await Api.post(UriConstants.refreshMovieFiles, movie, {
       headers: HttpHeaders.headers,
+    }).then((refreshedMovie) => {
+      setLoadingAnimation(false);
+      navigation.navigate(ScreenTitles.MovieScreen, {
+        movie: refreshedMovie.data,
+        showtime: selectedShowtimeObj,
+        selectedDate: selectedDate.toString(),
+      });
     });
-    return movieFiles.data;
   };
 
   return (

@@ -46,15 +46,12 @@ const SettingsScreen = () => {
     const myTicketsRequest = {
       username: value,
     };
-    const myTickets = await Api.post(
-      UriConstants.getTickets,
-      myTicketsRequest,
-      {
-        headers: HttpHeaders.headers,
-      }
-    );
-    setUsername(value);
-    setMyTickets(myTickets.data);
+    await Api.post(UriConstants.getTickets, myTicketsRequest, {
+      headers: HttpHeaders.headers,
+    }).then((response) => {
+      setUsername(value);
+      setMyTickets(response.data);
+    });
   };
 
   const removeData = async () => {
