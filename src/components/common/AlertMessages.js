@@ -38,7 +38,7 @@ const AlertMessages = {
   IosAlreadyPurchasedMsg:
     "You already purchased a ticket for this movie, showtime, and date. Please contact Apple support to receive a refund.",
   GoogleAlreadyPurchasedMsg:
-    "You already purchased a ticket for this movie, showtime, and date. Please contact our support team to receive a refund.",
+    "You already purchased a ticket for this movie, showtime, and date. Payment was not processed.",
 };
 
 export default AlertMessages;

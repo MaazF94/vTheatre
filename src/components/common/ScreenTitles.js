@@ -5,6 +5,7 @@ const ScreenTitles = {
   SettingsScreen: "Settings",
   AuthScreen: "vTheatre",
   ForgotPassword: "Forgot Password",
+  PurchaseTicket: "Purchase Ticket",
 };
 
 export default ScreenTitles;

@@ -6,7 +6,6 @@ import UriConstants from "../../api/UriConstants";
 import AlertMessages from "../common/AlertMessages";
 import HttpHeaders from "../common/HttpHeaders";
 import ScreenTitles from "../common/ScreenTitles";
-import * as Network from "expo-network";
 import moment from "moment";
 import LoadingSpinner from "../common/LoadingSpinner";
 
@@ -58,28 +57,11 @@ const HasTickets = ({
     }
   };
 
-  const checkMissedShowtime = (showtimeObj) => {
-    if (!showtimeHasNotEnded(showtimeObj.showtime)) {
-      return false;
-    } else {
-      return true;
-    }
-  };
-
-  const verifyTicket = async () => {
-    if (!checkMissedShowtime(selectedShowtimeObj)) {
+  const verifyEnterTheatre = async () => {
+    if (!showtimeHasNotEnded(selectedShowtimeObj.showtime)) {
       Alert.alert(
         AlertMessages.ShowtimeTooLateTitle,
         AlertMessages.ShowtimeTooLateMsg
-      );
-      return;
-    }
-
-    const networkStatus = await Network.getNetworkStateAsync();
-    if (!networkStatus.isConnected) {
-      Alert.alert(
-        AlertMessages.ConnectivityErrorTitle,
-        AlertMessages.ConnectivityErrorMsg
       );
       return;
     }
@@ -130,15 +112,8 @@ const HasTickets = ({
   return (
     <View style={styles.confirmationContainer}>
       <LoadingSpinner show={loadingAnimation} />
-      <Text style={styles.text}>Enjoy the showing!</Text>
-      <View
-        style={{
-          borderColor: "white",
-          borderWidth: 1,
-          marginTop: 20,
-          padding: 20,
-        }}
-      >
+      <Text style={styles.title}>Enjoy The Showing!</Text>
+      <View style={styles.ticketContainer}>
         <Text style={styles.textTicketTitle}>Ticket Confirmed:</Text>
         <Text style={styles.ticketText}>{username}</Text>
         <Text style={styles.ticketText}>
@@ -146,7 +121,7 @@ const HasTickets = ({
         </Text>
         <Text style={styles.ticketText}>{selectedShowtimeObj.showtime}</Text>
       </View>
-      <TouchableOpacity onPress={verifyTicket} style={styles.button}>
+      <TouchableOpacity onPress={verifyEnterTheatre} style={styles.button}>
         <Text style={styles.buttonText}>Enter</Text>
       </TouchableOpacity>
     </View>
@@ -163,11 +138,17 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 20,
   },
-  text: {
+  title: {
     color: "#FFFFFF",
     fontWeight: "bold",
     fontSize: 20,
     textAlign: "center",
+  },
+  ticketContainer: {
+    borderColor: "white",
+    borderWidth: 1,
+    marginTop: 20,
+    padding: 20,
   },
   textTicketTitle: {
     color: "#FFFFFF",

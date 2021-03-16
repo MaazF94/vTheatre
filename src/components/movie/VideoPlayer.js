@@ -130,6 +130,7 @@ const VideoPlayer = ({
       chosenDate: selectedDate,
       showtime: showtime,
       status: status,
+      movieId: movie.movieId,
     };
     Api.post(
       UriConstants.updateTicketStatus,

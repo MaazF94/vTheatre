@@ -1,32 +1,34 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, View, Text, Alert, Platform } from "react-native";
 import { PaymentsStripe as Stripe } from "expo-payments-stripe";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Api from "../../api/Api";
 import UriConstants from "../../api/UriConstants";
-import StripeConfigs from "../common/StripeConfigs";
+import StripeConfigs from "../../components/common/StripeConfigs";
 import moment from "moment";
-import AlertMessages from "../common/AlertMessages";
+import AlertMessages from "../../components/common/AlertMessages";
 import * as Network from "expo-network";
-import HttpHeaders from "../common/HttpHeaders";
+import HttpHeaders from "../../components/common/HttpHeaders";
 import GooglePay from "../../assets/svg/GooglePay";
 import * as InAppPurchases from "expo-in-app-purchases";
 import { useIsFocused } from "@react-navigation/native";
-import StorageConstants from "../common/StorageConstants";
-import LoadingSpinner from "../common/LoadingSpinner";
+import StorageConstants from "../../components/common/StorageConstants";
+import { useNavigation } from "@react-navigation/native";
+import ScreenTitles from "../../components/common/ScreenTitles";
 
 const PurchaseTicket = ({
-  selectedShowtimeObj,
-  setHasTickets,
   movie,
+  selectedShowtimeObj,
   selectedDate,
-  iapProduct,
   username,
+  verifyTicketResponse,
+  setLoadingAnimation,
+  iapProduct,
 }) => {
   const { title, ticketPrice } = movie;
   const currencyCode = "USD";
   const isFocused = useIsFocused();
-  const [loadingAnimation, setLoadingAnimation] = useState(false);
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (isFocused) {
@@ -96,7 +98,15 @@ const PurchaseTicket = ({
         }
       });
       setLoadingAnimation(false);
-      setHasTickets(true);
+      verifyTicketResponse.status = "ACTIVE";
+      verifyTicketResponse.exists = true;
+      navigation.navigate(ScreenTitles.EnterMovie, {
+        movie: movie,
+        selectedShowtimeObj: selectedShowtimeObj,
+        selectedDate: selectedDate.toString(),
+        username: username,
+        verifyTicketResponse: verifyTicketResponse,
+      });
     } else {
       // Else find out what went wrong
       if (responseCode === InAppPurchases.IAPResponseCode.USER_CANCELED) {
@@ -189,7 +199,15 @@ const PurchaseTicket = ({
             AlertMessages.SuccessfulPaymentMsg
           );
           setLoadingAnimation(false);
-          setHasTickets(true);
+          verifyTicketResponse.status = "ACTIVE";
+          verifyTicketResponse.exists = true;
+          navigation.navigate(ScreenTitles.EnterMovie, {
+            movie: movie,
+            selectedShowtimeObj: selectedShowtimeObj,
+            selectedDate: selectedDate.toString(),
+            username: username,
+            verifyTicketResponse: verifyTicketResponse,
+          });
         } catch (error) {
           Stripe.cancelNativePayRequestAsync();
           setLoadingAnimation(false);
@@ -218,36 +236,30 @@ const PurchaseTicket = ({
   };
 
   return (
-    <View>
-      <LoadingSpinner show={loadingAnimation} />
-      <View style={styles.confirmationContainer}>
-        <Text style={styles.headerText}>Buy a ticket!</Text>
-        <View style={{ flexDirection: "row", justifyContent: "center" }}>
-          <View style={{ flexDirection: "column", justifyContent: "center" }}>
-            <Text style={styles.ticketTypeText}>Total</Text>
-            {Platform.OS === "android" && (
-              <Text style={styles.ticketPrice}>${ticketPrice}.00</Text>
-            )}
-            {Platform.OS === "ios" && iapProduct !== undefined && (
-              <Text style={styles.ticketPrice}>{iapProduct[0].price}</Text>
-            )}
-          </View>
+    <View style={styles.confirmationContainer}>
+      <Text style={styles.headerText}>Buy a Ticket!</Text>
+      <View style={{ flexDirection: "row", justifyContent: "center" }}>
+        <View style={{ flexDirection: "column", justifyContent: "center" }}>
+          <Text style={styles.ticketTypeText}>Total</Text>
+          {Platform.OS === "android" && (
+            <Text style={styles.ticketPrice}>${ticketPrice}.00</Text>
+          )}
+          {Platform.OS === "ios" && iapProduct !== undefined && (
+            <Text style={styles.ticketPrice}>{iapProduct[0].price}</Text>
+          )}
         </View>
-        {Platform.OS === "android" && (
-          <TouchableOpacity
-            onPress={processPayment}
-            style={styles.googlePayBtn}
-          >
-            <GooglePay />
-          </TouchableOpacity>
-        )}
-
-        {Platform.OS === "ios" && (
-          <TouchableOpacity onPress={processPayment} style={styles.applePayBtn}>
-            <Text style={styles.buttonText}>Proceed to checkout</Text>
-          </TouchableOpacity>
-        )}
       </View>
+      {Platform.OS === "android" && (
+        <TouchableOpacity onPress={processPayment} style={styles.googlePayBtn}>
+          <GooglePay />
+        </TouchableOpacity>
+      )}
+
+      {Platform.OS === "ios" && (
+        <TouchableOpacity onPress={processPayment} style={styles.applePayBtn}>
+          <Text style={styles.buttonText}>Proceed to checkout</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
