@@ -47,7 +47,7 @@ const EntervTheatreApp = ({ setShowLoadingSpinner }) => {
         username: email,
         password,
       });
-      storeData(user.attributes.email);
+      storeData(user.username);
       setShowLoadingSpinner(false);
       navigation.navigate(ScreenTitles.HomeScreen);
     } catch (error) {
