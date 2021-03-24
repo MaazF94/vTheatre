@@ -4,7 +4,12 @@ import { AntDesign } from "@expo/vector-icons";
 import moment from "moment";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-const DateBanner = ({ selectedDate, setSelectedDate }) => {
+const DateBanner = ({
+  selectedDate,
+  setSelectedDate,
+  showDatePicker,
+  setShowDatePicker,
+}) => {
   // 2 date variables
   const [dateMinusOne, setDateMinusOne] = useState(
     moment(selectedDate).subtract(1, "day")
@@ -12,7 +17,7 @@ const DateBanner = ({ selectedDate, setSelectedDate }) => {
   const [datePlusOne, setDatePlusOne] = useState(
     moment(selectedDate).add(1, "day")
   );
-  const [showPreviousDate, setShowPreviousDate] = useState([]);
+  const [showPreviousDate, setShowPreviousDate] = useState(true);
 
   useEffect(() => {
     HideIfToday();
@@ -42,7 +47,10 @@ const DateBanner = ({ selectedDate, setSelectedDate }) => {
 
   // cannot see list of movies before today's date
   const HideIfToday = () => {
-    if (moment(selectedDate).format("MM/DD/YYYY") === moment(new Date()).format("MM/DD/YYYY")) {
+    if (
+      moment(selectedDate).format("MM/DD/YYYY") ===
+      moment(new Date()).format("MM/DD/YYYY")
+    ) {
       setShowPreviousDate(false);
     } else {
       if (showPreviousDate === false) {
@@ -51,41 +59,52 @@ const DateBanner = ({ selectedDate, setSelectedDate }) => {
     }
   };
 
+  const showDatepicker = () => {
+    setShowDatePicker(!showDatePicker);
+  };
+
   return (
-    <View style={styles.dateBannerContainer}>
-      <View>
-        {showPreviousDate && (
-          <AntDesign
-            onPress={subtractDays}
-            name="left"
-            size={24}
-            color="white"
-          />
-        )}
-      </View>
-      <View>
-        {showPreviousDate && (
-          <TouchableOpacity onPress={subtractDays}>
+    <View style={{ flex: 1 }}>
+      <View style={styles.dateBannerContainer}>
+        <View>
+          {showPreviousDate && (
+            <AntDesign
+              onPress={subtractDays}
+              name="left"
+              size={24}
+              color="white"
+            />
+          )}
+        </View>
+        <View>
+          {showPreviousDate && (
+            <TouchableOpacity onPress={subtractDays}>
+              <Text style={styles.dateBannerSideText}>
+                {moment(dateMinusOne).format("MMM DD[\n]ddd")}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        <View>
+          <Text style={styles.dateBannerText}>
+            {moment(selectedDate).format("MMM DD[\n]ddd")}
+          </Text>
+        </View>
+        <View>
+          <TouchableOpacity onPress={addDays}>
             <Text style={styles.dateBannerSideText}>
-              {moment(dateMinusOne).format("MMM DD[\n]ddd")}
+              {moment(datePlusOne).format("MMM DD[\n]ddd")}
             </Text>
           </TouchableOpacity>
-        )}
+        </View>
+        <View>
+          <AntDesign onPress={addDays} name="right" size={24} color="white" />
+        </View>
       </View>
-      <View>
-        <Text style={styles.dateBannerText}>
-          {moment(selectedDate).format("MMM DD[\n]ddd")}
-        </Text>
-      </View>
-      <View>
-        <TouchableOpacity onPress={addDays}>
-          <Text style={styles.dateBannerSideText}>
-            {moment(datePlusOne).format("MMM DD[\n]ddd")}
-          </Text>
+      <View style={styles.dateBannerContainer}>
+        <TouchableOpacity onPress={showDatepicker} style={styles.dateBtn}>
+          <Text style={styles.selectDateBtnText}>Select Future Date</Text>
         </TouchableOpacity>
-      </View>
-      <View>
-        <AntDesign onPress={addDays} name="right" size={24} color="white" />
       </View>
     </View>
   );
@@ -110,6 +129,20 @@ const styles = StyleSheet.create({
     textAlign: "center",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 1,
+  },
+  dateBtn: {
+    backgroundColor: "#7E0808",
+    borderWidth: 1,
+    borderRadius: 1,
+    borderColor: "#ffffff",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+  },
+  selectDateBtnText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
 

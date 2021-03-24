@@ -10,6 +10,7 @@ import ScreenTitles from "../components/common/ScreenTitles";
 
 const HomeScreen = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const isFocused = useIsFocused();
   const navigation = useNavigation();
 
@@ -60,8 +61,15 @@ const HomeScreen = () => {
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
           isDateBanner={true}
+          showDatePicker={showDatePicker}
+          setShowDatePicker={setShowDatePicker}
         />
-        <MovieDetails selectedDate={selectedDate} />
+        <MovieDetails
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          showDatePicker={showDatePicker}
+          setShowDatePicker={setShowDatePicker}
+        />
       </View>
     </View>
   );

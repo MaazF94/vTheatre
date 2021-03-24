@@ -10,6 +10,8 @@ const BannerBackground = (props) => {
     selectedDate,
     setSelectedDate,
     selectedShowtimeObj,
+    showDatePicker,
+    setShowDatePicker,
   } = props;
 
   const GetBannerContent = () => {
@@ -18,6 +20,8 @@ const BannerBackground = (props) => {
         <DateBanner
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
+          showDatePicker={showDatePicker}
+          setShowDatePicker={setShowDatePicker}
         />
       );
     } else if (isTimeBanner) {
@@ -26,19 +30,17 @@ const BannerBackground = (props) => {
   };
 
   return (
-    <View style={styles.dateBannerBackground}>
+    <View
+      style={{
+        height: isDateBanner ? 125 : 75,
+        backgroundColor: "#7E0808",
+        flexDirection: "row",
+        justifyContent: "center",
+      }}
+    >
       <GetBannerContent />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  dateBannerBackground: {
-    backgroundColor: "#7E0808",
-    height: 75,
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-});
 
 export default BannerBackground;
