@@ -5,6 +5,7 @@ import {
   ScrollView,
   Alert,
   BackHandler,
+  Platform,
 } from "react-native";
 import Api from "../../api/Api";
 import MovieCard from "./MovieCard";
@@ -14,10 +15,17 @@ import * as Network from "expo-network";
 import AlertMessages from "../common/AlertMessages";
 import { useIsFocused } from "@react-navigation/native";
 import HttpHeaders from "../common/HttpHeaders";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
-const MovieDetails = ({ selectedDate }) => {
+const MovieDetails = ({
+  selectedDate,
+  setSelectedDate,
+  showDatePicker,
+  setShowDatePicker,
+}) => {
   const [refreshing, setRefreshing] = useState(false);
   const [movies, setMovies] = useState([]);
+
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -83,8 +91,46 @@ const MovieDetails = ({ selectedDate }) => {
       });
   };
 
+  const onChange = (event, chosenDate) => {
+    const currentDate = chosenDate || selectedDate;
+    setShowDatePicker(false);
+    setSelectedDate(currentDate);
+  };
+
   return (
     <View style={{ flex: 1 }}>
+      {showDatePicker && Platform.OS === "ios" && (
+        <DateTimePicker
+          style={{
+            backgroundColor: "#7E0808",
+            top: 0,
+            left: 0,
+            right: 0,
+          }}
+          value={new Date(selectedDate)}
+          mode="date"
+          display="spinner"
+          onChange={onChange}
+          minimumDate={new Date()}
+          textColor="white"
+        />
+      )}
+      {showDatePicker && Platform.OS === "android" && (
+        <DateTimePicker
+          style={{
+            backgroundColor: "#7E0808",
+            top: 0,
+            left: 0,
+            right: 0,
+          }}
+          value={new Date(selectedDate)}
+          mode="date"
+          display="default"
+          onChange={onChange}
+          minimumDate={new Date()}
+          textColor="white"
+        />
+      )}
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
