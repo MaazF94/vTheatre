@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Audio, Video } from "expo-av";
-import { Dimensions, AppState, Platform } from "react-native";
+import { Dimensions, AppState, Platform, Alert } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
@@ -15,6 +15,7 @@ import UriConstants from "../../api/UriConstants";
 import * as ScreenCapture from "expo-screen-capture";
 import HttpHeaders from "../common/HttpHeaders";
 import { useKeepAwake } from "expo-keep-awake";
+import AlertMessages from "../common/AlertMessages";
 
 const VideoPlayer = ({
   showtime,
@@ -116,12 +117,52 @@ const VideoPlayer = ({
       if (movieDateTime < moment(new Date()) && showtimeHasNotEnded(showtime)) {
         recordTimeUserWatched();
       }
+      updateTicketStatus("ACTIVE");
     } else if (nextAppState === "active") {
       if (isFocused) {
         intervalId = clearInterval(intervalId);
+        verifyTicket();
         enterUserInMovie();
       }
+      updateTicketStatus("INACTIVE");
     }
+  };
+
+  const verifyTicket = async () => {
+    const networkStatus = await Network.getNetworkStateAsync();
+    if (!networkStatus.isConnected) {
+      Alert.alert(
+        AlertMessages.ConnectivityErrorTitle,
+        AlertMessages.ConnectivityErrorMsg
+      );
+      return;
+    }
+
+    let verifyTicketResponse;
+    const verifyTicketRequest = {
+      username: username,
+      chosenDate: moment(selectedDate).format("YYYY-MM-DD"),
+      showtime: showtime,
+      movieId: movie.movieId,
+    };
+
+    await Api.post(UriConstants.verifyTicket, verifyTicketRequest, {
+      headers: HttpHeaders.headers,
+    })
+      .then((response) => {
+        verifyTicketResponse = response.data;
+
+        if (verifyTicketResponse.status === "INACTIVE") {
+          Alert.alert(
+            AlertMessages.TicketStatusInactiveTitle,
+            AlertMessages.TicketStatusInactiveMsg
+          );
+          navigation.goBack();
+        }
+      })
+      .catch(() => {
+        Alert.alert(AlertMessages.ErrorTitle, AlertMessages.ErrorMsg);
+      });
   };
 
   const updateTicketStatus = (status) => {
