@@ -22,7 +22,7 @@ const PurchaseTicket = ({
   selectedDate,
   username,
   verifyTicketResponse,
-  setLoadingAnimation,
+  setShowLoadingSpinner,
   iapProduct,
 }) => {
   const { title, ticketPrice } = movie;
@@ -83,7 +83,7 @@ const PurchaseTicket = ({
         }
       })
       .catch(() => {
-        setLoadingAnimation(false);
+        setShowLoadingSpinner(false);
         Alert.alert(AlertMessages.ErrorTitle, AlertMessages.ErrorMsg);
       });
   };
@@ -99,7 +99,7 @@ const PurchaseTicket = ({
           InAppPurchases.finishTransactionAsync(purchase, true);
         }
       });
-      setLoadingAnimation(false);
+      setShowLoadingSpinner(false);
       verifyTicketResponse.status = "ACTIVE";
       verifyTicketResponse.exists = true;
       navigation.navigate(ScreenTitles.EnterMovie, {
@@ -112,13 +112,13 @@ const PurchaseTicket = ({
     } else {
       // Else find out what went wrong
       if (responseCode === InAppPurchases.IAPResponseCode.USER_CANCELED) {
-        setLoadingAnimation(false);
+        setShowLoadingSpinner(false);
         Alert.alert(
           AlertMessages.CanceledPaymentTitle,
           AlertMessages.CanceledPaymentMsg
         );
       } else if (responseCode === InAppPurchases.IAPResponseCode.DEFERRED) {
-        setLoadingAnimation(false);
+        setShowLoadingSpinner(false);
         // Process transaction here...
         // Handle this with logged in user
         Alert.alert(
@@ -126,7 +126,7 @@ const PurchaseTicket = ({
           AlertMessages.PaymentDeferredMsg
         );
       } else {
-        setLoadingAnimation(false);
+        setShowLoadingSpinner(false);
         Alert.alert(
           AlertMessages.CanceledPaymentTitle,
           AlertMessages.CanceledPaymentMsg
@@ -151,7 +151,7 @@ const PurchaseTicket = ({
         );
         return;
       }
-      setLoadingAnimation(true);
+      setShowLoadingSpinner(true);
 
       // Check if the device supports native wallet pay and if a payment method exists
       const supportedAndPaymentMethodExists = await Stripe.canMakeNativePayPaymentsAsync();
@@ -182,7 +182,7 @@ const PurchaseTicket = ({
           })
             .then(async (response) => {
               if (!response.data.confirmed) {
-                setLoadingAnimation(false);
+                setShowLoadingSpinner(false);
                 Alert.alert(
                   AlertMessages.AlreadyPurchasedTitle,
                   AlertMessages.GoogleAlreadyPurchasedMsg
@@ -196,7 +196,7 @@ const PurchaseTicket = ({
                   AlertMessages.SuccessfulPaymentTitle,
                   AlertMessages.SuccessfulPaymentMsg
                 );
-                setLoadingAnimation(false);
+                setShowLoadingSpinner(false);
                 verifyTicketResponse.status = "ACTIVE";
                 verifyTicketResponse.exists = true;
                 navigation.navigate(ScreenTitles.EnterMovie, {
@@ -209,19 +209,19 @@ const PurchaseTicket = ({
               }
             })
             .catch(() => {
-              setLoadingAnimation(false);
+              setShowLoadingSpinner(false);
               Alert.alert(AlertMessages.ErrorTitle, AlertMessages.ErrorMsg);
             });
         } catch (error) {
           Stripe.cancelNativePayRequestAsync();
-          setLoadingAnimation(false);
+          setShowLoadingSpinner(false);
           Alert.alert(
             AlertMessages.CanceledPaymentTitle,
             AlertMessages.CanceledPaymentMsg
           );
         }
       } else {
-        setLoadingAnimation(false);
+        setShowLoadingSpinner(false);
         Alert.alert(
           AlertMessages.PaymentMethodNotSupportedTitle,
           AlertMessages.PaymentMethodNotSupportedMsg
@@ -231,7 +231,7 @@ const PurchaseTicket = ({
       // IOS will use In-App Purchases
     } else if (Platform.OS === "ios") {
       if (iapProduct !== undefined) {
-        setLoadingAnimation(true);
+        setShowLoadingSpinner(true);
         InAppPurchases.purchaseItemAsync(iapProduct[0].productId);
       } else {
         Alert.alert(AlertMessages.ErrorTitle, AlertMessages.ErrorMsg);
