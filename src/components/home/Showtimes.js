@@ -18,7 +18,7 @@ const Showtimes = ({ movie, selectedDate }) => {
   const { showtimes } = movie;
   const [username, setUsername] = useState("");
   const isFocused = useIsFocused();
-  const [loadingAnimation, setLoadingAnimation] = useState(false);
+  const [showLoadingSpinner, setShowLoadingSpinner] = useState(false);
 
   useEffect(() => {
     if (isFocused) {
@@ -36,7 +36,7 @@ const Showtimes = ({ movie, selectedDate }) => {
       return;
     }
 
-    setLoadingAnimation(true);
+    setShowLoadingSpinner(true);
 
     let verifyTicketResponse;
     const verifyTicketRequest = {
@@ -50,7 +50,7 @@ const Showtimes = ({ movie, selectedDate }) => {
       headers: HttpHeaders.headers,
     })
       .then((response) => {
-        setLoadingAnimation(false);
+        setShowLoadingSpinner(false);
         verifyTicketResponse = response.data;
 
         if (verifyTicketResponse.exists) {
@@ -150,7 +150,7 @@ const Showtimes = ({ movie, selectedDate }) => {
 
   return (
     <View>
-      <LoadingSpinner show={loadingAnimation} />
+      <LoadingSpinner show={showLoadingSpinner} />
       <View style={styles.showtimesContainer}>
         {showtimes.map((showtimeObj) => {
           if (showtimeHasNotEnded(showtimeObj.showtime)) {

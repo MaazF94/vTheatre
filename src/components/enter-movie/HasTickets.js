@@ -17,7 +17,7 @@ const HasTickets = ({
   verifyTicketResponse,
 }) => {
   const navigation = useNavigation();
-  const [loadingAnimation, setLoadingAnimation] = useState(false);
+  const [showLoadingSpinner, setShowLoadingSpinner] = useState(false);
 
   const showtimeHasNotEnded = (showtime) => {
     if (
@@ -68,10 +68,10 @@ const HasTickets = ({
 
     if (verifyTicketResponse.exists) {
       if (verifyTicketResponse.status === "ACTIVE") {
-        setLoadingAnimation(true);
+        setShowLoadingSpinner(true);
         refreshMovieFiles()
           .then((refreshedMovie) => {
-            setLoadingAnimation(false);
+            setShowLoadingSpinner(false);
             navigation.navigate(ScreenTitles.MovieScreen, {
               movie: refreshedMovie,
               showtime: selectedShowtimeObj,
@@ -115,7 +115,7 @@ const HasTickets = ({
 
   return (
     <View style={styles.confirmationContainer}>
-      <LoadingSpinner show={loadingAnimation} />
+      <LoadingSpinner show={showLoadingSpinner} />
       <Text style={styles.title}>Enjoy The Showing!</Text>
       <View style={styles.ticketContainer}>
         <Text style={styles.textTicketTitle}>Ticket Confirmed:</Text>

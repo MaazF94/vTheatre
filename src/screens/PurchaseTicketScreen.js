@@ -15,7 +15,7 @@ const PurchaseTicketScreen = (props) => {
   const selectedDate = new Date(selectedDateStr);
   const username = props.route.params.username;
   const verifyTicketResponse = props.route.params.verifyTicketResponse;
-  const [loadingAnimation, setLoadingAnimation] = useState(false);
+  const [showLoadingSpinner, setShowLoadingSpinner] = useState(false);
   const [iapProduct, setIapProduct] = useState();
   const isFocused = useIsFocused();
 
@@ -65,14 +65,14 @@ const PurchaseTicketScreen = (props) => {
         />
         <View>
           <EnterTheatre img={movie.img} />
-          <LoadingSpinner show={loadingAnimation} />
+          <LoadingSpinner show={showLoadingSpinner} />
           <PurchaseTicket
             movie={movie}
             selectedShowtimeObj={selectedShowtimeObj}
             selectedDate={selectedDate}
             username={username}
             verifyTicketResponse={verifyTicketResponse}
-            setLoadingAnimation={setLoadingAnimation}
+            setShowLoadingSpinner={setShowLoadingSpinner}
             iapProduct={iapProduct}
           />
         </View>

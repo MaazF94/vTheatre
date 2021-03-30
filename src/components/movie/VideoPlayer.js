@@ -117,14 +117,29 @@ const VideoPlayer = ({
       if (movieDateTime < moment(new Date()) && showtimeHasNotEnded(showtime)) {
         recordTimeUserWatched();
       }
-      updateTicketStatus("ACTIVE");
+      if (
+        (Platform.OS === "android" && ticketPrice !== 0) ||
+        (Platform.OS === "ios" && iosProductId !== null)
+      ) {
+        updateTicketStatus("ACTIVE");
+      }
     } else if (nextAppState === "active") {
       if (isFocused) {
         intervalId = clearInterval(intervalId);
-        verifyTicket();
+        if (
+          (Platform.OS === "android" && ticketPrice !== 0) ||
+          (Platform.OS === "ios" && iosProductId !== null)
+        ) {
+          verifyTicket();
+        }
         enterUserInMovie();
       }
-      updateTicketStatus("INACTIVE");
+      if (
+        (Platform.OS === "android" && ticketPrice !== 0) ||
+        (Platform.OS === "ios" && iosProductId !== null)
+      ) {
+        updateTicketStatus("INACTIVE");
+      }
     }
   };
 

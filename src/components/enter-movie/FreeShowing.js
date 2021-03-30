@@ -17,7 +17,7 @@ const FreeShowing = ({
   username,
 }) => {
   const navigation = useNavigation();
-  const [loadingAnimation, setLoadingAnimation] = useState(false);
+  const [showLoadingSpinner, setShowLoadingSpinner] = useState(false);
 
   const showtimeHasNotEnded = (showtime) => {
     if (
@@ -73,7 +73,7 @@ const FreeShowing = ({
         );
         return;
       }
-      setLoadingAnimation(true);
+      setShowLoadingSpinner(true);
       refreshMovieFiles();
     }
   };
@@ -82,18 +82,20 @@ const FreeShowing = ({
     await Api.post(UriConstants.refreshMovieFiles, movie, {
       headers: HttpHeaders.headers,
     }).then((refreshedMovie) => {
-      setLoadingAnimation(false);
+      setShowLoadingSpinner(false);
       navigation.navigate(ScreenTitles.MovieScreen, {
         movie: refreshedMovie.data,
         showtime: selectedShowtimeObj,
         selectedDate: selectedDate.toString(),
+        ticketPrice: refreshedMovie.data.ticketPrice,
+        iosProductId: refreshedMovie.data.iosProductId,
       });
     });
   };
 
   return (
     <View style={styles.confirmationContainer}>
-      <LoadingSpinner show={loadingAnimation} />
+      <LoadingSpinner show={showLoadingSpinner} />
       <Text style={styles.text}>Enjoy the showing!</Text>
       <View
         style={{
