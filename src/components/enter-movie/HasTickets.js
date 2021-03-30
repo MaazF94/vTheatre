@@ -69,21 +69,62 @@ const HasTickets = ({
     if (verifyTicketResponse.exists) {
       if (verifyTicketResponse.status === "ACTIVE") {
         setShowLoadingSpinner(true);
-        refreshMovieFiles()
-          .then((refreshedMovie) => {
-            setShowLoadingSpinner(false);
-            navigation.navigate(ScreenTitles.MovieScreen, {
-              movie: refreshedMovie,
-              showtime: selectedShowtimeObj,
-              selectedDate: selectedDate.toString(),
-              ticketPrice: refreshedMovie.ticketPrice,
-              iosProductId: refreshedMovie.iosProductId,
-              username: username,
-            });
+        // Validate Receipt for iOS to check if ticket was refunded
+        if (verifyTicketResponse.appleTransactionId !== null) {
+          const verifyReceiptRequest = {
+            transactionReceipt: verifyTicketResponse.appleTransactionReceipt,
+            transactionId: verifyTicketResponse.appleTransactionId,
+          };
+          await Api.post(UriConstants.validateReceipt, verifyReceiptRequest, {
+            headers: HttpHeaders.headers,
           })
-          .catch(() => {
-            setShowLoadingSpinner(false);
-          });
+            .then((response) => {
+              if (response.data === true) {
+                refreshMovieFiles()
+                  .then((refreshedMovie) => {
+                    setShowLoadingSpinner(false);
+                    navigation.navigate(ScreenTitles.MovieScreen, {
+                      movie: refreshedMovie,
+                      showtime: selectedShowtimeObj,
+                      selectedDate: selectedDate.toString(),
+                      ticketPrice: refreshedMovie.ticketPrice,
+                      iosProductId: refreshedMovie.iosProductId,
+                      username: username,
+                    });
+                  })
+                  .catch(() => {
+                    setShowLoadingSpinner(false);
+                  });
+              } else {
+                setShowLoadingSpinner(false);
+                verifyTicketResponse.status = "REFUNDED";
+                Alert.alert(
+                  AlertMessages.TicketStatusRefundedTitle,
+                  AlertMessages.TicketStatusRefundedMsg
+                );
+              }
+            })
+            .catch(() => {
+              Alert.alert(AlertMessages.ErrorTitle, AlertMessages.ErrorMsg);
+              setShowLoadingSpinner(false);
+            });
+        } else {
+          refreshMovieFiles()
+            .then((refreshedMovie) => {
+              setShowLoadingSpinner(false);
+              navigation.navigate(ScreenTitles.MovieScreen, {
+                movie: refreshedMovie,
+                showtime: selectedShowtimeObj,
+                selectedDate: selectedDate.toString(),
+                ticketPrice: refreshedMovie.ticketPrice,
+                iosProductId: refreshedMovie.iosProductId,
+                username: username,
+              });
+            })
+            .catch(() => {
+              setShowLoadingSpinner(false);
+            });
+        }
       } else if (verifyTicketResponse.status === "INACTIVE") {
         Alert.alert(
           AlertMessages.TicketStatusInactiveTitle,
