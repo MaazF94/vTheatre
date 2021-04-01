@@ -59,7 +59,7 @@ const PurchaseTicket = ({
     return options;
   };
 
-  const processIosPayment = async () => {
+  const processIosPayment = async (transactionDetails) => {
     const chosenDate = moment(selectedDate).format("YYYY-MM-DD");
 
     // Build request object for backend
@@ -68,10 +68,12 @@ const PurchaseTicket = ({
       movie: movie,
       chosenDate: chosenDate,
       username: username,
+      appleTransactionReceipt: transactionDetails.transactionReceipt,
+      appleTransactionId: transactionDetails.transactionId,
     };
 
     // Call backend to process the payment
-    await Api.post(UriConstants.processIosPayment, paymentRequest, {
+    await Api.post(UriConstants.completeIosPayment, paymentRequest, {
       headers: HttpHeaders.headers,
     })
       .then((response) => {
@@ -92,16 +94,26 @@ const PurchaseTicket = ({
   InAppPurchases.setPurchaseListener(({ responseCode, results, errorCode }) => {
     // Purchase was successful
     if (responseCode === InAppPurchases.IAPResponseCode.OK) {
+      const transactionDetails = {
+        transactionReceipt: null,
+        transactionId: null,
+      };
       results.forEach((purchase) => {
         if (!purchase.acknowledged) {
           // Process transaction here and unlock content...
-          processIosPayment();
+          transactionDetails.transactionReceipt = purchase.transactionReceipt;
+          transactionDetails.transactionId = purchase.orderId;
+          processIosPayment(transactionDetails);
           InAppPurchases.finishTransactionAsync(purchase, true);
         }
       });
       setShowLoadingSpinner(false);
       verifyTicketResponse.status = "ACTIVE";
       verifyTicketResponse.exists = true;
+      verifyTicketResponse.appleTransactionReceipt =
+        transactionDetails.transactionReceipt;
+      verifyTicketResponse.appleTransactionId =
+        transactionDetails.transactionId;
       navigation.navigate(ScreenTitles.EnterMovie, {
         movie: movie,
         selectedShowtimeObj: selectedShowtimeObj,
@@ -177,7 +189,7 @@ const PurchaseTicket = ({
           };
 
           // Call backend to process the payment
-          await Api.post(UriConstants.completeAndroidPayment, paymentRequest, {
+          await Api.post(UriConstants.processAndroidPayment, paymentRequest, {
             headers: HttpHeaders.headers,
           })
             .then(async (response) => {
