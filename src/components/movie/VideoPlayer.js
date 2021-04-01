@@ -84,7 +84,10 @@ const VideoPlayer = ({
       if (intervalId !== undefined) {
         intervalId = clearInterval(intervalId);
       }
-      if (movieDateTime < moment(new Date()) && showtimeHasNotEnded(showtime)) {
+      if (
+        movieDateTime < moment(new Date()) &&
+        isPositionInStreamPastShowtime()
+      ) {
         recordTimeUserWatched();
       }
       if (
@@ -114,7 +117,7 @@ const VideoPlayer = ({
 
   const _handleAppStateChange = (nextAppState) => {
     if (nextAppState === "background") {
-      if (movieDateTime < moment(new Date()) && showtimeHasNotEnded(showtime)) {
+      if (movieDateTime < moment(new Date())) {
         recordTimeUserWatched();
       }
       if (
@@ -249,39 +252,29 @@ const VideoPlayer = ({
     });
   };
 
-  const showtimeHasNotEnded = (showtime) => {
-    if (
-      moment(selectedDate).format("MM/DD/YYYY") ===
-      moment(new Date()).format("MM/DD/YYYY")
-    ) {
-      const hrs = movie.length.includes("HR") ? movie.length.substr(0, 1) : 0;
-      const mins = movie.length.includes("MIN")
-        ? movie.length.substring(
-            movie.length.indexOf("MIN") - 3,
-            movie.length.indexOf("MIN")
-          )
-        : 0;
-      const secs = movie.length.includes("SEC")
-        ? movie.length.substring(
-            movie.length.indexOf("SEC") - 3,
-            movie.length.indexOf("SEC")
-          )
-        : 0;
+  const isPositionInStreamPastShowtime = () => {
+    const hrs = movie.length.includes("HR") ? movie.length.substr(0, 1) : 0;
+    const mins = movie.length.includes("MIN")
+      ? movie.length.substring(
+          movie.length.indexOf("MIN") - 3,
+          movie.length.indexOf("MIN")
+        )
+      : 0;
+    const secs = movie.length.includes("SEC")
+      ? movie.length.substring(
+          movie.length.indexOf("SEC") - 3,
+          movie.length.indexOf("SEC")
+        )
+      : 0;
 
-      const movieEndTime = moment(showtime, "HH:mm a");
-      const currentTime = moment(new Date());
+    const movieLength = moment
+      .duration()
+      .add(parseInt(hrs), "hours")
+      .add(parseInt(mins), "minutes")
+      .add(parseInt(secs), "seconds");
 
-      if (
-        currentTime >
-        movieEndTime
-          .add(parseInt(hrs), "hours")
-          .add(parseInt(mins), "minutes")
-          .add(parseInt(secs), "seconds")
-      ) {
-        return false;
-      } else {
-        return true;
-      }
+    if (positionInStream > movieLength) {
+      return false;
     } else {
       return true;
     }
