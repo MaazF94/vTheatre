@@ -28,7 +28,7 @@ const MovieScreen = (props) => {
   }, [isFocused]);
 
   return (
-    <View>
+    <View style={{backgroundColor: "black"}}>
       <StatusBar type={"slide"} />
       <VideoPlayer
         showtime={showtime}
