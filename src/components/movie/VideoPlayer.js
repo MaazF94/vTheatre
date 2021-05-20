@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Audio, Video } from "expo-av";
-import { Dimensions, AppState, Platform, Alert } from "react-native";
+import { Dimensions, AppState, Platform } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
@@ -14,8 +13,8 @@ import Api from "../../api/Api";
 import UriConstants from "../../api/UriConstants";
 import * as ScreenCapture from "expo-screen-capture";
 import HttpHeaders from "../common/HttpHeaders";
-import { useKeepAwake } from "expo-keep-awake";
-import AlertMessages from "../common/AlertMessages";
+import Video from "react-native-video";
+import DrmConfigs from "../common/DrmConfigs";
 
 const VideoPlayer = ({
   showtime,
@@ -24,9 +23,9 @@ const VideoPlayer = ({
   ticketPrice,
   iosProductId,
   username,
+  licenseToken,
 }) => {
   ScreenCapture.usePreventScreenCapture();
-  useKeepAwake();
 
   // Common variables
   const navigation = useNavigation();
@@ -48,8 +47,7 @@ const VideoPlayer = ({
   // State variables
   const [appState, setAppState] = useState(AppState.currentState);
   const [headerShown, setHeaderShown] = useState(false);
-  const [shouldPlay, setShouldPlay] = useState(false);
-  const [usePoster, setUsePoster] = useState(true);
+  const [pause, setPause] = useState(true);
   const [timeLeft, setTimeLeft] = useState(
     moment.duration(movieDateTime.diff(moment(new Date())))
   );
@@ -60,11 +58,6 @@ const VideoPlayer = ({
     opacity: 0,
   });
   const [showCountdown, setShowCountdown] = useState(true);
-  const [stoppedVidPosition, setStoppedVidPosition] = useState(
-    moment(new Date())
-  );
-  const stoppedVidPositionRef = useRef();
-  stoppedVidPositionRef.current = stoppedVidPosition;
 
   useEffect(() => {
     if (isFocused) {
@@ -83,12 +76,6 @@ const VideoPlayer = ({
     return () => {
       if (intervalId !== undefined) {
         intervalId = clearInterval(intervalId);
-      }
-      if (
-        movieDateTime < moment(new Date()) &&
-        isPositionInStreamPastShowtime()
-      ) {
-        recordTimeUserWatched();
       }
       if (
         (Platform.OS === "android" && ticketPrice !== 0) ||
@@ -117,9 +104,6 @@ const VideoPlayer = ({
 
   const _handleAppStateChange = (nextAppState) => {
     if (nextAppState === "background") {
-      if (movieDateTime < moment(new Date())) {
-        recordTimeUserWatched();
-      }
       if (
         (Platform.OS === "android" && ticketPrice !== 0) ||
         (Platform.OS === "ios" && iosProductId !== null)
@@ -129,58 +113,9 @@ const VideoPlayer = ({
     } else if (nextAppState === "active") {
       if (isFocused) {
         intervalId = clearInterval(intervalId);
-        if (
-          (Platform.OS === "android" && ticketPrice !== 0) ||
-          (Platform.OS === "ios" && iosProductId !== null)
-        ) {
-          verifyTicket();
-        }
-        enterUserInMovie();
-      }
-      if (
-        (Platform.OS === "android" && ticketPrice !== 0) ||
-        (Platform.OS === "ios" && iosProductId !== null)
-      ) {
-        updateTicketStatus("INACTIVE");
+        navigation.goBack();
       }
     }
-  };
-
-  const verifyTicket = async () => {
-    const networkStatus = await Network.getNetworkStateAsync();
-    if (!networkStatus.isConnected) {
-      Alert.alert(
-        AlertMessages.ConnectivityErrorTitle,
-        AlertMessages.ConnectivityErrorMsg
-      );
-      return;
-    }
-
-    let verifyTicketResponse;
-    const verifyTicketRequest = {
-      username: username,
-      chosenDate: moment(selectedDate).format("YYYY-MM-DD"),
-      showtime: showtime,
-      movieId: movie.movieId,
-    };
-
-    await Api.post(UriConstants.verifyTicket, verifyTicketRequest, {
-      headers: HttpHeaders.headers,
-    })
-      .then((response) => {
-        verifyTicketResponse = response.data;
-
-        if (verifyTicketResponse.status === "INACTIVE") {
-          Alert.alert(
-            AlertMessages.TicketStatusInactiveTitle,
-            AlertMessages.TicketStatusInactiveMsg
-          );
-          navigation.goBack();
-        }
-      })
-      .catch(() => {
-        Alert.alert(AlertMessages.ErrorTitle, AlertMessages.ErrorMsg);
-      });
   };
 
   const updateTicketStatus = (status) => {
@@ -209,40 +144,15 @@ const VideoPlayer = ({
           intervalId = clearInterval(intervalId);
         }
         if (videoRef.current !== null) {
-          setActivityIndicator({ opacity: 1 });
-          setUsePoster(false);
           setShowCountdown(false);
-          setShouldPlay(true);
+          setPause(false);
           positionInStream = moment.duration(
             moment(new Date()).diff(movieDateTime)
           );
-          videoRef.current.playFromPositionAsync(
-            positionInStream.asMilliseconds()
-          );
-          Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+          videoRef.current.seek(positionInStream.asMilliseconds() / 1000);
         }
       }
     }, 1000);
-  };
-
-  const recordTimeUserWatched = async () => {
-    const networkStatus = await Network.getNetworkStateAsync();
-    if (networkStatus.isConnected) {
-      const videoTimeWatched = moment.duration(
-        stoppedVidPositionRef.current.diff(positionInStream.asMilliseconds())
-      );
-      const videoTimeWatchedRequest = {
-        hours: videoTimeWatched.hours(),
-        minutes: videoTimeWatched.minutes(),
-        seconds: videoTimeWatched.seconds(),
-        movieId: movie.movieId,
-      };
-      Api.post(UriConstants.recordVideoTimeWatched, videoTimeWatchedRequest, {
-        headers: HttpHeaders.headers,
-      })
-        .then(() => {})
-        .catch(() => {});
-    }
   };
 
   const headerToggle = () => {
@@ -252,57 +162,27 @@ const VideoPlayer = ({
     });
   };
 
-  const isPositionInStreamPastShowtime = () => {
-    const hrs = movie.length.includes("HR") ? movie.length.substr(0, 1) : 0;
-    const mins = movie.length.includes("MIN")
-      ? movie.length.substring(
-          movie.length.indexOf("MIN") - 3,
-          movie.length.indexOf("MIN")
-        )
-      : 0;
-    const secs = movie.length.includes("SEC")
-      ? movie.length.substring(
-          movie.length.indexOf("SEC") - 3,
-          movie.length.indexOf("SEC")
-        )
-      : 0;
-
-    const movieLength = moment
-      .duration()
-      .add(parseInt(hrs), "hours")
-      .add(parseInt(mins), "minutes")
-      .add(parseInt(secs), "seconds");
-
-    if (positionInStream > movieLength) {
-      return false;
-    } else {
-      return true;
-    }
+  const onPlaybackLoading = () => {
+    setActivityIndicator({ opacity: 1 });
   };
 
-  const onPlaybackStatusUpdate = async (playbackStatus) => {
-    if (playbackStatus.isBuffering && !playbackStatus.isPlaying) {
-      setActivityIndicator({ opacity: 1 });
-    } else {
-      const networkStatus = await Network.getNetworkStateAsync();
-      if (networkStatus.isConnected) {
-        setActivityIndicator({ opacity: 0 });
-        if (playbackStatus.isPlaying) {
-          setStoppedVidPosition(moment(playbackStatus.positionMillis));
-        }
-      } else {
-        if (videoRef.current !== null) {
-          videoRef.current.pauseAsync();
-        }
-        wait(3000).then(() => {
-          navigation.navigate(ScreenTitles.HomeScreen);
-        });
-      }
-    }
+  const onPlaybackLoaded = () => {
+    setActivityIndicator({ opacity: 0 });
+  };
 
-    if (playbackStatus.didJustFinish) {
-      setMovieEndedText({ opacity: 1 });
-      wait(3000).then(() => navigation.navigate(ScreenTitles.HomeScreen));
+  const onEnd = () => {
+    setMovieEndedText({ opacity: 1 });
+    wait(3000).then(() => navigation.navigate(ScreenTitles.HomeScreen));
+  };
+
+  const onError = async () => {
+    const networkStatus = await Network.getNetworkStateAsync();
+    if (!networkStatus.isConnected) {
+      setPause(true);
+      setActivityIndicator(true);
+      wait(3000).then(() => {
+        navigation.navigate(ScreenTitles.HomeScreen);
+      });
     }
   };
 
@@ -314,23 +194,85 @@ const VideoPlayer = ({
 
   return (
     <TouchableOpacity onPress={headerToggle}>
-      <Video
-        source={{
-          uri: movie.vid,
-        }}
-        rate={1.0}
-        volume={1.0}
-        isMuted={false}
-        resizeMode="contain"
-        shouldPlay={shouldPlay}
-        style={{ width: width, height: height }}
-        ref={videoRef}
-        posterSource={{ uri: movie.img }}
-        usePoster={usePoster}
-        onPlaybackStatusUpdate={(playbackStatus) =>
-          onPlaybackStatusUpdate(playbackStatus)
-        }
-      />
+      {movie.drmEnabled === 0 && (
+        <Video
+          source={{
+            uri: movie.vid,
+          }}
+          style={{ width: width, height: height }}
+          resizeMode="contain"
+          rate={1.0}
+          volume={1.0}
+          ref={videoRef}
+          poster={movie.img}
+          onLoadStart={onPlaybackLoading}
+          onLoad={onPlaybackLoaded}
+          paused={pause}
+          onEnd={onEnd}
+          onError={onError}
+          allowsExternalPlayback={false}
+          ignoreSilentSwitch="ignore"
+          playWhenInactive={true}
+        />
+      )}
+      {Platform.OS === "ios" && movie.drmEnabled === 1 && (
+        <Video
+          source={{
+            uri: movie.fairplayPlayback,
+          }}
+          drm={{
+            type: "fairplay",
+            licenseServer: DrmConfigs.licenseServer,
+            certificateUrl:
+              DrmConfigs.certificateUrl,
+            headers: {
+              "pallycon-customdata-v2": licenseToken,
+            },
+          }}
+          style={{ width: width, height: height }}
+          resizeMode="contain"
+          rate={1.0}
+          volume={1.0}
+          ref={videoRef}
+          poster={movie.img}
+          onLoadStart={onPlaybackLoading}
+          onLoad={onPlaybackLoaded}
+          paused={pause}
+          onEnd={onEnd}
+          onError={onError}
+          allowsExternalPlayback={false}
+          ignoreSilentSwitch="ignore"
+          playWhenInactive={true}
+        />
+      )}
+      {Platform.OS === "android" && movie.drmEnabled === 1 && (
+        <Video
+          source={{
+            uri: movie.widevinePlayback,
+          }}
+          drm={{
+            type: "widevine",
+            licenseServer: DrmConfigs.licenseServer,
+            headers: {
+              "pallycon-customdata-v2": licenseToken,
+            },
+          }}
+          style={{ width: width, height: height }}
+          resizeMode="contain"
+          rate={1.0}
+          volume={1.0}
+          ref={videoRef}
+          poster={movie.img}
+          onLoadStart={onPlaybackLoading}
+          onLoad={onPlaybackLoaded}
+          paused={pause}
+          onEnd={onEnd}
+          onError={onError}
+          allowsExternalPlayback={false}
+          ignoreSilentSwitch="ignore"
+          playWhenInactive={true}
+        />
+      )}
       <VideoActivityIndicator activityIndicator={activityIndicator} />
       <VideoEnded movieEndedText={movieEndedText} />
       <ShowtimeCountdown

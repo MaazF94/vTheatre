@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  Platform,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AlertMessages from "../common/AlertMessages";
 import ScreenTitles from "../common/ScreenTitles";
@@ -82,14 +89,41 @@ const FreeShowing = ({
     await Api.post(UriConstants.refreshMovieFiles, movie, {
       headers: HttpHeaders.headers,
     }).then((refreshedMovie) => {
-      setShowLoadingSpinner(false);
-      navigation.navigate(ScreenTitles.MovieScreen, {
-        movie: refreshedMovie.data,
-        showtime: selectedShowtimeObj,
-        selectedDate: selectedDate.toString(),
-        ticketPrice: refreshedMovie.data.ticketPrice,
-        iosProductId: refreshedMovie.data.iosProductId,
-      });
+      const tokenLicenseRequest = {
+        sourceType: Platform.OS,
+      };
+
+      if (refreshedMovie.data.drmEnabled) {
+        // get license token
+        Api.post(
+          UriConstants.getTokenLicense,
+          tokenLicenseRequest,
+          HttpHeaders.headers
+        )
+          .then((licenseToken) => {
+            setShowLoadingSpinner(false);
+            navigation.navigate(ScreenTitles.MovieScreen, {
+              movie: refreshedMovie.data,
+              showtime: selectedShowtimeObj,
+              selectedDate: selectedDate.toString(),
+              ticketPrice: refreshedMovie.data.ticketPrice,
+              iosProductId: refreshedMovie.data.iosProductId,
+              licenseToken: licenseToken.data,
+            });
+          })
+          .catch(() => {
+            setShowLoadingSpinner(false);
+            Alert.alert(AlertMessages.ErrorTitle, AlertMessages.ErrorMsg);
+          });
+      } else {
+        navigation.navigate(ScreenTitles.MovieScreen, {
+          movie: refreshedMovie.data,
+          showtime: selectedShowtimeObj,
+          selectedDate: selectedDate.toString(),
+          ticketPrice: refreshedMovie.data.ticketPrice,
+          iosProductId: refreshedMovie.data.iosProductId,
+        });
+      }
     });
   };
 

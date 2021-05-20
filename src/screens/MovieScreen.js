@@ -13,6 +13,7 @@ const MovieScreen = (props) => {
   const ticketPrice = props.route.params.ticketPrice;
   const iosProductId = props.route.params.iosProductId;
   const username = props.route.params.username;
+  const licenseToken = props.route.params.licenseToken;
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -28,7 +29,7 @@ const MovieScreen = (props) => {
   }, [isFocused]);
 
   return (
-    <View style={{backgroundColor: "black"}}>
+    <View style={{ backgroundColor: "black" }}>
       <StatusBar type={"slide"} />
       <VideoPlayer
         showtime={showtime}
@@ -37,6 +38,7 @@ const MovieScreen = (props) => {
         ticketPrice={ticketPrice}
         iosProductId={iosProductId}
         username={username}
+        licenseToken={licenseToken}
       />
     </View>
   );

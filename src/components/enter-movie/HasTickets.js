@@ -69,6 +69,8 @@ const HasTickets = ({
     if (verifyTicketResponse.exists) {
       if (verifyTicketResponse.status === "ACTIVE") {
         setShowLoadingSpinner(true);
+        // Assume the ticket is valid
+        let validTicket = true;
         // Validate Receipt for iOS to check if ticket was refunded
         if (verifyTicketResponse.appleTransactionId !== null) {
           const verifyReceiptRequest = {
@@ -79,9 +81,27 @@ const HasTickets = ({
             headers: HttpHeaders.headers,
           })
             .then((response) => {
-              if (response.data === true) {
-                refreshMovieFiles()
-                  .then((refreshedMovie) => {
+              validTicket = response.data;
+            })
+            .catch(() => {
+              Alert.alert(AlertMessages.ErrorTitle, AlertMessages.ErrorMsg);
+              setShowLoadingSpinner(false);
+            });
+        }
+        if (validTicket === true) {
+          refreshMovieFiles()
+            .then((refreshedMovie) => {
+              const tokenLicenseRequest = {
+                sourceType: Platform.OS,
+              };
+              if (refreshedMovie.drmEnabled) {
+                // get license token
+                Api.post(
+                  UriConstants.getTokenLicense,
+                  tokenLicenseRequest,
+                  HttpHeaders.headers
+                )
+                  .then((licenseToken) => {
                     setShowLoadingSpinner(false);
                     navigation.navigate(ScreenTitles.MovieScreen, {
                       movie: refreshedMovie,
@@ -90,40 +110,37 @@ const HasTickets = ({
                       ticketPrice: refreshedMovie.ticketPrice,
                       iosProductId: refreshedMovie.iosProductId,
                       username: username,
+                      licenseToken: licenseToken.data,
                     });
                   })
                   .catch(() => {
                     setShowLoadingSpinner(false);
+                    Alert.alert(
+                      AlertMessages.ErrorTitle,
+                      AlertMessages.ErrorMsg
+                    );
                   });
               } else {
-                setShowLoadingSpinner(false);
-                verifyTicketResponse.status = "REFUNDED";
-                Alert.alert(
-                  AlertMessages.TicketStatusRefundedTitle,
-                  AlertMessages.TicketStatusRefundedMsg
-                );
+                navigation.navigate(ScreenTitles.MovieScreen, {
+                  movie: refreshedMovie,
+                  showtime: selectedShowtimeObj,
+                  selectedDate: selectedDate.toString(),
+                  ticketPrice: refreshedMovie.ticketPrice,
+                  iosProductId: refreshedMovie.iosProductId,
+                  username: username,
+                });
               }
             })
             .catch(() => {
-              Alert.alert(AlertMessages.ErrorTitle, AlertMessages.ErrorMsg);
               setShowLoadingSpinner(false);
             });
         } else {
-          refreshMovieFiles()
-            .then((refreshedMovie) => {
-              setShowLoadingSpinner(false);
-              navigation.navigate(ScreenTitles.MovieScreen, {
-                movie: refreshedMovie,
-                showtime: selectedShowtimeObj,
-                selectedDate: selectedDate.toString(),
-                ticketPrice: refreshedMovie.ticketPrice,
-                iosProductId: refreshedMovie.iosProductId,
-                username: username,
-              });
-            })
-            .catch(() => {
-              setShowLoadingSpinner(false);
-            });
+          setShowLoadingSpinner(false);
+          verifyTicketResponse.status = "REFUNDED";
+          Alert.alert(
+            AlertMessages.TicketStatusRefundedTitle,
+            AlertMessages.TicketStatusRefundedMsg
+          );
         }
       } else if (verifyTicketResponse.status === "INACTIVE") {
         Alert.alert(
