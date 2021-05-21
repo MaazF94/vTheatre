@@ -91,6 +91,8 @@ const FreeShowing = ({
     }).then((refreshedMovie) => {
       const tokenLicenseRequest = {
         sourceType: Platform.OS,
+        contentId: movie.vid.substring(0, movie.vid.indexOf(".")),
+        userId: username,
       };
 
       if (refreshedMovie.data.drmEnabled) {

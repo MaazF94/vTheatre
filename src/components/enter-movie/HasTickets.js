@@ -93,6 +93,8 @@ const HasTickets = ({
             .then((refreshedMovie) => {
               const tokenLicenseRequest = {
                 sourceType: Platform.OS,
+                contentId: movie.vid.substring(0, movie.vid.indexOf(".")),
+                userId: username,
               };
               if (refreshedMovie.drmEnabled) {
                 // get license token
