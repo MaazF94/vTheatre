@@ -8,7 +8,8 @@ const UriConstants = {
   updateTicketStatus: "/updateTicketStatus",
   getIapConfigs: "/getIapConfigs",
   getTickets: "/getTickets",
-  validateReceipt: "/validateReceipt"
+  validateReceipt: "/validateReceipt",
+  getTokenLicense: "/getTokenLicense",
 };
 
 export default UriConstants;
